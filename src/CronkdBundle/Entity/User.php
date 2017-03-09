@@ -17,8 +17,49 @@ class User extends BaseUser
      */
     protected $id;
 
+    /**
+     * @var Kingdom[]
+     *
+     * @ORM\OneToMany(targetEntity="Kingdom", mappedBy="user")
+     */
+    private $kingdoms;
+
     public function __construct()
     {
         parent::__construct();
+    }
+
+    /**
+     * Add kingdom
+     *
+     * @param Kingdom $kingdom
+     *
+     * @return User
+     */
+    public function addKingdom(Kingdom $kingdom)
+    {
+        $this->kingdoms[] = $kingdom;
+
+        return $this;
+    }
+
+    /**
+     * Remove kingdom
+     *
+     * @param Kingdom $kingdom
+     */
+    public function removeKingdom(Kingdom $kingdom)
+    {
+        $this->kingdoms->removeElement($kingdom);
+    }
+
+    /**
+     * Get kingdoms
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getKingdoms()
+    {
+        return $this->kingdoms;
     }
 }

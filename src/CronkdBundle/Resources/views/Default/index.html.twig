@@ -1,8 +1,31 @@
 {% extends '::base.html.twig' %}
 
 {% block body %}
-    <h1>Hello World, {{ something }}!</h1>
-    <p>
-        <a href="{{ path('fos_user_security_logout') }}">Logout</a>
-    </p>
+    <h1>Welcome, there are {{ kingdoms|length }} kingdoms!</h1>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Kingdom Name</th>
+            <th>Owner</th>
+            <th>Resources</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for kingdom in kingdoms %}
+            <tr>
+                <td>{{ kingdom.name }}</td>
+                <td>{{ kingdom.user }}</td>
+                <td>
+                    <ul>
+                        {% for resource in kingdom.resources %}
+                            <li>{{ resource.resource.name }}: {{ resource.quantity }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
 {% endblock %}
