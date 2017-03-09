@@ -1,0 +1,8 @@
+{% extends '::base.html.twig' %}
+
+{% block body %}
+    <h1>Hello World, {{ something }}!</h1>
+    <p>
+        <a href="{{ path('fos_user_security_logout') }}">Logout</a>
+    </p>
+{% endblock %}

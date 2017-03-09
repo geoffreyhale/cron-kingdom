@@ -1,13 +1,18 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8" />
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
-    </body>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}Cron.KD{% endblock %}</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    {% block css %}
+        <link rel="stylesheet" href="{{ asset('bundles/cronkd/css/bootstrap.css') }}">
+        <link rel="stylesheet" href="{{ asset('bundles/cronkd/css/font-awesome.css') }}">
+    {% endblock %}
+</head>
+<body>
+{% block body %}{% endblock %}
+{% block js %}
+    <script src="{{ asset('bundles/cronkd/js/bootstrap.js') }}"></script>
+{% endblock %}
+</body>
 </html>
