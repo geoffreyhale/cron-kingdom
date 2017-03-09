@@ -1,9 +1,9 @@
 <?php
 
-namespace AppBundle;
+namespace CronkdBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class AppBundle extends Bundle
+class CronkdBundle extends Bundle
 {
 }

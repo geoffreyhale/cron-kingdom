@@ -1,0 +1,4 @@
+services:
+#    cronkd.example:
+#        class: CronkdBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]
