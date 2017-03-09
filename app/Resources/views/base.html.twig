@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>{% block title %}Cron.KD{% endblock %}</title>
+    <title>{% block title %}CronKD{% endblock %}</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     {% block css %}
         <link rel="stylesheet" href="{{ asset('bundles/cronkd/css/bootstrap.css') }}">
@@ -10,7 +10,41 @@
     {% endblock %}
 </head>
 <body>
-{% block body %}{% endblock %}
+
+{% block nav %}
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{{ path('homepage') }}">CronKD</a>
+            </div>
+            <div class="collapse navbar-collapse">
+                <div class="navbar navbar-nav navbar-left">
+
+                </div>
+                <div class="navbar navbar-nav navbar-right">
+                    {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+                        <p class="navbar-text">
+                            {{ app.user.username }} |
+                            <a href="{{ path('fos_user_security_logout') }}" class="navbar-link">
+                                {{ 'layout.logout'|trans({}, 'FOSUserBundle') }}
+                            </a>
+                        </p>
+                    {% else %}
+                        <ul class="nav navbar-nav">
+                            <li><a href="{{ path('fos_user_security_login') }}" class="navbar-link">{{ 'layout.login'|trans({}, 'FOSUserBundle') }}</a></li>
+                            <li><a href="{{ path('fos_user_registration_register') }}" class="navbar-link">Register</a></li>
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
 {% block js %}
     <script src="{{ asset('bundles/cronkd/js/bootstrap.js') }}"></script>
 {% endblock %}

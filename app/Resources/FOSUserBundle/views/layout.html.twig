@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register - {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="col-md-12">
+        <div class="panel panel-default" style="margin: 0 auto; max-width: 300px;">
+            <div class="panel-body">
+                <h2 class="page-header">Register</h2>
+                {% block fos_user_content %}{% endblock %}
+            </div>
+            <div class="panel-footer">
+                <span class="text-muted">Already have an account? <a href="{{ path('fos_user_security_login') }}">Login &raquo;</a></span>
+            </div>
+        </div>
+    </div>
+{% endblock %}
