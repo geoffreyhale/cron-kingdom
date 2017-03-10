@@ -50,10 +50,18 @@ class Kingdom
     private $resources;
 
     /**
+     * @var Queue[]
+     *
+     * @ORM\OneToMany(targetEntity="Queue", mappedBy="kingdom", fetch="EAGER")
+     */
+    private $queues;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
+        $this->queues    = new ArrayCollection();
         $this->resources = new ArrayCollection();
     }
 
@@ -171,5 +179,39 @@ class Kingdom
     public function getResources()
     {
         return $this->resources;
+    }
+
+    /**
+     * Add queue
+     *
+     * @param Queue $queue
+     *
+     * @return Kingdom
+     */
+    public function addQueue(Queue $queue)
+    {
+        $this->queues[] = $queue;
+
+        return $this;
+    }
+
+    /**
+     * Remove queue
+     *
+     * @param Queue $queue
+     */
+    public function removeQueue(Queue $queue)
+    {
+        $this->queues->removeElement($queue);
+    }
+
+    /**
+     * Get queues
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getQueues()
+    {
+        return $this->queues;
     }
 }

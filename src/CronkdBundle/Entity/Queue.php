@@ -4,12 +4,12 @@ namespace CronkdBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * KingdomResource
+ * Queue
  *
- * @ORM\Table(name="kingdom_resource")
- * @ORM\Entity(repositoryClass="CronkdBundle\Repository\KingdomResourceRepository")
+ * @ORM\Table(name="queue")
+ * @ORM\Entity(repositoryClass="CronkdBundle\Repository\QueueRepository")
  */
-class KingdomResource
+class Queue
 {
     /**
      * @var int
@@ -23,6 +23,13 @@ class KingdomResource
     /**
      * @var int
      *
+     * @ORM\Column(name="tick", type="bigint")
+     */
+    private $tick;
+
+    /**
+     * @var int
+     *
      * @ORM\Column(name="quantity", type="bigint")
      */
     private $quantity;
@@ -30,14 +37,15 @@ class KingdomResource
     /**
      * @var Kingdom
      *
-     * @ORM\ManyToOne(targetEntity="Kingdom", inversedBy="resources")
+     * @ORM\ManyToOne(targetEntity="Kingdom", inversedBy="queues")
      */
     private $kingdom;
 
     /**
      * @var Resource
      *
-     * @ORM\ManyToOne(targetEntity="Resource", inversedBy="kingdoms", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="Resource")
+     * @ORM\JoinColumn(name="resource_id", referencedColumnName="id")
      */
     private $resource;
 
@@ -52,11 +60,35 @@ class KingdomResource
     }
 
     /**
+     * Set tick
+     *
+     * @param integer $tick
+     *
+     * @return Queue
+     */
+    public function setTick($tick)
+    {
+        $this->tick = $tick;
+
+        return $this;
+    }
+
+    /**
+     * Get tick
+     *
+     * @return int
+     */
+    public function getTick()
+    {
+        return $this->tick;
+    }
+
+    /**
      * Set quantity
      *
      * @param integer $quantity
      *
-     * @return KingdomResource
+     * @return Queue
      */
     public function setQuantity($quantity)
     {
@@ -76,22 +108,11 @@ class KingdomResource
     }
 
     /**
-     * @param $quantity
-     * @return KingdomResource
-     */
-    public function addQuantity($quantity)
-    {
-        $this->setQuantity($this->getQuantity() + $quantity);
-
-        return $this;
-    }
-
-    /**
      * Set kingdom
      *
      * @param Kingdom $kingdom
      *
-     * @return KingdomResource
+     * @return Queue
      */
     public function setKingdom(Kingdom $kingdom = null)
     {
@@ -115,7 +136,7 @@ class KingdomResource
      *
      * @param Resource $resource
      *
-     * @return KingdomResource
+     * @return Queue
      */
     public function setResource(Resource $resource = null)
     {
@@ -127,7 +148,7 @@ class KingdomResource
     /**
      * Get resource
      *
-     * @return Resource
+     * @return \CronkdBundle\Entity\Resource
      */
     public function getResource()
     {
