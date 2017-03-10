@@ -24,7 +24,7 @@ class World
     /**
      * @var int
      *
-     * @ORM\Column(name="tick", type="bigint")
+     * @ORM\Column(name="tick", type="bigint", options={"default": 1})
      */
     private $tick;
 
@@ -82,6 +82,17 @@ class World
     public function getTick()
     {
         return $this->tick;
+    }
+
+    /**
+     * @return World
+     */
+    public function addTick()
+    {
+        $tick = $this->getTick();
+        $this->setTick(++$tick);
+
+        return $this;
     }
 
     /**
