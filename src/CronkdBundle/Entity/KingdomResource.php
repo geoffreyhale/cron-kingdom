@@ -87,6 +87,17 @@ class KingdomResource
     }
 
     /**
+     * @param $quantity
+     * @return KingdomResource
+     */
+    public function removeQuantity($quantity)
+    {
+        $this->setQuantity($this->getQuantity() - $quantity);
+
+        return $this;
+    }
+
+    /**
      * Set kingdom
      *
      * @param Kingdom $kingdom
