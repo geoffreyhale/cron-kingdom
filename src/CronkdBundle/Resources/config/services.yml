@@ -1,4 +1,12 @@
 services:
-#    cronkd.example:
-#        class: CronkdBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]
+    cronkd.queue_populator:
+        class: CronkdBundle\Service\QueuePopulator
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
+
+    cronkd.manager.kingdom:
+        class: CronkdBundle\Service\KingdomManager
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
+        calls:
+            - [setLogger, ["@logger"]]

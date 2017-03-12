@@ -1,0 +1,30 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+    <ul class="breadcrumb">
+        <li><a href="{{ path("homepage") }}">Kingdoms</a></li>
+        <li class="active">[{{ kingdom.netWorth }}] {{ kingdom.name }} Queues</li>
+    </ul>
+
+    <h3>Available Resources</h3>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            {% for resource in kingdom.resources %}
+                <th>{{ resource.resource.name }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            {% for resource in kingdom.resources %}
+                <td>{{ resource.quantity }}</td>
+            {% endfor %}
+        </tr>
+        </tbody>
+    </table>
+
+    {% for queueData in queues %}
+        {% include 'CronkdBundle:Default:displayQueue.html.twig' %}
+    {% endfor %}
+{% endblock %}

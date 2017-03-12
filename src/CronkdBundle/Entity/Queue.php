@@ -108,6 +108,17 @@ class Queue
     }
 
     /**
+     * @param $quantity
+     * @return Queue
+     */
+    public function addQuantity($quantity)
+    {
+        $newQuantity = $this->getQuantity() + $quantity;
+
+        return $this->setQuantity($newQuantity);
+    }
+
+    /**
      * Set kingdom
      *
      * @param Kingdom $kingdom
