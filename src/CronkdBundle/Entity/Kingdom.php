@@ -29,6 +29,13 @@ class Kingdom
     private $name;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="net_worth", type="integer")
+     */
+    private $netWorth;
+
+    /**
      * @var World
      *
      * @ORM\ManyToOne(targetEntity="World", inversedBy="kingdoms")
@@ -97,6 +104,30 @@ class Kingdom
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Set netWorth
+     *
+     * @param integer $netWorth
+     *
+     * @return Kingdom
+     */
+    public function setNetWorth($netWorth)
+    {
+        $this->netWorth = $netWorth;
+
+        return $this;
+    }
+
+    /**
+     * Get netWorth
+     *
+     * @return integer
+     */
+    public function getNetWorth()
+    {
+        return $this->netWorth;
     }
 
     /**

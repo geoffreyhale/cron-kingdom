@@ -7,7 +7,7 @@ use CronkdBundle\Entity\Resource;
 use CronkdBundle\Exceptions\InvalidQueueIntervalException;
 use Doctrine\ORM\EntityManagerInterface;
 
-class QueueBuilder
+class QueuePopulator
 {
     /** @var EntityManagerInterface */
     private $em;
@@ -62,6 +62,7 @@ class QueueBuilder
             }
         }
 
+        $queues = array_reverse($queues, false);
         foreach ($queues as $queue) {
             $this->em->persist($queue);
         }

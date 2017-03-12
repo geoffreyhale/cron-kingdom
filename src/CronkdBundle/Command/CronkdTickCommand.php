@@ -1,13 +1,12 @@
 <?php
 namespace CronkdBundle\Command;
 
+use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Queue;
 use CronkdBundle\Entity\World;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CronkdTickCommand extends ContainerAwareCommand
@@ -22,11 +21,12 @@ class CronkdTickCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $logger = $this->getContainer()->get('logger');
-        $logger->info('Starting tick command');
-
         $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
+        $kingdomManager = $this->getContainer()->get('cronkd.manager.kingdom');
+        $logger = $this->getContainer()->get('logger');
         $worlds = $em->getRepository(World::class)->findAll();
+
+        $logger->info('Starting tick command');
 
         /** @var World $world */
         foreach ($worlds as $world) {
@@ -63,6 +63,19 @@ class CronkdTickCommand extends ContainerAwareCommand
 
             $world->addTick();
             $em->persist($world);
+            $logger->info('Completed queues');
+
+            foreach ($world->getKingdoms() as $kingdom) {
+                if (!$kingdomManager->isAtMaxPopulation($kingdom)) {
+                    $kingdomManager->incrementPopulation($kingdom);
+                    $logger->info($kingdom->getName() . ' kingdom is not at capacity, adding to population');
+                } else {
+                    $logger->info($kingdom->getName() . ' is at capacity');
+                }
+
+                $kingdomManager->calculateNetWorth($kingdom);
+                $logger->info($kingdom->getName() . ' kingdom has a net worth of ' . $kingdom->getNetWorth());
+            }
         }
 
         $em->flush();

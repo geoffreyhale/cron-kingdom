@@ -47,9 +47,9 @@ class ActionController extends ApiController
             return $this->createErrorJsonResponse('Not enough civilians to complete action!');
         }
 
-        $queueBuilder = $this->get('cronkd.queue_builder');
-        $civilianQueues = $queueBuilder->build($kingdom, $civilianResource, 8, $quantity);
-        $materialQueues = $queueBuilder->build($kingdom, $materialResource, 8, $quantity);
+        $queuePopulator = $this->get('cronkd.queue_populator');
+        $civilianQueues = $queuePopulator->build($kingdom, $civilianResource, 8, $quantity);
+        $materialQueues = $queuePopulator->build($kingdom, $materialResource, 8, $quantity);
 
         $availableCivilians->removeQuantity($quantity);
         $em->persist($availableCivilians);
@@ -104,9 +104,9 @@ class ActionController extends ApiController
             return $this->createErrorJsonResponse('Note enough materials to complete action');
         }
 
-        $queueBuilder = $this->get('cronkd.queue_builder');
-        $civilianQueues = $queueBuilder->build($kingdom, $civilianResource, 16, $quantity);
-        $housingQueues = $queueBuilder->build($kingdom, $housingResource, 16, $quantity);
+        $queuePopulator = $this->get('cronkd.queue_populator');
+        $civilianQueues = $queuePopulator->build($kingdom, $civilianResource, 16, $quantity);
+        $housingQueues = $queuePopulator->build($kingdom, $housingResource, 16, $quantity);
 
         $availableMaterials->removeQuantity($quantity);
         $em->persist($availableMaterials);
@@ -155,8 +155,8 @@ class ActionController extends ApiController
             return $this->createErrorJsonResponse('Not enough civilians to complete action!');
         }
 
-        $queueBuilder = $this->get('cronkd.queue_builder');
-        $militaryQueues = $queueBuilder->build($kingdom, $militaryResource, 24, $quantity);
+        $queuePopulator = $this->get('cronkd.queue_populator');
+        $militaryQueues = $queuePopulator->build($kingdom, $militaryResource, 24, $quantity);
 
         $availableCivilians->removeQuantity($quantity);
         $em->persist($availableCivilians);

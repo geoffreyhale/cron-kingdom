@@ -12,6 +12,10 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Resource
 {
+    const CIVILIAN = 'Civilian';
+    const MATERIAL = 'Material';
+    const HOUSING  = 'Housing';
+    const MILITARY = 'Military';
     /**
      * @var int
      *
@@ -27,6 +31,13 @@ class Resource
      * @ORM\Column(name="name", type="string", length=255, unique=true)
      */
     private $name;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="value", type="integer")
+     */
+    private $value;
 
     /**
      * @var KingdomResource[]
@@ -75,6 +86,30 @@ class Resource
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Set value
+     *
+     * @param integer $value
+     *
+     * @return Resource
+     */
+    public function setValue($value)
+    {
+        $this->value = $value;
+
+        return $this;
+    }
+
+    /**
+     * Get value
+     *
+     * @return integer
+     */
+    public function getValue()
+    {
+        return $this->value;
     }
 
     /**

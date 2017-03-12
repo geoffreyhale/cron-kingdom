@@ -8,21 +8,15 @@
         <tr>
             <th>Kingdom Name</th>
             <th>Owner</th>
-            <th>Resources</th>
+            <th>Net Worth</th>
         </tr>
         </thead>
         <tbody>
         {% for kingdom in kingdoms %}
             <tr>
-                <td>{{ kingdom.name }}</td>
+                <td><a href="{{ path("kingdom_stats", {'id': kingdom.id}) }}">{{ kingdom.name }}</a></td>
                 <td>{{ kingdom.user }}</td>
-                <td>
-                    <ul>
-                        {% for resource in kingdom.resources %}
-                            <li>{{ resource.resource.name }}: {{ resource.quantity }}</li>
-                        {% endfor %}
-                    </ul>
-                </td>
+                <td>{{ kingdom.netWorth }}</td>
             </tr>
         {% endfor %}
         </tbody>
