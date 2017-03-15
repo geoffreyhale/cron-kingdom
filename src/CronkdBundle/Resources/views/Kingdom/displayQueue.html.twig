@@ -1,10 +1,10 @@
-<h3>{{ queueData.kingdomResource.resource.name }}</h3>
 {% if not queueData.queues|length %}
     <p>No active {{ queueData.kingdomResource.resource.name }}.</p>
 {% else %}
     <table class="table table-bordered">
         <thead>
         <tr>
+            <th><strong>Tick</strong></th>
             {% for queue in queueData.queues %}
                 <th>{{ queue.tick }}</th>
             {% endfor %}
@@ -12,6 +12,7 @@
         </thead>
         <tbody>
         <tr>
+            <th><strong>{{ queueData.kingdomResource.resource.name }}</strong></th>
             {% for queue in queueData.queues %}
                 <td>{{ queue.quantity }}</td>
             {% endfor %}
