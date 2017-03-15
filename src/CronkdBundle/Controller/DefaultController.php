@@ -2,8 +2,7 @@
 namespace CronkdBundle\Controller;
 
 use CronkdBundle\Entity\Kingdom;
-use CronkdBundle\Entity\Queue;
-use CronkdBundle\Entity\Resource;
+use CronkdBundle\Entity\User;
 use CronkdBundle\Entity\World;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -32,6 +31,48 @@ class DefaultController extends Controller
             'world'          => $world,
             'kingdoms'       => $kingdoms,
             'userHasKingdom' => $userHasKingdom,
+        ];
+    }
+
+    /**
+     * @Route("/kingdoms", name="kingdoms")
+     * @Template
+     */
+    public function kingdomsAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+        $kingdoms = $em->getRepository(Kingdom::class)->findBy(['world' => 1]);
+
+        return [
+            'kingdoms' => $kingdoms,
+        ];
+    }
+
+    /**
+     * @Route("/users", name="users")
+     * @Template
+     */
+    public function usersAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+        $users = $em->getRepository(User::class)->findAll();
+
+        return [
+            'users' => $users,
+        ];
+    }
+
+    /**
+     * @Route("/worlds", name="worlds")
+     * @Template
+     */
+    public function worldsAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+        $worlds = $em->getRepository(World::class)->findAll();
+
+        return [
+            'worlds' => $worlds,
         ];
     }
 }
