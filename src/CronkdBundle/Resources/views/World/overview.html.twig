@@ -1,0 +1,30 @@
+<div class="row-fluid">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">World</h3>
+        </div>
+        <div class="panel-body">
+            <a href="{{ path("world_show", {'id': world.id}) }}">{{ world.name }}</a>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Hour</th>
+                <th>Kingdoms</th>
+                {% if worldNetworth is defined %}
+                    <th>Networth</th>
+                {% endif %}
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>{{ world.tick }}</td>
+                <td>{{ world.kingdoms|length }}</td>
+                {% if worldNetworth is defined %}
+                    <td>{{ worldNetworth }}</td>
+                {% endif %}
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

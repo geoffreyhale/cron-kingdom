@@ -1,24 +1,8 @@
 {% extends '::base.html.twig' %}
 
 {% block content %}
-    <div class="row-fluid">
-        <table class="table table-bordered">
-            <thead>
-            <tr>
-                <td>Name</td>
-                <td>Tick</td>
-                <td>Active</td>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>{{ world.name }}</td>
-                <td>{{ world.tick }}</td>
-                <td>{{ world.active }}</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+
+    {% include 'CronkdBundle:World:overview.html.twig' %}
 
     <div class="row-fluid">
         <div class="col-sm-12 col-md-8 col-md-offset-2">
@@ -43,4 +27,5 @@
             </table>
         </div>
     </div>
+
 {% endblock %}

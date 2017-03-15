@@ -2,32 +2,7 @@
 
 {% block content %}
 
-    <div class="row-fluid">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">World</h3>
-            </div>
-            <div class="panel-body">
-                <a href="{{ path("world_show", {'id': world.id}) }}">{{ world.name }}</a>
-            </div>
-            <table class="table table-bordered">
-                <thead>
-                <tr>
-                    <th>Hour</th>
-                    <th>Kingdoms</th>
-                    <th>Networth</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>{{ world.tick }}</td>
-                    <td>{{ world.kingdoms|length }}</td>
-                    <td>{{ worldNetworth }}</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    {% include 'CronkdBundle:World:overview.html.twig' %}
 
     {% if not userHasKingdom %}
         <div class="row-fluid">
@@ -37,34 +12,7 @@
             <hr />
         </div>
     {% else %}
-        <div class="row-fluid">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Kingdom</h3>
-                </div>
-                <div class="panel-body">
-                    <a href="{{ path("kingdom_show", {'id': kingdom.id}) }}">{{ kingdom.name }}</a>
-                </div>
-                <table class="table table-bordered">
-                    <thead>
-                    <tr>
-                        {% for resource in kingdom.resources %}
-                            <th>{{ resource.resource.name }}</th>
-                        {% endfor %}
-                        <th>Networth</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        {% for resource in kingdom.resources %}
-                            <td>{{ resource.quantity }}</td>
-                        {% endfor %}
-                        <td>{{ kingdom.networth }}</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        {% include 'CronkdBundle:Kingdom:overview.html.twig' %}
     {% endif %}
 
     <div class="row-fluid">
@@ -83,9 +31,7 @@
             <div class="panel-heading">
                 <h3 class="panel-title">Queues</h3>
             </div>
-            {% for queueData in queues %}
-                {% include 'CronkdBundle:Kingdom:displayQueue.html.twig' %}
-            {% endfor %}
+            {% include 'CronkdBundle:Kingdom:queues.html.twig' %}
         </div>
     </div>
 
