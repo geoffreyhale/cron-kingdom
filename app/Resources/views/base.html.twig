@@ -19,7 +19,11 @@
             </div>
             <div class="collapse navbar-collapse">
                 <div class="navbar navbar-nav navbar-left">
-
+                    <ul class="nav navbar-nav">
+                        <li><a href="{{ path('kingdoms') }}">Kingdoms</a></li>
+                        <li><a href="{{ path('users') }}">Users</a></li>
+                        <li><a href="{{ path('worlds') }}">Worlds</a></li>
+                    </ul>
                 </div>
                 <div class="navbar navbar-nav navbar-right">
                     {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
