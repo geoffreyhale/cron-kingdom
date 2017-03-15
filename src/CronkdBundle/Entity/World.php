@@ -36,9 +36,17 @@ class World
     private $name;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="active", type="boolean")
+     */
+    private $active;
+
+    /**
      * @var Kingdom[]
      *
      * @ORM\OneToMany(targetEntity="Kingdom", mappedBy="world")
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     private $kingdoms;
 
@@ -117,6 +125,30 @@ class World
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Set active
+     *
+     * @param boolean $active
+     *
+     * @return World
+     */
+    public function setActive($active)
+    {
+        $this->active = $active;
+
+        return $this;
+    }
+
+    /**
+     * Get active
+     *
+     * @return boolean
+     */
+    public function getActive()
+    {
+        return $this->active;
     }
 
     /**
