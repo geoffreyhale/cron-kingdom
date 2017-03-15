@@ -2,7 +2,7 @@
 
 {% block content %}
     <ul class="breadcrumb">
-        <li><a href="{{ path("homepage") }}">Kingdoms - World Tick #{{ kingdom.world.tick }}</a></li>
+        <li><a href="{{ path("homepage") }}">{{ kingdom.world.name }} - World Tick #{{ kingdom.world.tick }}</a></li>
         <li class="active">[{{ kingdom.netWorth }}] {{ kingdom.name }} Queues</li>
     </ul>
 
@@ -25,6 +25,6 @@
     </table>
 
     {% for queueData in queues %}
-        {% include 'CronkdBundle:Default:displayQueue.html.twig' %}
+        {% include 'CronkdBundle:Kingdom:displayQueue.html.twig' %}
     {% endfor %}
 {% endblock %}

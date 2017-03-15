@@ -3,12 +3,15 @@ namespace CronkdBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Kingdom
  *
  * @ORM\Table(name="kingdom")
  * @ORM\Entity(repositoryClass="CronkdBundle\Repository\KingdomRepository")
+ * @UniqueEntity("name")
  */
 class Kingdom
 {
@@ -25,6 +28,8 @@ class Kingdom
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, unique=true)
+     *
+     * @Assert\NotBlank()
      */
     private $name;
 
@@ -52,7 +57,7 @@ class Kingdom
     /**
      * @var KingdomResource[]
      *
-     * @ORM\OneToMany(targetEntity="KingdomResource", mappedBy="kingdom", fetch="EAGER")
+     * @ORM\OneToMany(targetEntity="KingdomResource", mappedBy="kingdom", fetch="EAGER", cascade={"persist"})
      */
     private $resources;
 

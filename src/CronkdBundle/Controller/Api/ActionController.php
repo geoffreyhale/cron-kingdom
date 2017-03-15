@@ -36,8 +36,8 @@ class ActionController extends ApiController
             return $this->createErrorJsonResponse('Invalid Kingdom');
         }
 
-        $materialResource = $em->getRepository(Resource::class)->findOneBy(['name' => 'Material']);
-        $civilianResource = $em->getRepository(Resource::class)->findOneBy(['name' => 'Civilian']);
+        $materialResource = $em->getRepository(Resource::class)->findOneBy(['name' => Resource::MATERIAL]);
+        $civilianResource = $em->getRepository(Resource::class)->findOneBy(['name' => Resource::CIVILIAN]);
         $availableCivilians = $em->getRepository(KingdomResource::class)->findOneBy([
             'kingdom'  => $kingdom,
             'resource' => $civilianResource,
@@ -85,9 +85,9 @@ class ActionController extends ApiController
             return $this->createErrorJsonResponse('Invalid Kingdom');
         }
 
-        $housingResource = $em->getRepository(Resource::class)->findOneBy(['name' => 'Housing']);
-        $materialResource = $em->getRepository(Resource::class)->findOneBy(['name' => 'Material']);
-        $civilianResource = $em->getRepository(Resource::class)->findOneBy(['name' => 'Civilian']);
+        $housingResource = $em->getRepository(Resource::class)->findOneBy(['name' => Resource::HOUSING]);
+        $materialResource = $em->getRepository(Resource::class)->findOneBy(['name' => Resource::MATERIAL]);
+        $civilianResource = $em->getRepository(Resource::class)->findOneBy(['name' => Resource::CIVILIAN]);
         $availableCivilians = $em->getRepository(KingdomResource::class)->findOneBy([
             'kingdom'  => $kingdom,
             'resource' => $civilianResource,
@@ -123,10 +123,10 @@ class ActionController extends ApiController
     }
 
     /**
-     * @Route("/train", name="action_train")
+     * @Route("/train_military", name="action_train_military")
      * @Method("PUT")
      */
-    public function trainAction(Request $request)
+    public function trainMilitaryAction(Request $request)
     {
         $kingdomId = (int) $request->get('kingdomId');
         $quantity = (int) $request->get('quantity');
@@ -144,8 +144,8 @@ class ActionController extends ApiController
             return $this->createErrorJsonResponse('Invalid Kingdom');
         }
 
-        $militaryResource = $em->getRepository(Resource::class)->findOneBy(['name' => 'Military']);
-        $civilianResource = $em->getRepository(Resource::class)->findOneBy(['name' => 'Civilian']);
+        $militaryResource = $em->getRepository(Resource::class)->findOneBy(['name' => Resource::MILITARY]);
+        $civilianResource = $em->getRepository(Resource::class)->findOneBy(['name' => Resource::CIVILIAN]);
         $availableCivilians = $em->getRepository(KingdomResource::class)->findOneBy([
             'kingdom'  => $kingdom,
             'resource' => $civilianResource,
@@ -165,6 +165,53 @@ class ActionController extends ApiController
         return new JsonResponse([
             'data' => [
                 'military_queues' => $militaryQueues,
+            ],
+        ]);
+    }
+
+    /**
+     * @Route("/train_hacker", name="action_train_hacker")
+     * @Method("PUT")
+     */
+    public function trainHackerAction(Request $request)
+    {
+        $kingdomId = (int) $request->get('kingdomId');
+        $quantity = (int) $request->get('quantity');
+
+        if (empty($kingdomId)) {
+            return $this->createErrorJsonResponse('You must pass a parameter `kingdomId` (int)');
+        }
+        if (empty($quantity) || 0 >= $quantity) {
+            return $this->createErrorJsonResponse('You must pass a parameter `quantity` (positive int)');
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $kingdom = $em->getRepository(Kingdom::class)->find($kingdomId);
+        if (!$kingdom) {
+            return $this->createErrorJsonResponse('Invalid Kingdom');
+        }
+
+        $hackerResource = $em->getRepository(Resource::class)->findOneBy(['name' => Resource::HACKER]);
+        $militaryResource = $em->getRepository(Resource::class)->findOneBy(['name' => Resource::MILITARY]);
+        $availableMilitary = $em->getRepository(KingdomResource::class)->findOneBy([
+            'kingdom'  => $kingdom,
+            'resource' => $militaryResource,
+        ]);
+
+        if (!$availableMilitary || $quantity > $availableMilitary->getQuantity()) {
+            return $this->createErrorJsonResponse('Not enough military to complete action!');
+        }
+
+        $queuePopulator = $this->get('cronkd.queue_populator');
+        $hackerQueues = $queuePopulator->build($kingdom, $hackerResource, 24, $quantity);
+
+        $availableMilitary->removeQuantity($quantity);
+        $em->persist($availableMilitary);
+        $em->flush();
+
+        return new JsonResponse([
+            'data' => [
+                'hacker_queues' => $hackerQueues,
             ],
         ]);
     }

@@ -62,4 +62,9 @@ class User extends BaseUser
     {
         return $this->kingdoms;
     }
+
+    public function __toString()
+    {
+        return $this->getUsername();
+    }
 }

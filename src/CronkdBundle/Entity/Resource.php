@@ -16,6 +16,8 @@ class Resource
     const MATERIAL = 'Material';
     const HOUSING  = 'Housing';
     const MILITARY = 'Military';
+    const HACKER   = 'Hacker';
+
     /**
      * @var int
      *
@@ -38,6 +40,13 @@ class Resource
      * @ORM\Column(name="value", type="integer")
      */
     private $value;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="can_be_probed", type="boolean")
+     */
+    private $canBeProbed;
 
     /**
      * @var KingdomResource[]
@@ -110,6 +119,30 @@ class Resource
     public function getValue()
     {
         return $this->value;
+    }
+
+    /**
+     * Set canBeProbed
+     *
+     * @param boolean $canBeProbed
+     *
+     * @return Resource
+     */
+    public function setCanBeProbed($canBeProbed)
+    {
+        $this->canBeProbed = $canBeProbed;
+
+        return $this;
+    }
+
+    /**
+     * Get canBeProbed
+     *
+     * @return boolean
+     */
+    public function getCanBeProbed()
+    {
+        return $this->canBeProbed;
     }
 
     /**
