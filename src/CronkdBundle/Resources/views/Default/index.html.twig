@@ -2,9 +2,7 @@
 
 {% block content %}
 
-    <div class="row-fluid">
-        <h1>Welcome, {{ user.username }}!</h1>
-    </div>
+    {% include 'CronkdBundle:World:overview.html.twig' %}
 
     {% if not userHasKingdom %}
         <div class="row-fluid">
@@ -13,29 +11,28 @@
             </div>
             <hr />
         </div>
+    {% else %}
+        {% include 'CronkdBundle:Kingdom:overview.html.twig' %}
     {% endif %}
 
     <div class="row-fluid">
-        <div class="col-sm-12 col-md-8 col-md-offset-2">
-            <h3>{{ world.name }} Kingdoms</h3>
-            <table class="table">
-                <thead>
-                <tr>
-                    <th>Kingdom Name</th>
-                    <th>Owner</th>
-                    <th>Net Worth</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for kingdom in kingdoms %}
-                    <tr>
-                        <td><a href="{{ path("kingdom_show", {'id': kingdom.id}) }}">{{ kingdom.name }}</a></td>
-                        <td>{{ kingdom.user.username }}</td>
-                        <td>{{ kingdom.netWorth }}</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Actions</h3>
+            </div>
+            <div class="panel-body">
+                Coming soon!
+            </div>
         </div>
     </div>
+
+    <div class="row-fluid">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Queues</h3>
+            </div>
+            {% include 'CronkdBundle:Kingdom:queues.html.twig' %}
+        </div>
+    </div>
+
 {% endblock %}

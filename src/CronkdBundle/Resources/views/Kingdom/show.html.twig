@@ -1,30 +1,20 @@
 {% extends '::base.html.twig' %}
 
+{% if world is not defined %}
+    {% set world = kingdom.world %}
+{% endif %}
+
 {% block content %}
+
     <ul class="breadcrumb">
         <li><a href="{{ path("homepage") }}">{{ kingdom.world.name }} - World Tick #{{ kingdom.world.tick }}</a></li>
         <li class="active">[{{ kingdom.netWorth }}] {{ kingdom.name }} Queues</li>
     </ul>
 
-    <h3>Available Resources</h3>
-    <table class="table table-bordered">
-        <thead>
-        <tr>
-            {% for resource in kingdom.resources %}
-                <th>{{ resource.resource.name }}</th>
-            {% endfor %}
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            {% for resource in kingdom.resources %}
-                <td>{{ resource.quantity }}</td>
-            {% endfor %}
-        </tr>
-        </tbody>
-    </table>
+    {% include 'CronkdBundle:World:overview.html.twig' %}
 
-    {% for queueData in queues %}
-        {% include 'CronkdBundle:Kingdom:displayQueue.html.twig' %}
-    {% endfor %}
+    {% include 'CronkdBundle:Kingdom:overview.html.twig' %}
+
+    {% include 'CronkdBundle:Kingdom:queues.html.twig' %}
+
 {% endblock %}

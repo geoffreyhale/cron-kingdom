@@ -17,19 +17,30 @@ class DefaultController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
+
+        $user = $this->getUser();
+
         $world = $em->getRepository(World::class)->findOneBy(['active' => true]);
         if (!$world) {
             throw $this->createNotFoundException('No active world found!');
         }
 
-        $user = $this->getUser();
+        $worldNetworth = 0;
+        foreach ($world->getKingdoms() as $kingdom) {
+            $worldNetworth += $kingdom->getNetworth();
+        }
+
+        $kingdom = $em->getRepository(Kingdom::class)->findOneByUserWorld($user, $world);
         $userHasKingdom = $em->getRepository(Kingdom::class)->userHasKingdom($user, $world);
-        $kingdoms = $em->getRepository(Kingdom::class)->findBy(['world' => $world]);
+
+        $queues = $this->get('cronkd.manager.kingdom')->getResourceQueues($kingdom);
 
         return [
             'user'           => $user,
+            'kingdom'        => $kingdom,
+            'queues'         => $queues,
             'world'          => $world,
-            'kingdoms'       => $kingdoms,
+            'worldNetworth'  => $worldNetworth,
             'userHasKingdom' => $userHasKingdom,
         ];
     }
