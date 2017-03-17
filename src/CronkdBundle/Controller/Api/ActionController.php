@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 class ActionController extends ApiController
 {
     /**
-     * @Route("/produce", name="action_product")
+     * @Route("/produce", name="api_action_product")
      * @Method("PUT")
      */
     public function produceAction(Request $request)
@@ -64,7 +64,7 @@ class ActionController extends ApiController
     }
 
     /**
-     * @Route("/build", name="action_build")
+     * @Route("/build", name="api_action_build")
      * @Method("PUT")
      */
     public function buildAction(Request $request)
@@ -123,7 +123,7 @@ class ActionController extends ApiController
     }
 
     /**
-     * @Route("/train_military", name="action_train_military")
+     * @Route("/train_military", name="api_action_train_military")
      * @Method("PUT")
      */
     public function trainMilitaryAction(Request $request)
@@ -170,7 +170,7 @@ class ActionController extends ApiController
     }
 
     /**
-     * @Route("/train_hacker", name="action_train_hacker")
+     * @Route("/train_hacker", name="api_action_train_hacker")
      * @Method("PUT")
      */
     public function trainHackerAction(Request $request)

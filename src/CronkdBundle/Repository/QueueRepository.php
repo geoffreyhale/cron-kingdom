@@ -36,6 +36,7 @@ class QueueRepository extends \Doctrine\ORM\EntityRepository
     public function findCurrentQueues(KingdomResource $kingdomResource)
     {
         $qb = $this->createQueryBuilder('q');
+        $qb->join('q.resource', 'r');
         $qb->where('q.kingdom = :kingdom');
         $qb->andWhere('q.resource = :resource');
         $qb->andWhere('q.tick >= :tick');
@@ -44,6 +45,7 @@ class QueueRepository extends \Doctrine\ORM\EntityRepository
             'resource' => $kingdomResource->getResource(),
             'tick'     => $kingdomResource->getKingdom()->getWorld()->getTick(),
         ]);
+        $qb->orderBy('r.name', 'ASC');
 
         return $qb->getQuery()->getResult();
     }

@@ -51,15 +51,19 @@ class KingdomManager
             'resource' => $civilianResource,
         ])->getQuantity();
         $inactiveCivilianResources = $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $civilianResource);
+        $housingResourcesCount = 0;
         $housingResources = $this->em->getRepository(KingdomResource::class)->findOneBy([
             'kingdom' => $kingdom,
             'resource' => $housingResource,
-        ])->getQuantity();
+        ]);
+        if (null !== $housingResources) {
+            $housingResourcesCount = $housingResources->getQuantity();
+        }
 
         $totalCivilians = $activeCivilianResources + $inactiveCivilianResources;
-        $this->logger->info($activeCivilianResources . ' + ' . $inactiveCivilianResources . ' ?= ' . $housingResources);
+        $this->logger->info($activeCivilianResources . ' + ' . $inactiveCivilianResources . ' ?= ' . $housingResourcesCount);
 
-        return $totalCivilians >= $housingResources;
+        return $totalCivilians >= $housingResourcesCount;
     }
 
     /**
@@ -111,8 +115,10 @@ class KingdomManager
     {
         $queues = [];
 
+        $kingdomResources = $this->em->getRepository(KingdomResource::class)->findByKingdom($kingdom);
+
         /** @var KingdomResource $kingdomResource */
-        foreach ($kingdom->getResources() as $kingdomResource) {
+        foreach ($kingdomResources as $kingdomResource) {
             $queues[] = [
                 'kingdomResource' => $kingdomResource,
                 'queues'          => $this->em->getRepository(Queue::class)->findCurrentQueues($kingdomResource),

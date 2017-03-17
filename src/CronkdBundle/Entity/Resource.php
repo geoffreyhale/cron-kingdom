@@ -3,12 +3,15 @@ namespace CronkdBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Jms;
 
 /**
  * Resource
  *
  * @ORM\Table(name="resource")
  * @ORM\Entity(repositoryClass="CronkdBundle\Repository\ResourceRepository")
+ *
+ * @Jms\ExclusionPolicy("all")
  */
 class Resource
 {
@@ -31,6 +34,8 @@ class Resource
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, unique=true)
+     *
+     * @Jms\Expose()
      */
     private $name;
 
@@ -38,6 +43,8 @@ class Resource
      * @var int
      *
      * @ORM\Column(name="value", type="integer")
+     *
+     * @Jms\Expose()
      */
     private $value;
 
@@ -45,6 +52,8 @@ class Resource
      * @var boolean
      *
      * @ORM\Column(name="can_be_probed", type="boolean")
+     *
+     * @Jms\Expose()
      */
     private $canBeProbed;
 

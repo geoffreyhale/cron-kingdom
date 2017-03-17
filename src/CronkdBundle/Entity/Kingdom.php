@@ -3,6 +3,7 @@ namespace CronkdBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Jms;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -12,6 +13,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="kingdom")
  * @ORM\Entity(repositoryClass="CronkdBundle\Repository\KingdomRepository")
  * @UniqueEntity("name")
+ *
+ * @Jms\ExclusionPolicy("all")
  */
 class Kingdom
 {
@@ -30,6 +33,7 @@ class Kingdom
      * @ORM\Column(name="name", type="string", length=255, unique=true)
      *
      * @Assert\NotBlank()
+     * @Jms\Expose()
      */
     private $name;
 
@@ -37,6 +41,8 @@ class Kingdom
      * @var int
      *
      * @ORM\Column(name="net_worth", type="integer")
+     *
+     * @Jms\Expose()
      */
     private $netWorth;
 
@@ -249,5 +255,13 @@ class Kingdom
     public function getQueues()
     {
         return $this->queues;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getName();
     }
 }
