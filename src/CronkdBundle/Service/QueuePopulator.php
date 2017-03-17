@@ -27,7 +27,7 @@ class QueuePopulator
         $worldTick = $world->getTick();
 
         $queues = [];
-        for ($i = 0; $i < $intervals; $i++) {
+        for ($i = 1; $i <= $intervals; $i++) {
             $currentTick = $worldTick + $i;
             $queue = $this->em->getRepository(Queue::class)->findOneBy([
                 'tick'     => $currentTick,
