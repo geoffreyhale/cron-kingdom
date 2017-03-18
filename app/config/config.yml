@@ -72,8 +72,8 @@ fos_user:
     firewall_name: main
     user_class: CronkdBundle\Entity\User
     from_email:
-        address: get@cronkd.com
-        sender_name: get@cronkd.com
+        address: get@cron.kd
+        sender_name: get.cron.kd
 
 stof_doctrine_extensions:
     orm:
@@ -81,14 +81,63 @@ stof_doctrine_extensions:
             timestampable: true
 
 cronkd:
+    population: Civilian
+    initialize_kingdom:
+        resources:
+            - resource:
+                name: Civilian
+                quantity: 100
+            - resource:
+                name: Housing
+                quantity: 100
     resources:
-        Civilian:
-            initial: 16
-        Material:
-            initial: 8
-        Housing:
-            initial: 25
-        Military:
-            initial: 8
-        Hacker:
-            initial: 1
+        - resource:
+            inputs:
+                - input:
+                    name: Civilian
+                    quantity: 1
+                    requeue: true
+                    queue_size: 8
+            outputs:
+                - output:
+                    name: Material
+                    quantity: 1
+                    queue_size: 8
+        - resource:
+            inputs:
+                - input:
+                    name: Civilian
+                    quantity: 1
+                    requeue: true
+                    queue_size: 16
+                - input:
+                    name: Material
+                    quantity: 1
+                    requeue: false
+            outputs:
+                - output:
+                    name: Housing
+                    quantity: true
+                    queue_size: 16
+        - resource:
+            inputs:
+                - input:
+                    name: Civilian
+                    quantity: 1
+                    requeue: false
+            outputs:
+                - output:
+                    name: Military
+                    quantity: 1
+                    queue_size: 24
+        - resource:
+            inputs:
+                - input:
+                    name: Military
+                    quantity: 1
+                    requeue: false
+            outputs:
+                - output:
+                    name: Hacker
+                    quantity: 1
+                    queue_size: 24
