@@ -1,7 +1,7 @@
 <table class="table table-bordered">
     <thead>
     <tr>
-        {% for resource in kingdom.resources %}
+        {% for resource in kingdomResources %}
             <th>{{ resource.resource.name }}</th>
         {% endfor %}
         <th>Networth</th>
@@ -9,7 +9,7 @@
     </thead>
     <tbody>
     <tr>
-        {% for resource in kingdom.resources %}
+        {% for resource in kingdomResources %}
             <td>{{ resource.quantity }}</td>
         {% endfor %}
         <td>{{ kingdom.networth }}</td>

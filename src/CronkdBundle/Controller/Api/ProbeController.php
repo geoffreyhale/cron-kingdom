@@ -57,15 +57,23 @@ class ProbeController extends ApiController
             return $this->createErrorJsonResponse('Not enough hackers to complete action!');
         }
 
+        $probingService = $this->get('cronkd.service.probing');
+        $report = $probingService->probe($targetKingdom, $quantity);
+        $timeToReturn = 8;
+        if (false === $report->getResult()) {
+            $timeToReturn = 24;
+        }
+
         $queuePopulator = $this->get('cronkd.queue_populator');
-        $hackerQueues = $queuePopulator->build($kingdom, $hackerResource, 24, $quantity);
+        $hackerQueues = $queuePopulator->build($kingdom, $hackerResource, $timeToReturn, $quantity);
 
         $availableHackers->removeQuantity($quantity);
         $em->persist($availableHackers);
         $em->flush();
 
-        return new JsonResponse([
+        return $this->createSerializedJsonResponse([
             'data' => [
+                'report'        => $report,
                 'hacker_queues' => $hackerQueues,
             ],
         ]);

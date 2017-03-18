@@ -2,6 +2,7 @@
 namespace CronkdBundle\Controller;
 
 use CronkdBundle\Entity\Kingdom;
+use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\User;
 use CronkdBundle\Entity\World;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -17,7 +18,6 @@ class DefaultController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-
         $user = $this->getUser();
 
         $world = $em->getRepository(World::class)->findOneBy(['active' => true]);
@@ -32,16 +32,18 @@ class DefaultController extends Controller
 
         $kingdom = $em->getRepository(Kingdom::class)->findOneByUserWorld($user, $world);
         $userHasKingdom = $em->getRepository(Kingdom::class)->userHasKingdom($user, $world);
-
+        $kingdomResources = $em->getRepository(KingdomResource::class)->findByKingdom($kingdom);
         $queues = $this->get('cronkd.manager.kingdom')->getResourceQueues($kingdom);
 
         return [
-            'user'           => $user,
-            'kingdom'        => $kingdom,
-            'queues'         => $queues,
-            'world'          => $world,
-            'worldNetworth'  => $worldNetworth,
-            'userHasKingdom' => $userHasKingdom,
+            'user'             => $user,
+            'kingdom'          => $kingdom,
+            'queues'           => $queues,
+            'world'            => $world,
+            'worldNetworth'    => $worldNetworth,
+            'kingdoms'         => $world->getKingdoms(),
+            'kingdomResources' => $kingdomResources,
+            'userHasKingdom'   => $userHasKingdom,
         ];
     }
 

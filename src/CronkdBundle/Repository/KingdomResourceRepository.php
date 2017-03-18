@@ -1,6 +1,8 @@
 <?php
 namespace CronkdBundle\Repository;
 
+use CronkdBundle\Entity\Kingdom;
+
 /**
  * KingdomResourceRepository
  *
@@ -9,4 +11,29 @@ namespace CronkdBundle\Repository;
  */
 class KingdomResourceRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findResourcesThatMayBeProbed(Kingdom $kingdom)
+    {
+        $qb = $this->createQueryBuilder('kr');
+        $qb->join('kr.resource', 'r');
+        $qb->where('r.canBeProbed = 1');
+        $qb->andWhere('kr.kingdom = :kingdom');
+        $qb->setParameter('kingdom', $kingdom);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @param Kingdom $kingdom
+     * @return array
+     */
+    public function findByKingdom(Kingdom $kingdom)
+    {
+        $qb = $this->createQueryBuilder('kr');
+        $qb->join('kr.resource', 'r');
+        $qb->where('kr.kingdom = :kingdom');
+        $qb->setParameter('kingdom', $kingdom);
+        $qb->orderBy('r.name');
+
+        return $qb->getQuery()->getResult();
+    }
 }

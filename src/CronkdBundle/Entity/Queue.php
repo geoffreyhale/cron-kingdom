@@ -2,12 +2,15 @@
 namespace CronkdBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Jms;
 
 /**
  * Queue
  *
  * @ORM\Table(name="queue")
  * @ORM\Entity(repositoryClass="CronkdBundle\Repository\QueueRepository")
+ *
+ * @Jms\ExclusionPolicy("all")
  */
 class Queue
 {
@@ -24,6 +27,8 @@ class Queue
      * @var int
      *
      * @ORM\Column(name="tick", type="bigint")
+     *
+     * @Jms\Expose()
      */
     private $tick;
 
@@ -31,6 +36,8 @@ class Queue
      * @var int
      *
      * @ORM\Column(name="quantity", type="bigint")
+     *
+     * @Jms\Expose()
      */
     private $quantity;
 
@@ -38,6 +45,8 @@ class Queue
      * @var Kingdom
      *
      * @ORM\ManyToOne(targetEntity="Kingdom", inversedBy="queues")
+     *
+     * @Jms\Expose()
      */
     private $kingdom;
 
@@ -46,6 +55,8 @@ class Queue
      *
      * @ORM\ManyToOne(targetEntity="Resource")
      * @ORM\JoinColumn(name="resource_id", referencedColumnName="id")
+     *
+     * @Jms\Expose()
      */
     private $resource;
 

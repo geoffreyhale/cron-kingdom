@@ -21,7 +21,15 @@
                 <h3 class="panel-title">Actions</h3>
             </div>
             <div class="panel-body">
-                Coming soon!
+                <div class="btn-group" role="group">
+                <a href="{{ path('action_produce_materials', {id: kingdom.id}) }}" class="btn btn-default">Produce Materials</a>
+                <a href="{{ path('action_build_housing', {id: kingdom.id}) }}" class="btn btn-default">Build Housing</a>
+                <a href="{{ path('action_train_military', {id: kingdom.id}) }}" class="btn btn-default">Train Military</a>
+                <a href="{{ path('action_train_hacker', {id: kingdom.id}) }}" class="btn btn-default">Train Hackers</a>
+                </div>
+                <div class="btn-group" role="group">
+                    <a href="{{ path('probe_send', {id: kingdom.id}) }}" class="btn btn-warning">Attempt Hack</a>
+                </div>
             </div>
         </div>
     </div>

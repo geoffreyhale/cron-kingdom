@@ -10,3 +10,8 @@ services:
             - "@doctrine.orm.default_entity_manager"
         calls:
             - [setLogger, ["@logger"]]
+
+    cronkd.service.probing:
+        class: CronkdBundle\Service\ProbingService
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
