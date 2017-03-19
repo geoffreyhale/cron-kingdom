@@ -15,3 +15,10 @@ services:
         class: CronkdBundle\Service\ProbingService
         arguments:
             - "@doctrine.orm.default_entity_manager"
+
+    cronkd.service.attacking:
+        class: CronkdBundle\Service\AttackingService
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
+            - "@cronkd.queue_populator"
+            - "@cronkd.manager.kingdom"

@@ -10,28 +10,25 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * @Route("/api/probe")
+ * @Route("/api/attack")
  */
-class ProbeController extends ApiController
+class AttackController extends ApiController
 {
     /**
-     * @Route("/send", name="api_probe_send")
+     * @Route("", name="api_attack")
      * @Method("POST")
      */
-    public function sendAction(Request $request)
+    public function attackAction(Request $request)
     {
+        $attackingService = $this->get('cronkd.service.attacking');
         $kingdomId = (int) $request->get('kingdomId');
         $targetKingdomId = (int) $request->get('targetKingdomId');
-        $quantity = (int) $request->get('quantity');
 
         if (empty($kingdomId)) {
             return $this->createErrorJsonResponse('You must pass a parameter `kingdomId` (int)');
         }
         if (empty($targetKingdomId)) {
             return $this->createErrorJsonResponse('You must pass a parameter `targetKingdomId` (int)');
-        }
-        if (empty($quantity) || 0 >= $quantity) {
-            return $this->createErrorJsonResponse('You must pass a parameter `quantity` (positive int)');
         }
         if ($kingdomId == $targetKingdomId) {
             return $this->createErrorJsonResponse('`kingdomId` and `targetKingdomId` cannot be the same');
@@ -47,35 +44,34 @@ class ProbeController extends ApiController
             return $this->createErrorJsonResponse('Invalid Target Kingdom');
         }
 
-        $hackerResource = $em->getRepository(Resource::class)->findOneBy(['name' => Resource::HACKER]);
-        $availableHackers = $em->getRepository(KingdomResource::class)->findOneBy([
-            'kingdom'  => $kingdom,
-            'resource' => $hackerResource,
-        ]);
-
-        if (!$availableHackers || $quantity > $availableHackers->getQuantity()) {
-            return $this->createErrorJsonResponse('Not enough hackers to complete action!');
+        $resourceMap = $this->buildResourcesMap($request);
+        $army = $attackingService->buildArmy($kingdom, $resourceMap);
+        if (!$army->containsResources()) {
+            return $this->createErrorJsonResponse('No resources were sent to attack');
+        }
+        if (!$attackingService->kingdomHasResourcesToAttack($army)) {
+            return $this->createErrorJsonResponse('Kingdom does not have enough resources');
         }
 
-        $probingService = $this->get('cronkd.service.probing');
-        $report = $probingService->probe($targetKingdom, $quantity);
-        $timeToReturn = 8;
-        if (false === $report->getResult()) {
-            $timeToReturn = 24;
-        }
-
-        $queuePopulator = $this->get('cronkd.queue_populator');
-        $hackerQueues = $queuePopulator->build($kingdom, $hackerResource, $timeToReturn, $quantity);
-
-        $availableHackers->removeQuantity($quantity);
-        $em->persist($availableHackers);
-        $em->flush();
+        $attackReport = $attackingService->attack($kingdom, $targetKingdom, $army);
 
         return $this->createSerializedJsonResponse([
             'data' => [
-                'report'        => $report,
-                'hacker_queues' => $hackerQueues,
+                'report' => $attackReport,
             ],
         ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     */
+    private function buildResourcesMap(Request $request)
+    {
+        $resources = [
+            Resource::MILITARY => $request->get('military'),
+        ];
+
+        return $resources;
     }
 }

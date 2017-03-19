@@ -127,4 +127,36 @@ class KingdomManager
 
         return $queues;
     }
+
+    /**
+     * @param Kingdom $kingdom
+     * @param Resource $resource
+     * @param int $quantity
+     * @return KingdomResource
+     */
+    public function modifyResources(Kingdom $kingdom, Resource $resource, int $quantity)
+    {
+        $this->logger->info('Modifying resource for Kingdom ' . $kingdom->getName() . '; Resource ' . $resource->getName() . '; Qty: ' . $quantity);
+
+        $kingdomResource = $this->em->getRepository(KingdomResource::class)->findOneBy([
+            'kingdom' => $kingdom,
+            'resource' => $resource,
+        ]);
+        if (!$kingdomResource) {
+            $kingdomResource = new KingdomResource();
+            $kingdomResource->setKingdom($kingdom);
+            $kingdomResource->setResource($resource);
+            $kingdomResource->setQuantity(0);
+        }
+
+        $kingdomResource->addQuantity($quantity);
+        if (0 > $kingdomResource->getQuantity()) {
+            $kingdomResource->setQuantity(0);
+        }
+
+        $this->em->persist($kingdomResource);
+        $this->em->flush();
+
+        return $kingdomResource;
+    }
 }

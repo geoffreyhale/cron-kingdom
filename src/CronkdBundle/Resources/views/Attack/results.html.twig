@@ -1,0 +1,22 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+    <div class="row-fluid">
+        <div class="col-sm-12">
+            <h1>Attack Results</h1>
+            <div class="alert alert-{{ results.data.report.result ? 'success' : 'danger' }}">
+                <h3 style="margin-top: 0px;">{{ results.data.report.result ? 'Success!' : 'Failure!' }}</h3>
+                {% if results.data.report.result %}
+                    <p>We received the following resources:</p>
+                    <ul>
+                        {% for resourceMessage in results.data.report.modified_resources %}
+                            <li>{{ resourceMessage }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>The attack has failed!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
