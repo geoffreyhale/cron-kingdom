@@ -67,8 +67,8 @@ class CronkdTickCommand extends ContainerAwareCommand
 
             foreach ($world->getKingdoms() as $kingdom) {
                 if (!$kingdomManager->isAtMaxPopulation($kingdom)) {
-                    $kingdomManager->incrementPopulation($kingdom);
-                    $logger->info($kingdom->getName() . ' kingdom is not at capacity, adding to population');
+                    $addition = $kingdomManager->incrementPopulation($kingdom);
+                    $logger->info($kingdom->getName() . ' kingdom is not at capacity, adding ' . $addition . ' to population');
                 } else {
                     $logger->info($kingdom->getName() . ' is at capacity');
                 }

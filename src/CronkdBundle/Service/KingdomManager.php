@@ -61,7 +61,6 @@ class KingdomManager
         }
 
         $totalCivilians = $activeCivilianResources + $inactiveCivilianResources;
-        $this->logger->info($activeCivilianResources . ' + ' . $inactiveCivilianResources . ' ?= ' . $housingResourcesCount);
 
         return $totalCivilians >= $housingResourcesCount;
     }
@@ -79,12 +78,20 @@ class KingdomManager
                 'name' => Resource::CIVILIAN,
             ])
         ]);
+        $housingResources = $this->em->getRepository(KingdomResource::class)->findOneBy([
+            'kingdom' => $kingdom,
+            'resource' => $this->em->getRepository(Resource::class)->findOneBy([
+                'name' => Resource::HOUSING,
+            ])
+        ]);
 
-        $civilianResources->addQuantity(1);
+        $difference = floor(($housingResources->getQuantity() - $civilianResources->getQuantity()) / 10);
+
+        $civilianResources->addQuantity($difference);
         $this->em->persist($civilianResources);
         $this->em->flush();
 
-        return $civilianResources->getQuantity();
+        return $difference;
     }
 
     /**
