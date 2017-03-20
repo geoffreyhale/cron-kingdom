@@ -48,6 +48,7 @@ class AttackController extends Controller
             $results = json_decode($results, true);
             return $this->render('@Cronkd/Attack/results.html.twig', [
                 'results' => $results,
+                'kingdom' => $kingdom,
             ]);
         }
 

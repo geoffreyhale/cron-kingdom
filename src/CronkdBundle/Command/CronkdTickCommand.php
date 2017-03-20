@@ -76,9 +76,11 @@ class CronkdTickCommand extends ContainerAwareCommand
                 $kingdomManager->calculateNetWorth($kingdom);
                 $logger->info($kingdom->getName() . ' kingdom has a net worth of ' . $kingdom->getNetWorth());
             }
+
+            $logger->info('Completed tick ' . $world->getTick());
         }
 
         $em->flush();
-        $output->writeln('Completed tick');
+        $logger->info('Completed command');
     }
 }

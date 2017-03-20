@@ -46,6 +46,7 @@ class ProbeController extends Controller
             $results = json_decode($results, true);
             return $this->render('@Cronkd/Probe/results.html.twig', [
                 'results' => $results,
+                'kingdom' => $kingdom,
             ]);
         }
 
