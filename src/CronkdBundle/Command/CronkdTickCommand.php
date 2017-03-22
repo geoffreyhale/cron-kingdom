@@ -35,7 +35,7 @@ class CronkdTickCommand extends ContainerAwareCommand
         foreach ($worlds as $world) {
             $logger->info('Starting world ' . $world->getName() . ': tick ' . $world->getTick());
 
-            $queues = $em->getRepository(Queue::class)->findCurrentByWorld($world);
+            $queues = $em->getRepository(Queue::class)->findNextByWorld($world);
             $logger->info('Found ' . count($queues) . ' queues to parse');
 
             /** @var Queue $queue */
@@ -60,16 +60,16 @@ class CronkdTickCommand extends ContainerAwareCommand
                 $kingdomResource->addQuantity($queue->getQuantity());
                 $em->persist($kingdomResource);
 
-                $logManager->createLog(
-                    $queue->getKingdom(),
-                    Log::TYPE_TICK,
-                    $queue->getQuantity() . ' ' . $queue->getResource()->getName() . ' are now available'
-                );
+                if (0 < $queue->getQuantity()) {
+                    $logManager->createLog(
+                        $queue->getKingdom(),
+                        Log::TYPE_TICK,
+                        $queue->getQuantity() . ' ' . $queue->getResource()->getName() . ' are now available'
+                    );
+                }
                 $logger->info('Adding ' . $queue->getQuantity() . ' ' . $queue->getResource()->getName() . '; New balance is ' . $kingdomResource->getQuantity());
             }
 
-            $world->addTick();
-            $em->persist($world);
             $logger->info('Completed queues');
 
             foreach ($world->getKingdoms() as $kingdom) {
@@ -78,7 +78,7 @@ class CronkdTickCommand extends ContainerAwareCommand
                     $logManager->createLog(
                         $kingdom,
                         Log::TYPE_TICK,
-                        'Kingdom gave birth to ' . $addition . ' ' . Resource::CIVILIAN
+                        'Gave birth to ' . $addition . ' ' . Resource::CIVILIAN
                     );
                     $logger->info($kingdom->getName() . ' kingdom is not at capacity, adding ' . $addition . ' to population');
                 } else {
@@ -90,6 +90,9 @@ class CronkdTickCommand extends ContainerAwareCommand
             }
 
             $logger->info('Completed tick ' . $world->getTick());
+
+            $world->addTick();
+            $em->persist($world);
         }
 
         $em->flush();

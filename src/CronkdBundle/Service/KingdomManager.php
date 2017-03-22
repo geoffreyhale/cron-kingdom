@@ -95,6 +95,9 @@ class KingdomManager
         ]);
 
         $difference = floor(($housingResources->getQuantity() - $civilianResources->getQuantity()) / 10);
+        if (0 == $difference) {
+            $difference = 1;
+        }
 
         $civilianResources->addQuantity($difference);
         $this->em->persist($civilianResources);

@@ -15,7 +15,7 @@ use CronkdBundle\Entity\World;
  */
 class QueueRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function findCurrentByWorld(World $world)
+    public function findNextByWorld(World $world)
     {
         $qb = $this->createQueryBuilder('q');
         $qb->join('q.kingdom', 'k');
@@ -23,7 +23,7 @@ class QueueRepository extends \Doctrine\ORM\EntityRepository
         $qb->andWhere('q.tick = :worldTick');
         $qb->setParameters([
             'world'     => $world,
-            'worldTick' => $world->getTick(),
+            'worldTick' => $world->getTick()+1,
         ]);
 
         return $qb->getQuery()->getResult();
