@@ -1,0 +1,28 @@
+<form action="{{ path('fos_user_registration_register') }}" method="POST" style="max-width: 300px;">
+    <div id="fos_user_registration_form">
+        <div class="form-group">
+            {{ form_widget(form.email, { 'attr': {'class': 'form-control', 'placeholder': 'Email'|trans } }) }}
+            {{ form_errors(form.email) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_widget(form.username, { 'attr': {'class': 'form-control', 'placeholder': 'Username'|trans } }) }}
+            {{ form_errors(form.username) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_widget(form.plainPassword.first, { 'attr': {'class': 'form-control', 'placeholder': 'Password'|trans } }) }}
+            {{ form_errors(form.plainPassword.first) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_widget(form.plainPassword.second, { 'attr': {'class': 'form-control', 'placeholder': 'Password'|trans } }) }}
+            {{ form_errors(form.plainPassword.second) }}
+        </div>
+
+        {{ form_rest(form) }}
+    </div>
+    <div>
+        <input class="btn btn-lg btn-primary btn-block" type="submit" value="{{ 'Submit'|trans }}">
+    </div>
+</form>

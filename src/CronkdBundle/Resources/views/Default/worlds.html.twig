@@ -1,0 +1,35 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+    <h3>Worlds</h3>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Kingdoms</th>
+            <th>Tick</th>
+            <th>Active</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for world in worlds %}
+            <tr>
+                <td>{{ world.name }}</td>
+                <td>
+                    {% if not world.kingdoms|length %}
+                        No Kingdoms Yet!
+                    {% else %}
+                        {% for kingdom in world.kingdoms %}
+                            <ul>
+                                <li><a href="{{ path("kingdom_show", {'id': kingdom.id}) }}">{{ kingdom.name }}</a> (NW: {{ kingdom.networth }})</li>
+                            </ul>
+                        {% endfor %}
+                    {% endif %}
+                </td>
+                <td>{{ world.tick }}</td>
+                <td>{{ world.active }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

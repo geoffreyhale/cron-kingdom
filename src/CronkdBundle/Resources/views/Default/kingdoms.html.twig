@@ -1,0 +1,23 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+    <h3>Kingdoms</h3>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Kingdom Name</th>
+            <th>Owner</th>
+            <th>Net Worth</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for kingdom in kingdoms %}
+            <tr>
+                <td><a href="{{ path("kingdom_show", {'id': kingdom.id}) }}">{{ kingdom.name }}</a></td>
+                <td>{{ kingdom.user }}</td>
+                <td>{{ kingdom.netWorth }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

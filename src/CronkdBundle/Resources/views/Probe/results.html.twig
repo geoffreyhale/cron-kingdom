@@ -1,0 +1,32 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+    <div class="row-fluid">
+        <div class="col-sm-12">
+            <h3>Hack Results</h3>
+            <ol class="breadcrumb">
+                <li><a href="{{ path('homepage') }}">Dashboard</a></li>
+                <li><a href="{{ path('probe_send', {'id': kingdom.id}) }}">Probe Attempt</a></li>
+                <li class="active">Probe Results</li>
+            </ol>
+            <div class="alert alert-{{ results.data.report.result ? 'success' : 'danger' }}">
+                <h3 style="margin-top: 0px;">{{ results.data.report.result ? 'Success!' : 'Failure!' }}</h3>
+                {% if results.data.report.result %}
+                    <p>Hackers uncovered the following information:</p>
+                    <ul>
+                        {% for kingdomResource in results.data.report.data %}
+                            <li>{{ kingdomResource.kingdom.name }} has {{ kingdomResource.quantity }} available {{ kingdomResource.resource.name }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>Hackers were not able to retrieve any information.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="col-sm-12">
+            <a href="{{ path('probe_send', {'id': kingdom.id}) }}" class="btn btn-primary">Hack Again</a>
+        </div>
+    </div>
+{% endblock %}

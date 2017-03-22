@@ -1,0 +1,65 @@
+{% set minTick = world.tick + 1 %}
+{% set maxTick = world.tick + 1 %}
+
+{% for resourceQueues in queues %}
+    {% for queue in resourceQueues.queues %}
+        {% set maxTick = queue.tick %}
+    {% endfor %}
+{% endfor %}
+
+<table class="table table-bordered" style="display: table;">
+    <thead>
+    <tr>
+        <th>
+            <i class="fa fa-clock-o fa-fw"></i>
+            <strong>Tick</strong>
+        </th>
+        <th style="border-left: 0px;">
+            <span class="pull-right">{{ world.tick }}</span>
+        </th>
+        {% for tick in range(minTick, maxTick) %}
+            <th>{{ tick }}</th>
+        {% endfor %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for resourceQueues in queues %}
+    <tr>
+        <td>
+            {% if resourceQueues.kingdomResource.resource.name == 'Civilian' %}
+                <i class="fa fa-user fa-fw"></i>
+            {% elseif resourceQueues.kingdomResource.resource.name == 'Housing' %}
+                <i class="fa fa-home fa-fw"></i>
+            {% elseif resourceQueues.kingdomResource.resource.name == 'Material' %}
+                <i class="fa fa-usd fa-fw"></i>
+            {% elseif resourceQueues.kingdomResource.resource.name == 'Military' %}
+                <i class="fa fa-fighter-jet fa-fw"></i>
+            {% elseif resourceQueues.kingdomResource.resource.name == 'Hacker' %}
+                <i class="fa fa-laptop fa-fw"></i>
+            {% endif %}
+            <strong>{{ resourceQueues.kingdomResource.resource.name }}</strong>
+        </td>
+        <td>
+            <span class="pull-right">
+                <strong>
+                {% for kingdomResource in kingdom.resources %}
+                    {% if kingdomResource.resource.id == resourceQueues.kingdomResource.resource.id %}
+                    {{ kingdomResource.quantity }}
+                    {% endif %}
+                {% endfor %}
+                </strong>
+            </span>
+        </td>
+        {% for tick in range(minTick, maxTick) %}
+            {% set quantity = 0 %}
+            {% for queue in resourceQueues.queues %}
+                {% if tick == queue.tick %}
+                    {% set quantity = quantity + queue.quantity %}
+                {% endif %}
+            {% endfor %}
+            <td>{{ quantity }}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
