@@ -3,7 +3,7 @@
 
 {% for resourceQueues in queues %}
     {% for queue in resourceQueues.queues %}
-        {% set maxTick = queue.tick %}
+        {% set maxTick = max(maxTick, queue.tick) %}
     {% endfor %}
 {% endfor %}
 
