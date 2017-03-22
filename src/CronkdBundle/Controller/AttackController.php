@@ -2,7 +2,9 @@
 namespace CronkdBundle\Controller;
 
 use CronkdBundle\Entity\Kingdom;
+use CronkdBundle\Form\AttackPlanType;
 use CronkdBundle\Form\ProbeAttemptType;
+use CronkdBundle\Model\AttackPlan;
 use CronkdBundle\Model\ProbeAttempt;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -12,39 +14,39 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * @Route("/probe")
+ * @Route("/attack")
  */
-class ProbeController extends Controller
+class AttackController extends Controller
 {
     /**
-     * @Route("/{id}/send", name="probe_send")
+     * @Route("/{id}", name="attack")
      * @Method({"GET", "POST"})
      * @ParamConverter(name="id", class="CronkdBundle:Kingdom")
-     * @Template()
+     * @Template("CronkdBundle:Attack:send.html.twig")
      */
-    public function sendAction(Request $request, Kingdom $kingdom)
+    public function attackAction(Request $request, Kingdom $kingdom)
     {
         $currentUser = $this->getUser();
         if ($currentUser != $kingdom->getUser()) {
             throw $this->createAccessDeniedException('Kingdom is not yours!');
         }
 
-        $probeAttempt = new ProbeAttempt();
-        $form = $this->createForm(ProbeAttemptType::class, $probeAttempt, [
+        $attackPlan = new AttackPlan();
+        $form = $this->createForm(AttackPlanType::class, $attackPlan, [
             'sourceKingdom' => $kingdom,
         ]);
 
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $response = $this->forward('CronkdBundle:Api/Probe:send', [
+            $response = $this->forward('CronkdBundle:Api/Attack:attack', [
                 'kingdomId'       => $kingdom->getId(),
-                'targetKingdomId' => $probeAttempt->getTarget()->getId(),
-                'quantity'        => $probeAttempt->getQuantity(),
+                'targetKingdomId' => $attackPlan->getTarget()->getId(),
+                'military'        => $attackPlan->getMilitaryAllocations(),
             ]);
 
             $results = $response->getContent();
             $results = json_decode($results, true);
-            return $this->render('@Cronkd/Probe/results.html.twig', [
+            return $this->render('@Cronkd/Attack/results.html.twig', [
                 'results' => $results,
                 'kingdom' => $kingdom,
             ]);

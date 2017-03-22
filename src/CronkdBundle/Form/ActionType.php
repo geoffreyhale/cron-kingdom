@@ -20,7 +20,7 @@ class ActionType extends AbstractType
                 'required' => true,
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Produce',
+                'label' => 'Go',
             ])
         ;
     }

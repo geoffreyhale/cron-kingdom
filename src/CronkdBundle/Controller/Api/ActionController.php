@@ -3,7 +3,9 @@ namespace CronkdBundle\Controller\Api;
 
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
+use CronkdBundle\Entity\Log;
 use CronkdBundle\Entity\Resource;
+use CronkdBundle\Repository\LogRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -54,6 +56,12 @@ class ActionController extends ApiController
         $availableCivilians->removeQuantity($quantity);
         $em->persist($availableCivilians);
         $em->flush();
+
+        $this->get('cronkd.manager.log')->createLog(
+            $kingdom,
+            Log::TYPE_ACTION,
+            'Producing ' . $quantity . ' ' . Resource::MATERIAL
+        );
 
         return new JsonResponse([
             'data' => [
@@ -114,6 +122,12 @@ class ActionController extends ApiController
         $em->persist($availableCivilians);
         $em->flush();
 
+        $this->get('cronkd.manager.log')->createLog(
+            $kingdom,
+            Log::TYPE_ACTION,
+            'Building ' . $quantity . ' ' . Resource::HOUSING
+        );
+
         return new JsonResponse([
             'data' => [
                 'civilian_queues' => $civilianQueues,
@@ -162,6 +176,12 @@ class ActionController extends ApiController
         $em->persist($availableCivilians);
         $em->flush();
 
+        $this->get('cronkd.manager.log')->createLog(
+            $kingdom,
+            Log::TYPE_ACTION,
+            'Training ' . $quantity . ' ' . Resource::MILITARY
+        );
+
         return new JsonResponse([
             'data' => [
                 'military_queues' => $militaryQueues,
@@ -208,6 +228,12 @@ class ActionController extends ApiController
         $availableMilitary->removeQuantity($quantity);
         $em->persist($availableMilitary);
         $em->flush();
+
+        $this->get('cronkd.manager.log')->createLog(
+            $kingdom,
+            Log::TYPE_ACTION,
+            'Training ' . $quantity . ' ' . Resource::HACKER
+        );
 
         return new JsonResponse([
             'data' => [

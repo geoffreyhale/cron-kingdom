@@ -39,31 +39,39 @@ class KingdomManager
      */
     public function isAtMaxPopulation(Kingdom $kingdom)
     {
-        $civilianResource = $this->em->getRepository(Resource::class)->findOneBy([
-            'name' => Resource::CIVILIAN,
-        ]);
-        $housingResource = $this->em->getRepository(Resource::class)->findOneBy([
-            'name' => Resource::HOUSING,
-        ]);
+        $this->logger->info('Determining max population for ' . $kingdom->getName());
 
-        $activeCivilianResources = $this->em->getRepository(KingdomResource::class)->findOneBy([
-            'kingdom' => $kingdom,
-            'resource' => $civilianResource,
-        ])->getQuantity();
+        $civilianResource = $this->em->getRepository(Resource::class)->findOneBy(['name' => Resource::CIVILIAN,]);
+        $militaryResource = $this->em->getRepository(Resource::class)->findOneBy(['name' => Resource::MILITARY,]);
+        $hackerResource   = $this->em->getRepository(Resource::class)->findOneBy(['name' => Resource::HACKER,]);
+        $housingResource  = $this->em->getRepository(Resource::class)->findOneBy(['name' => Resource::HOUSING,]);
+
+        $activePopulationResources = $this->em->getRepository(KingdomResource::class)
+                ->findSumOfSpecificResources($kingdom, [
+                    $civilianResource->getId(),
+                    $militaryResource->getId(),
+                    $hackerResource->getId()
+            ]
+        );
+        $activeHousingResources = $this->em->getRepository(KingdomResource::class)
+                ->findSumOfSpecificResources($kingdom, [
+                    $housingResource->getId()
+            ]
+        );
+
         $inactiveCivilianResources = $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $civilianResource);
-        $housingResourcesCount = 0;
-        $housingResources = $this->em->getRepository(KingdomResource::class)->findOneBy([
-            'kingdom' => $kingdom,
-            'resource' => $housingResource,
-        ]);
-        if (null !== $housingResources) {
-            $housingResourcesCount = $housingResources->getQuantity();
-        }
+        $inactiveMilitaryResources = $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $militaryResource);
+        $inactiveHackerResources   = $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $hackerResource);
 
-        $totalCivilians = $activeCivilianResources + $inactiveCivilianResources;
-        $this->logger->info($activeCivilianResources . ' + ' . $inactiveCivilianResources . ' ?= ' . $housingResourcesCount);
+        $totalPopulation = $activePopulationResources +
+            $inactiveCivilianResources +
+            $inactiveMilitaryResources +
+            $inactiveHackerResources
+        ;
 
-        return $totalCivilians >= $housingResourcesCount;
+        $this->logger->info($kingdom->getName() . ': total population ' . $totalPopulation . ' ?= total active housing: ' . $activeHousingResources);
+
+        return $totalPopulation >= $activeHousingResources;
     }
 
     /**
@@ -79,12 +87,20 @@ class KingdomManager
                 'name' => Resource::CIVILIAN,
             ])
         ]);
+        $housingResources = $this->em->getRepository(KingdomResource::class)->findOneBy([
+            'kingdom' => $kingdom,
+            'resource' => $this->em->getRepository(Resource::class)->findOneBy([
+                'name' => Resource::HOUSING,
+            ])
+        ]);
 
-        $civilianResources->addQuantity(1);
+        $difference = floor(($housingResources->getQuantity() - $civilianResources->getQuantity()) / 10);
+
+        $civilianResources->addQuantity($difference);
         $this->em->persist($civilianResources);
         $this->em->flush();
 
-        return $civilianResources->getQuantity();
+        return $difference;
     }
 
     /**
@@ -126,5 +142,37 @@ class KingdomManager
         }
 
         return $queues;
+    }
+
+    /**
+     * @param Kingdom $kingdom
+     * @param Resource $resource
+     * @param int $quantity
+     * @return KingdomResource
+     */
+    public function modifyResources(Kingdom $kingdom, Resource $resource, int $quantity)
+    {
+        $this->logger->info('Modifying resource for Kingdom ' . $kingdom->getName() . '; Resource ' . $resource->getName() . '; Qty: ' . $quantity);
+
+        $kingdomResource = $this->em->getRepository(KingdomResource::class)->findOneBy([
+            'kingdom' => $kingdom,
+            'resource' => $resource,
+        ]);
+        if (!$kingdomResource) {
+            $kingdomResource = new KingdomResource();
+            $kingdomResource->setKingdom($kingdom);
+            $kingdomResource->setResource($resource);
+            $kingdomResource->setQuantity(0);
+        }
+
+        $kingdomResource->addQuantity($quantity);
+        if (0 > $kingdomResource->getQuantity()) {
+            $kingdomResource->setQuantity(0);
+        }
+
+        $this->em->persist($kingdomResource);
+        $this->em->flush();
+
+        return $kingdomResource;
     }
 }

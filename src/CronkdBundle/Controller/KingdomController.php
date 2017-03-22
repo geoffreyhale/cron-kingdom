@@ -82,8 +82,9 @@ class KingdomController extends Controller
         $queues = $kingdomManager->getResourceQueues($kingdom);
 
         return [
-            'kingdom' => $kingdom,
-            'queues'  => $queues,
+            'kingdom'          => $kingdom,
+            'queues'           => $queues,
+            'kingdomResources' => $kingdom->getResources(),
         ];
     }
 }

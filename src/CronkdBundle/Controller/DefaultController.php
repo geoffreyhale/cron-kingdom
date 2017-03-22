@@ -3,6 +3,7 @@ namespace CronkdBundle\Controller;
 
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
+use CronkdBundle\Entity\Log;
 use CronkdBundle\Entity\User;
 use CronkdBundle\Entity\World;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -34,6 +35,7 @@ class DefaultController extends Controller
         $userHasKingdom = $em->getRepository(Kingdom::class)->userHasKingdom($user, $world);
         $kingdomResources = $em->getRepository(KingdomResource::class)->findByKingdom($kingdom);
         $queues = $this->get('cronkd.manager.kingdom')->getResourceQueues($kingdom);
+        $recentLogs = $em->getRepository(Log::class)->findByRecent($kingdom, 10);
 
         return [
             'user'             => $user,
@@ -44,6 +46,7 @@ class DefaultController extends Controller
             'kingdoms'         => $world->getKingdoms(),
             'kingdomResources' => $kingdomResources,
             'userHasKingdom'   => $userHasKingdom,
+            'recentLogs'       => $recentLogs,
         ];
     }
 

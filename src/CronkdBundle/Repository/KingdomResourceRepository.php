@@ -36,4 +36,37 @@ class KingdomResourceRepository extends \Doctrine\ORM\EntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    /**
+     * @param Kingdom $kingdom
+     * @param array $resourceNames
+     * @return array
+     */
+    public function findSpecificResources(Kingdom $kingdom, array $resourceNames)
+    {
+        $qb = $this->createQueryBuilder('kr');
+        $qb->join('kr.resource', 'r');
+        $qb->where($qb->expr()->in('r.name', $resourceNames));
+        $qb->andWhere('kr.kingdom = :kingdom');
+        $qb->setParameter('kingdom', $kingdom);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @param Kingdom $kingdom
+     * @param array $resources
+     * @return int
+     */
+    public function findSumOfSpecificResources(Kingdom $kingdom, array $resources)
+    {
+        $qb = $this->createQueryBuilder('kr');
+        $qb->select('SUM(kr.quantity) AS ResourceTotal');
+        $qb->where($qb->expr()->in('kr.resource', $resources));
+        $qb->andWhere('kr.kingdom = :kingdom');
+        $qb->setParameter('kingdom', $kingdom);
+        $qb->groupBy('kr.kingdom');
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
 }

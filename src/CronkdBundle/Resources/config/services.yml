@@ -11,7 +11,21 @@ services:
         calls:
             - [setLogger, ["@logger"]]
 
+    cronkd.manager.log:
+        class: CronkdBundle\Service\LogManager
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
+
     cronkd.service.probing:
         class: CronkdBundle\Service\ProbingService
         arguments:
             - "@doctrine.orm.default_entity_manager"
+            - "@cronkd.manager.log"
+
+    cronkd.service.attacking:
+        class: CronkdBundle\Service\AttackingService
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
+            - "@cronkd.queue_populator"
+            - "@cronkd.manager.kingdom"
+            - "@cronkd.manager.log"
