@@ -1,0 +1,14 @@
+<div class="panel panel-default" style="display: table;">
+    <table class="table">
+        <tbody>
+        <tr>
+            <td title="World"><i class="fa fa-globe"></i> <strong><a href="{{ path("world_show", {'id': world.id}) }}">{{ world.name }}</a></strong></td>
+            <td title="Tick"><i class="fa fa-clock-o"></i> {{ world.tick }}</td>
+            <td title="Kingdoms"><i class="fa fa-flag"></i> {{ world.kingdoms|length }}</td>
+            {% if worldNetworth is defined %}
+                <td title="Net Worth"><i class="fa fa-line-chart"></i> {{ worldNetworth }}</td>
+            {% endif %}
+        </tr>
+        </tbody>
+    </table>
+</div>
