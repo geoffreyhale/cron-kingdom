@@ -33,9 +33,15 @@ class DefaultController extends Controller
 
         $kingdom = $em->getRepository(Kingdom::class)->findOneByUserWorld($user, $world);
         $userHasKingdom = $em->getRepository(Kingdom::class)->userHasKingdom($user, $world);
-        $kingdomResources = $em->getRepository(KingdomResource::class)->findByKingdom($kingdom);
-        $queues = $this->get('cronkd.manager.kingdom')->getResourceQueues($kingdom);
-        $recentLogs = $em->getRepository(Log::class)->findByRecent($kingdom, 10);
+
+        $kingdomResources = [];
+        $queues = [];
+        $recentLogs = [];
+        if ($kingdom) {
+            $kingdomResources = $em->getRepository(KingdomResource::class)->findByKingdom($kingdom);
+            $queues = $this->get('cronkd.manager.kingdom')->getResourceQueues($kingdom);
+            $recentLogs = $em->getRepository(Log::class)->findByRecent($kingdom, 10);
+        }
 
         return [
             'user'             => $user,

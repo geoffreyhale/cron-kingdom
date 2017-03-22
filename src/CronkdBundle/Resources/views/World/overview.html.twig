@@ -9,7 +9,7 @@
         <table class="table table-bordered">
             <thead>
             <tr>
-                <th>Hour</th>
+                <th>Tick</th>
                 <th>Kingdoms</th>
                 {% if worldNetworth is defined %}
                     <th>Networth</th>
@@ -19,7 +19,7 @@
             <tbody>
             <tr>
                 <td>{{ world.tick }}</td>
-                <td>{{ world.kingdoms|length }}</td>
+                <td>{{ world.kingdoms|length ? world.kingdoms|length : 'No Kingdoms Yet!' }}</td>
                 {% if worldNetworth is defined %}
                     <td>{{ worldNetworth }}</td>
                 {% endif %}

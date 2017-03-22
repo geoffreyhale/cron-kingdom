@@ -40,19 +40,27 @@ class KingdomController extends Controller
         $form = $this->createForm(KingdomType::class, $kingdom);
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $civilianResource = $em->getRepository(Resource::class)->findOneBy(['name' => Resource::CIVILIAN]);
-            if (!$civilianResource) {
-                $this->createNotFoundException('Civilian resource does not exist!');
+            $initialResources = [
+                Resource::CIVILIAN => 10,
+                Resource::MATERIAL => 0,
+                Resource::HOUSING  => 10,
+                Resource::MILITARY => 0,
+                Resource::HACKER   => 0,
+            ];
+            foreach ($initialResources as $resourceName => $count) {
+                $resource = $em->getRepository(Resource::class)->findOneByName($resourceName);
+                if (!$resource) {
+                    $this->createNotFoundException($resourceName . ' resource does not exist!');
+                }
+                $kingdomResource = new KingdomResource();
+                $kingdomResource->setKingdom($kingdom);
+                $kingdomResource->setResource($resource);
+                $kingdomResource->setQuantity($count);
+                $kingdom->addResource($kingdomResource);
             }
-
-            $kingdomResource = new KingdomResource();
-            $kingdomResource->setKingdom($kingdom);
-            $kingdomResource->setResource($civilianResource);
-            $kingdomResource->setQuantity(10);
 
             $kingdom->setWorld($world);
             $kingdom->setUser($this->getUser());
-            $kingdom->addResource($kingdomResource);
             $kingdom->setNetWorth(0);
 
             $em->persist($kingdom);

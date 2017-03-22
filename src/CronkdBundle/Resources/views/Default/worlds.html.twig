@@ -16,11 +16,15 @@
             <tr>
                 <td>{{ world.name }}</td>
                 <td>
-                    {% for kingdom in world.kingdoms %}
-                        <ul>
-                            <li><a href="{{ path("kingdom_show", {'id': kingdom.id}) }}">{{ kingdom.name }}</a> (NW: {{ kingdom.networth }})</li>
-                        </ul>
-                    {% endfor %}
+                    {% if not world.kingdoms|length %}
+                        No Kingdoms Yet!
+                    {% else %}
+                        {% for kingdom in world.kingdoms %}
+                            <ul>
+                                <li><a href="{{ path("kingdom_show", {'id': kingdom.id}) }}">{{ kingdom.name }}</a> (NW: {{ kingdom.networth }})</li>
+                            </ul>
+                        {% endfor %}
+                    {% endif %}
                 </td>
                 <td>{{ world.tick }}</td>
                 <td>{{ world.active }}</td>

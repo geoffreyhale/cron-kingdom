@@ -14,11 +14,15 @@
             <tr>
                 <td>{{ user.username }}</td>
                 <td>
-                    {% for kingdom in user.kingdoms %}
-                        <ul>
-                            <li><a href="{{ path("kingdom_show", {'id': kingdom.id}) }}">{{ kingdom.name }}</a> (NW: {{ kingdom.networth }})</li>
-                        </ul>
-                    {% endfor %}
+                    {% if not user.kingdoms|length %}
+                        No Kingdoms Yet!
+                    {% else %}
+                        {% for kingdom in user.kingdoms %}
+                            <ul>
+                                <li><a href="{{ path("kingdom_show", {'id': kingdom.id}) }}">{{ kingdom.name }}</a> (NW: {{ kingdom.networth }})</li>
+                            </ul>
+                        {% endfor %}
+                    {% endif %}
                 </td>
             </tr>
         {% endfor %}

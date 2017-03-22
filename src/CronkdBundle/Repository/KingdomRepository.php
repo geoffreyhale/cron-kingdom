@@ -19,7 +19,7 @@ class KingdomRepository extends \Doctrine\ORM\EntityRepository
             $qb->setParameter('world', $world);
         }
 
-        return $qb->getQuery()->getSingleResult();
+        return $qb->getQuery()->getOneOrNullResult();
     }
 
     public function userHasKingdom(User $user, World $world = null)

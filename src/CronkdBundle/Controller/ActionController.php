@@ -44,10 +44,12 @@ class ActionController extends Controller
             $results = $response->getContent();
             $results = json_decode($results, true);
 
-            $this->get('session')
-                ->getFlashBag()
-                ->add('success', $action->getQuantity() . ' Material is queued up for production.')
-            ;
+            $flashBag = $this->get('session')->getFlashBag();
+            if (isset($results['error'])) {
+                $flashBag->add('danger' , $results['error']);
+            } else {
+                $flashBag->add('success', $action->getQuantity() . ' Material is queued up for production.');
+            }
 
             return $this->redirectToRoute('homepage');
         }
@@ -86,10 +88,12 @@ class ActionController extends Controller
             $results = $response->getContent();
             $results = json_decode($results, true);
 
-            $this->get('session')
-                ->getFlashBag()
-                ->add('success', $action->getQuantity() . ' Housing is queued up to be built.')
-            ;
+            $flashBag = $this->get('session')->getFlashBag();
+            if (isset($results['error'])) {
+                $flashBag->add('danger' , $results['error']);
+            } else {
+                $flashBag->add('success', $action->getQuantity() . ' Housing is queued up to be built.');
+            }
 
             return $this->redirectToRoute('homepage');
         }
@@ -128,10 +132,12 @@ class ActionController extends Controller
             $results = $response->getContent();
             $results = json_decode($results, true);
 
-            $this->get('session')
-                ->getFlashBag()
-                ->add('success', $action->getQuantity() . ' Military is queued up for training.')
-            ;
+            $flashBag = $this->get('session')->getFlashBag();
+            if (isset($results['error'])) {
+                $flashBag->add('danger' , $results['error']);
+            } else {
+                $flashBag->add('success', $action->getQuantity() . ' Military is queued up for training.');
+            }
 
             return $this->redirectToRoute('homepage');
         }
@@ -170,10 +176,12 @@ class ActionController extends Controller
             $results = $response->getContent();
             $results = json_decode($results, true);
 
-            $this->get('session')
-                ->getFlashBag()
-                ->add('success', $action->getQuantity() . ' Hacker is queued up for training.')
-            ;
+            $flashBag = $this->get('session')->getFlashBag();
+            if (isset($results['error'])) {
+                $flashBag->add('danger' , $results['error']);
+            } else {
+                $flashBag->add('success', $action->getQuantity() . ' Hacker is queued up for training.');
+            }
 
             return $this->redirectToRoute('homepage');
         }
