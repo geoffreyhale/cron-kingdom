@@ -3,6 +3,7 @@ namespace CronkdBundle\Service;
 
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
+use CronkdBundle\Entity\Log;
 use CronkdBundle\Entity\Resource;
 use CronkdBundle\Model\Army;
 use CronkdBundle\Model\AttackReport;
@@ -16,15 +17,19 @@ class AttackingService
     private $queuePopulator;
     /** @var  KingdomManager */
     private $kingdomManager;
+    /** @var  LogManager */
+    private $logManager;
 
     public function __construct(
         EntityManagerInterface $em,
         QueuePopulator $queuePopulator,
-        KingdomManager $kingdomManager
+        KingdomManager $kingdomManager,
+        LogManager $logManager
     ) {
         $this->em             = $em;
         $this->queuePopulator = $queuePopulator;
         $this->kingdomManager = $kingdomManager;
+        $this->logManager     = $logManager;
     }
 
     /**
@@ -39,6 +44,17 @@ class AttackingService
 
         $result = $attackers->compare($defendingArmy);
         $report = new AttackReport($kingdom, $target, $result);
+
+        $this->logManager->createLog(
+            $kingdom,
+            Log::TYPE_ATTACK,
+            ($report->getResult() ? 'Successful' : 'Failed') . ' attack against ' . $target->getName()
+        );
+        $this->logManager->createLog(
+            $target,
+            Log::TYPE_ATTACK,
+            ($report->getResult() ? 'Failed' : 'Successful') . ' defend against ' . $kingdom->getName()
+        );
 
         if (1 == $result) {
             $this->awardResources($report, $kingdom, $target);
@@ -129,6 +145,17 @@ class AttackingService
         $this->kingdomManager->modifyResources($target, $civilianResource, -1 * $civiliansToTransfer);
         $report->addModifiedResource($kingdom, $civilianResource, $civiliansToTransfer);
 
+        $this->logManager->createLog(
+            $kingdom,
+            Log::TYPE_ATTACK,
+            'Attack awarded ' . $civiliansToTransfer . ' ' . Resource::CIVILIAN
+        );
+        $this->logManager->createLog(
+            $target,
+            Log::TYPE_ATTACK,
+            'Attack lost ' . $civiliansToTransfer . ' ' . Resource::CIVILIAN
+        );
+
         $materialResource = $this->em->getRepository(Resource::class)->findOneByName(Resource::MATERIAL);
         $opponentMaterials = $this->em->getRepository(KingdomResource::class)->findOneBy([
             'kingdom' => $target,
@@ -138,5 +165,16 @@ class AttackingService
         $this->kingdomManager->modifyResources($kingdom, $materialResource, $materialsToTransfer);
         $this->kingdomManager->modifyResources($target, $materialResource, -1 * $materialsToTransfer);
         $report->addModifiedResource($kingdom, $materialResource, $materialsToTransfer);
+
+        $this->logManager->createLog(
+            $kingdom,
+            Log::TYPE_ATTACK,
+            'Attack awarded ' . $materialsToTransfer . ' ' . Resource::MATERIAL
+        );
+        $this->logManager->createLog(
+            $target,
+            Log::TYPE_ATTACK,
+            'Attack lost ' . $materialsToTransfer . ' ' . Resource::MATERIAL
+        );
     }
 }

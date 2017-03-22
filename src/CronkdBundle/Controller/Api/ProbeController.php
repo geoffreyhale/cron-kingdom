@@ -58,7 +58,7 @@ class ProbeController extends ApiController
         }
 
         $probingService = $this->get('cronkd.service.probing');
-        $report = $probingService->probe($targetKingdom, $quantity);
+        $report = $probingService->probe($kingdom, $targetKingdom, $quantity);
         $timeToReturn = 8;
         if (false === $report->getResult()) {
             $timeToReturn = 24;

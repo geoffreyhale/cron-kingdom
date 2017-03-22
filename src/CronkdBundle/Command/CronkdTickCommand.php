@@ -3,7 +3,9 @@ namespace CronkdBundle\Command;
 
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
+use CronkdBundle\Entity\Log;
 use CronkdBundle\Entity\Queue;
+use CronkdBundle\Entity\Resource;
 use CronkdBundle\Entity\World;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,6 +26,7 @@ class CronkdTickCommand extends ContainerAwareCommand
         $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
         $kingdomManager = $this->getContainer()->get('cronkd.manager.kingdom');
         $logger = $this->getContainer()->get('logger');
+        $logManager = $this->getContainer()->get('cronkd.manager.log');
         $worlds = $em->getRepository(World::class)->findAll();
 
         $logger->info('Starting tick command');
@@ -57,8 +60,12 @@ class CronkdTickCommand extends ContainerAwareCommand
                 $kingdomResource->addQuantity($queue->getQuantity());
                 $em->persist($kingdomResource);
 
+                $logManager->createLog(
+                    $queue->getKingdom(),
+                    Log::TYPE_TICK,
+                    $queue->getQuantity() . ' ' . $queue->getResource()->getName() . ' are now available'
+                );
                 $logger->info('Adding ' . $queue->getQuantity() . ' ' . $queue->getResource()->getName() . '; New balance is ' . $kingdomResource->getQuantity());
-
             }
 
             $world->addTick();
@@ -68,6 +75,11 @@ class CronkdTickCommand extends ContainerAwareCommand
             foreach ($world->getKingdoms() as $kingdom) {
                 if (!$kingdomManager->isAtMaxPopulation($kingdom)) {
                     $addition = $kingdomManager->incrementPopulation($kingdom);
+                    $logManager->createLog(
+                        $kingdom,
+                        Log::TYPE_TICK,
+                        'Kingdom gave birth to ' . $addition . ' ' . Resource::CIVILIAN
+                    );
                     $logger->info($kingdom->getName() . ' kingdom is not at capacity, adding ' . $addition . ' to population');
                 } else {
                     $logger->info($kingdom->getName() . ' is at capacity');
