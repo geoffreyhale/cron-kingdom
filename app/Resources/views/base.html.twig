@@ -13,7 +13,7 @@
 
 {% block nav %}
     <nav class="navbar navbar-default">
-        <div class="container">
+        <div class="container-fluid">
             <div class="navbar-header">
                 <a class="navbar-brand" href="{{ path('homepage') }}">CronKD</a>
             </div>
@@ -45,16 +45,17 @@
     </nav>
 {% endblock %}
 
-    <div class="container-fluid">
-        <div class="row-fluid">
-            {% for type, flashMessages in app.session.flashbag.all() %}
-                {% for flashMessage in flashMessages %}
-                    <div class="alert alert-{{ type }}">{{ flashMessage }}</div>
-                {% endfor %}
+<div class="container-fluid">
+    <div class="row-fluid">
+        {% for type, flashMessages in app.session.flashbag.all() %}
+            {% for flashMessage in flashMessages %}
+                <div class="alert alert-{{ type }}">{{ flashMessage }}</div>
             {% endfor %}
-        </div>
-        {% block content %}{% endblock %}
+        {% endfor %}
     </div>
+</div>
+
+{% block content %}{% endblock %}
 
 {% block js %}
     <script src="{{ asset('bundles/cronkd/js/bootstrap.js') }}"></script>

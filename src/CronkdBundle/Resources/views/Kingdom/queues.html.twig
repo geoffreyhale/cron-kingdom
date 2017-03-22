@@ -7,11 +7,14 @@
     {% endfor %}
 {% endfor %}
 
-<table class="table table-bordered">
+<table class="table table-bordered" style="display: table;">
     <thead>
     <tr>
         <th>
+            <i class="fa fa-clock-o fa-fw"></i>
             <strong>Tick</strong>
+        </th>
+        <th style="border-left: 0px;">
             <span class="pull-right">{{ world.tick }}</span>
         </th>
         {% for tick in range(minTick, maxTick) %}
@@ -23,7 +26,20 @@
     {% for resourceQueues in queues %}
     <tr>
         <td>
+            {% if resourceQueues.kingdomResource.resource.name == 'Civilian' %}
+                <i class="fa fa-user fa-fw"></i>
+            {% elseif resourceQueues.kingdomResource.resource.name == 'Housing' %}
+                <i class="fa fa-home fa-fw"></i>
+            {% elseif resourceQueues.kingdomResource.resource.name == 'Material' %}
+                <i class="fa fa-usd fa-fw"></i>
+            {% elseif resourceQueues.kingdomResource.resource.name == 'Military' %}
+                <i class="fa fa-fighter-jet fa-fw"></i>
+            {% elseif resourceQueues.kingdomResource.resource.name == 'Hacker' %}
+                <i class="fa fa-laptop fa-fw"></i>
+            {% endif %}
             <strong>{{ resourceQueues.kingdomResource.resource.name }}</strong>
+        </td>
+        <td>
             <span class="pull-right">
                 <strong>
                 {% for kingdomResource in kingdom.resources %}
