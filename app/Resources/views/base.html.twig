@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}CronKD{% endblock %}</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     {% block css %}
@@ -14,34 +15,35 @@
 {% block nav %}
     <nav class="navbar navbar-default">
         <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#cronkd-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
                 <a class="navbar-brand" href="{{ path('homepage') }}">CronKD</a>
             </div>
-            <div class="collapse navbar-collapse">
-                <div class="navbar navbar-nav navbar-left">
-                    <ul class="nav navbar-nav">
-                        <li><a href="{{ path('kingdoms') }}">Kingdoms</a></li>
-                        <li><a href="{{ path('users') }}">Users</a></li>
-                        <li><a href="{{ path('worlds') }}">Worlds</a></li>
-                    </ul>
-                </div>
-                <div class="navbar navbar-nav navbar-right">
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="cronkd-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li><a href="{{ path('kingdoms') }}">Kingdoms</a></li>
+                    <li><a href="{{ path('users') }}">Users</a></li>
+                    <li><a href="{{ path('worlds') }}">Worlds</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
                     {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
-                        <p class="navbar-text">
-                            {{ app.user.username }} |
-                            <a href="{{ path('fos_user_security_logout') }}" class="navbar-link">
-                                {{ 'layout.logout'|trans({}, 'FOSUserBundle') }}
-                            </a>
-                        </p>
+                        <li class="navbar-text hidden-sm hidden-xs">{{ app.user.username }}</li>
+                        <li><a href="{{ path('fos_user_security_logout') }}" class="navbar-link">{{ 'layout.logout'|trans({}, 'FOSUserBundle') }}</a></li>
                     {% else %}
-                        <ul class="nav navbar-nav">
-                            <li><a href="{{ path('fos_user_security_login') }}" class="navbar-link">{{ 'layout.login'|trans({}, 'FOSUserBundle') }}</a></li>
-                            <li><a href="{{ path('fos_user_registration_register') }}" class="navbar-link">Register</a></li>
-                        </ul>
+                        <li><a href="{{ path('fos_user_security_login') }}" class="navbar-link">{{ 'layout.login'|trans({}, 'FOSUserBundle') }}</a></li>
+                        <li><a href="{{ path('fos_user_registration_register') }}" class="navbar-link">Register</a></li>
                     {% endif %}
-                </div>
-            </div>
-        </div>
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
     </nav>
 {% endblock %}
 
@@ -58,6 +60,7 @@
 {% block content %}{% endblock %}
 
 {% block js %}
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="{{ asset('bundles/cronkd/js/bootstrap.js') }}"></script>
 {% endblock %}
 </body>
