@@ -31,6 +31,11 @@ class DefaultController extends Controller
             $worldNetworth += $kingdom->getNetworth();
         }
 
+        $kingdomsByNetworth = $world->getKingdoms()->toArray();
+        usort($kingdomsByNetworth, function ($item1, $item2) {
+            return $item2->getNetworth() <=> $item1->getNetworth();
+        });
+
         $kingdom = $em->getRepository(Kingdom::class)->findOneByUserWorld($user, $world);
         $userHasKingdom = $em->getRepository(Kingdom::class)->userHasKingdom($user, $world);
 
@@ -50,51 +55,10 @@ class DefaultController extends Controller
             'world'            => $world,
             'worldNetworth'    => $worldNetworth,
             'kingdoms'         => $world->getKingdoms(),
+            'kingdomsByNetworth' => $kingdomsByNetworth,
             'kingdomResources' => $kingdomResources,
             'userHasKingdom'   => $userHasKingdom,
             'recentLogs'       => $recentLogs,
-        ];
-    }
-
-    /**
-     * @Route("/kingdoms", name="kingdoms")
-     * @Template
-     */
-    public function kingdomsAction()
-    {
-        $em = $this->getDoctrine()->getManager();
-        $kingdoms = $em->getRepository(Kingdom::class)->findBy(['world' => 1]);
-
-        return [
-            'kingdoms' => $kingdoms,
-        ];
-    }
-
-    /**
-     * @Route("/users", name="users")
-     * @Template
-     */
-    public function usersAction()
-    {
-        $em = $this->getDoctrine()->getManager();
-        $users = $em->getRepository(User::class)->findAll();
-
-        return [
-            'users' => $users,
-        ];
-    }
-
-    /**
-     * @Route("/worlds", name="worlds")
-     * @Template
-     */
-    public function worldsAction()
-    {
-        $em = $this->getDoctrine()->getManager();
-        $worlds = $em->getRepository(World::class)->findAll();
-
-        return [
-            'worlds' => $worlds,
         ];
     }
 }
