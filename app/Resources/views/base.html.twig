@@ -8,6 +8,8 @@
     {% block css %}
         <link rel="stylesheet" href="{{ asset('bundles/cronkd/css/bootstrap.css') }}">
         <link rel="stylesheet" href="{{ asset('bundles/cronkd/css/font-awesome.css') }}">
+        <link rel="stylesheet" href="{{ asset('bundles/cronkd/css/jquery.datatables.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('bundles/cronkd/css/datatables.bootstrap.min.css') }}">
     {% endblock %}
 </head>
 <body>
@@ -28,11 +30,6 @@
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="cronkd-navbar-collapse-1">
-                <ul class="nav navbar-nav">
-                    <li><a href="{{ path('kingdoms') }}">Kingdoms</a></li>
-                    <li><a href="{{ path('users') }}">Users</a></li>
-                    <li><a href="{{ path('worlds') }}">Worlds</a></li>
-                </ul>
                 <ul class="nav navbar-nav navbar-right">
                     {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
                         <li class="navbar-text hidden-sm hidden-xs">{{ app.user.username }}</li>
@@ -60,8 +57,10 @@
 {% block content %}{% endblock %}
 
 {% block js %}
-    <script type="text/javascript" src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="{{ asset('bundles/cronkd/js/jquery.min.js') }}"></script>
     <script src="{{ asset('bundles/cronkd/js/bootstrap.js') }}"></script>
+    <script src="{{ asset('bundles/cronkd/js/jquery.datatables.min.js') }}"></script>
+    <script src="{{ asset('bundles/cronkd/js/datatables.bootstrap.min.js') }}"></script>
 {% endblock %}
 </body>
 </html>

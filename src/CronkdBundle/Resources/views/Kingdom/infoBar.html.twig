@@ -1,12 +1,10 @@
-<div class="panel panel-default" style="display: table;">
-    <table class="table">
-        <tbody>
-        <tr>
-            <td title="Kingdom"><i class="fa fa-flag"></i> <strong><a href="{{ path("kingdom_show", {'id': kingdom.id}) }}">{{ kingdom.name }}</a></strong></td>
-            {% if worldNetworth is defined %}
-                <td title="Net Worth"><i class="fa fa-line-chart"></i> {{ kingdom.networth }}</td>
-            {% endif %}
-        </tr>
-        </tbody>
-    </table>
-</div>
+<table class="table">
+    <tbody>
+    <tr>
+        <td title="Kingdom"><i class="fa fa-flag"></i> <strong><a href="{{ path("kingdom_show", {'id': kingdom.id}) }}">{{ kingdom.name }}</a></strong></td>
+        {% if worldNetworth is defined %}
+            <td title="Net Worth"><i class="fa fa-line-chart"></i> {{ kingdom.networth }}</td>
+        {% endif %}
+    </tr>
+    </tbody>
+</table>
