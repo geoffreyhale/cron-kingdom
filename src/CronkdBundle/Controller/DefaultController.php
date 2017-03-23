@@ -61,4 +61,13 @@ class DefaultController extends Controller
             'recentLogs'       => $recentLogs,
         ];
     }
+
+    /**
+     * @Route("/help", name="help")
+     * @Template
+     */
+    public function helpAction()
+    {
+        return;
+    }
 }
