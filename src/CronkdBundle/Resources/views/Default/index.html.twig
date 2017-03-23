@@ -4,7 +4,7 @@
 
     {% if not userHasKingdom %}
 
-        <div class="row-fluid">
+        <div class="row-fluid text-center">
             <div class="text-center">
                 <a href="{{ path('kingdom_create') }}" class="btn btn-primary btn-lg">Create My Kingdom</a>
             </div>
@@ -83,11 +83,11 @@
                             <tr>
                                 {% if kingdomByNetworth.id == kingdom.id %}
                                     <td><strong>{{ loop.index }}</strong></td>
-                                    <td><strong><a href="{{ path("kingdom_show", {'id': kingdomByNetworth.id}) }}">{{ kingdomByNetworth.name }}</a></strong></td>
+                                    <td><strong>{{ kingdomByNetworth.name }}</strong></td>
                                     <td><strong>{{ kingdomByNetworth.netWorth }}</strong></td>
                                 {% else %}
                                     <td>{{ loop.index }}</td>
-                                    <td><a href="{{ path("kingdom_show", {'id': kingdomByNetworth.id}) }}">{{ kingdomByNetworth.name }}</a></td>
+                                    <td>{{ kingdomByNetworth.name }}</td>
                                     <td>{{ kingdomByNetworth.netWorth }}</td>
                                 {% endif %}
                             </tr>

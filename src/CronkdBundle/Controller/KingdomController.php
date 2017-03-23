@@ -66,33 +66,11 @@ class KingdomController extends Controller
             $em->persist($kingdom);
             $em->flush();
 
-            return $this->redirectToRoute('kingdom_show', ['id' => $kingdom->getId()]);
+            return $this->redirectToRoute('homepage');
         }
 
         return [
             'form' => $form->createView(),
-        ];
-    }
-
-    /**
-     * @Route("/{id}/show", name="kingdom_show")
-     * @Method("GET")
-     * @Template()
-     */
-    public function showAction(Kingdom $kingdom)
-    {
-        $currentUser = $this->getUser();
-        if ($currentUser != $kingdom->getUser()) {
-            throw $this->createAccessDeniedException('This is not your kingdom!');
-        }
-
-        $kingdomManager = $this->get('cronkd.manager.kingdom');
-        $queues = $kingdomManager->getResourceQueues($kingdom);
-
-        return [
-            'kingdom'          => $kingdom,
-            'queues'           => $queues,
-            'kingdomResources' => $kingdom->getResources(),
         ];
     }
 }

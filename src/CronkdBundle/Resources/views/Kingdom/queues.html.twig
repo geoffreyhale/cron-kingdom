@@ -9,7 +9,7 @@
 
 <table class="table table-bordered" style="display: table;">
     <thead>
-    <tr>
+    <tr style="background-color: #f5f5f5;">
         <th>
             <i class="fa fa-clock-o fa-fw"></i>
             <strong>Tick</strong>
@@ -25,7 +25,7 @@
     <tbody>
     {% for resourceQueues in queues %}
     <tr>
-        <td>
+        <td style="background-color: #f5f5f5;">
             {% if resourceQueues.kingdomResource.resource.name == 'Civilian' %}
                 <i class="fa fa-user fa-fw"></i>
             {% elseif resourceQueues.kingdomResource.resource.name == 'Housing' %}
@@ -39,7 +39,7 @@
             {% endif %}
             <strong>{{ resourceQueues.kingdomResource.resource.name }}</strong>
         </td>
-        <td>
+        <td style="background-color: #f5f5f5;">
             <span class="pull-right">
                 <strong>
                 {% for kingdomResource in kingdom.resources %}
