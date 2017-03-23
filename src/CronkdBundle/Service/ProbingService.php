@@ -49,12 +49,12 @@ class ProbingService
         $this->logManager->createLog(
             $kingdom,
             Log::TYPE_PROBE,
-            ($report->getResult() ? 'Successful' : 'Failed') . ' probe attempt against ' . $target->getName()
+            ($report->getResult() ? 'Successful' : 'Failed') . ' hacking attempt against ' . $target->getName()
         );
         $this->logManager->createLog(
             $target,
             Log::TYPE_PROBE,
-            ($report->getResult() ? 'Successful' : 'Failed') . ' probe attempt from ' . $kingdom->getName()
+            ($report->getResult() ? 'Successful' : 'Failed') . ' hacking attempt from ' . $kingdom->getName()
         );
 
         $event = new ProbeEvent($kingdom);
