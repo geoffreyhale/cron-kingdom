@@ -5,14 +5,18 @@ use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Log;
 use CronkdBundle\Entity\Resource;
+use CronkdBundle\Event\AttackEvent;
 use CronkdBundle\Model\Army;
 use CronkdBundle\Model\AttackReport;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class AttackingService
 {
     /** @var EntityManagerInterface */
     private $em;
+    /** @var EventDispatcherInterface  */
+    private $eventDispatcher;
     /** @var  QueuePopulator */
     private $queuePopulator;
     /** @var  KingdomManager */
@@ -22,14 +26,16 @@ class AttackingService
 
     public function __construct(
         EntityManagerInterface $em,
+        EventDispatcherInterface $dispatcher,
         QueuePopulator $queuePopulator,
         KingdomManager $kingdomManager,
         LogManager $logManager
     ) {
-        $this->em             = $em;
-        $this->queuePopulator = $queuePopulator;
-        $this->kingdomManager = $kingdomManager;
-        $this->logManager     = $logManager;
+        $this->em              = $em;
+        $this->eventDispatcher = $dispatcher;
+        $this->queuePopulator  = $queuePopulator;
+        $this->kingdomManager  = $kingdomManager;
+        $this->logManager      = $logManager;
     }
 
     /**
@@ -65,6 +71,9 @@ class AttackingService
             $queue = $this->queuePopulator->build($kingdom, $resource, 24, $attackers->getQuantityOfUnit($resourceName));
             $report->addQueue($resource, $queue);
         }
+
+        $event = new AttackEvent($kingdom, $target);
+        $this->eventDispatcher->dispatch('event.attack', $event);
 
         return $report;
     }

@@ -4,20 +4,28 @@ namespace CronkdBundle\Service;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Log;
+use CronkdBundle\Event\ProbeEvent;
 use CronkdBundle\Model\ProbeReport;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class ProbingService
 {
     /** @var EntityManagerInterface */
     private $em;
+    /** @var EventDispatcherInterface  */
+    private $eventDispatcher;
     /** @var LogManager  */
     private $logManager;
 
-    public function __construct(EntityManagerInterface $em, LogManager $logManager)
-    {
-        $this->em         = $em;
-        $this->logManager = $logManager;
+    public function __construct(
+        EntityManagerInterface $em,
+        EventDispatcherInterface $dispatcher,
+        LogManager $logManager
+    ) {
+        $this->em              = $em;
+        $this->eventDispatcher = $dispatcher;
+        $this->logManager      = $logManager;
     }
 
     /**
@@ -35,19 +43,22 @@ class ProbingService
                 ->findResourcesThatMayBeProbed($target);
 
             $report->setResult(true);
-            $report->setData([$availableResources[random_int(0, count($availableResources)-1)]]);
+            $report->setData($availableResources);
         }
 
         $this->logManager->createLog(
             $kingdom,
             Log::TYPE_PROBE,
-            ($report->getResult() ? 'Successful' : 'Failed') . ' probe attempt against ' . $target->getName()
+            ($report->getResult() ? 'Successful' : 'Failed') . ' hacking attempt against ' . $target->getName()
         );
         $this->logManager->createLog(
             $target,
             Log::TYPE_PROBE,
-            ($report->getResult() ? 'Successful' : 'Failed') . ' probe attempt from ' . $kingdom->getName()
+            ($report->getResult() ? 'Successful' : 'Failed') . ' hacking attempt from ' . $kingdom->getName()
         );
+
+        $event = new ProbeEvent($kingdom);
+        $this->eventDispatcher->dispatch('event.probe', $event);
 
         return $report;
     }
