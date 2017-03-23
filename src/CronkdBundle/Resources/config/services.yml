@@ -20,12 +20,25 @@ services:
         class: CronkdBundle\Service\ProbingService
         arguments:
             - "@doctrine.orm.default_entity_manager"
+            - "@event_dispatcher"
             - "@cronkd.manager.log"
 
     cronkd.service.attacking:
         class: CronkdBundle\Service\AttackingService
         arguments:
             - "@doctrine.orm.default_entity_manager"
+            - "@event_dispatcher"
             - "@cronkd.queue_populator"
             - "@cronkd.manager.kingdom"
             - "@cronkd.manager.log"
+
+    cronkd.listener.net_worth:
+        class: CronkdBundle\Listener\NetWorthListener
+        arguments:
+            - "@cronkd.manager.kingdom"
+        tags:
+            - {name: kernel.event_listener, event: event.world_tick, method: onTick}
+            - {name: kernel.event_listener, event: event.create_kingdom, method: onCreateKingdom}
+            - {name: kernel.event_listener, event: event.action, method: onAction}
+            - {name: kernel.event_listener, event: event.probe, method: onProbe}
+            - {name: kernel.event_listener, event: event.attack, method: onAttack}

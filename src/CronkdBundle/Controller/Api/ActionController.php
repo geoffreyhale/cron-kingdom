@@ -5,6 +5,7 @@ use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Log;
 use CronkdBundle\Entity\Resource;
+use CronkdBundle\Event\ActionEvent;
 use CronkdBundle\Repository\LogRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -62,6 +63,10 @@ class ActionController extends ApiController
             Log::TYPE_ACTION,
             'Producing ' . $quantity . ' ' . Resource::MATERIAL
         );
+
+        $event = new ActionEvent($kingdom);
+        $eventDispatcher = $this->get('event_dispatcher');
+        $eventDispatcher->dispatch('event.action', $event);
 
         return new JsonResponse([
             'data' => [
@@ -128,6 +133,10 @@ class ActionController extends ApiController
             'Building ' . $quantity . ' ' . Resource::HOUSING
         );
 
+        $event = new ActionEvent($kingdom);
+        $eventDispatcher = $this->get('event_dispatcher');
+        $eventDispatcher->dispatch('event.action', $event);
+
         return new JsonResponse([
             'data' => [
                 'civilian_queues' => $civilianQueues,
@@ -182,6 +191,10 @@ class ActionController extends ApiController
             'Training ' . $quantity . ' ' . Resource::MILITARY
         );
 
+        $event = new ActionEvent($kingdom);
+        $eventDispatcher = $this->get('event_dispatcher');
+        $eventDispatcher->dispatch('event.action', $event);
+
         return new JsonResponse([
             'data' => [
                 'military_queues' => $militaryQueues,
@@ -234,6 +247,10 @@ class ActionController extends ApiController
             Log::TYPE_ACTION,
             'Training ' . $quantity . ' ' . Resource::HACKER
         );
+
+        $event = new ActionEvent($kingdom);
+        $eventDispatcher = $this->get('event_dispatcher');
+        $eventDispatcher->dispatch('event.action', $event);
 
         return new JsonResponse([
             'data' => [

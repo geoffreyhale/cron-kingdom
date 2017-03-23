@@ -5,6 +5,7 @@ use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Resource;
 use CronkdBundle\Entity\World;
+use CronkdBundle\Event\CreateKingdomEvent;
 use CronkdBundle\Form\KingdomType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -65,6 +66,9 @@ class KingdomController extends Controller
 
             $em->persist($kingdom);
             $em->flush();
+
+            $event = new CreateKingdomEvent($kingdom);
+            $this->get('event_dispatcher')->dispatch('event.create_kingdom', $event);
 
             return $this->redirectToRoute('homepage');
         }
