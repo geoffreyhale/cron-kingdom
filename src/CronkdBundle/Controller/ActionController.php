@@ -56,7 +56,9 @@ class ActionController extends Controller
 
         return [
             'actionName' => 'Produce Material',
+            'actionDescription' => 'Production of Material requires 1 Civilian each and is spread over 8 Ticks.',
             'form' => $form->createView(),
+            'resourceDescription' => 'Material is consumed when Building Housing.'
         ];
     }
 
@@ -100,7 +102,9 @@ class ActionController extends Controller
 
         return [
             'actionName' => 'Build Housing',
+            'actionDescription' => 'Building of Housing requires 1 Civilian each and consumes 1 Material each and is spread over 16 Ticks.',
             'form' => $form->createView(),
+            'resourceDescription' => '1 Housing is required per 1 Civilian, 1 Military, 1 Hacker, etc.'
         ];
     }
 
@@ -144,7 +148,9 @@ class ActionController extends Controller
 
         return [
             'actionName' => 'Train Military',
+            'actionDescription' => 'Training of Military converts 1 Civilian each and is spread over 24 Ticks.',
             'form' => $form->createView(),
+            'resourceDescription' => 'Military is required for attack and defense.'
         ];
     }
 
@@ -188,7 +194,9 @@ class ActionController extends Controller
 
         return [
             'actionName' => 'Train Hacker',
+            'actionDescription' => 'Training of Hackers converts 1 Military each and is spread over 24 Ticks.',
             'form' => $form->createView(),
+            'resourceDescription' => 'Hackers can get information about other kingdoms by Hacking.'
         ];
     }
 }
