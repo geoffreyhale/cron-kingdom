@@ -31,6 +31,11 @@ class DefaultController extends Controller
             $worldNetworth += $kingdom->getNetworth();
         }
 
+        $kingdomsByNetworth = $world->getKingdoms()->toArray();
+        usort($kingdomsByNetworth, function ($item1, $item2) {
+            return $item2->getNetworth() <=> $item1->getNetworth();
+        });
+
         $kingdom = $em->getRepository(Kingdom::class)->findOneByUserWorld($user, $world);
         $userHasKingdom = $em->getRepository(Kingdom::class)->userHasKingdom($user, $world);
 
@@ -50,6 +55,7 @@ class DefaultController extends Controller
             'world'            => $world,
             'worldNetworth'    => $worldNetworth,
             'kingdoms'         => $world->getKingdoms(),
+            'kingdomsByNetworth' => $kingdomsByNetworth,
             'kingdomResources' => $kingdomResources,
             'userHasKingdom'   => $userHasKingdom,
             'recentLogs'       => $recentLogs,

@@ -12,17 +12,11 @@
 
     {% else %}
 
-        <div style="display: table; margin: 0 auto;">
-            {% include 'CronkdBundle:World:infoBar.html.twig' %}
-        </div>
-
-        <div style="display: table; margin: 0 auto;">
-            {% include 'CronkdBundle:Kingdom:infoBar.html.twig' %}
-        </div>
-
-
         <div class="row-fluid">
             <div class="col-md-2">
+                <div class="panel panel-default">
+                    {% include 'CronkdBundle:Kingdom:infoBar.html.twig' %}
+                </div>
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title"><i class="fa fa-shield"></i> Actions</h3>
@@ -60,21 +54,32 @@
 
             <div class="col-md-2">
                 <div class="panel panel-default">
+                    {% include 'CronkdBundle:World:infoBar.html.twig' %}
+                </div>
+                <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title"><i class="fa fa-trophy"></i> Scores</h3>
                     </div>
                     <table class="table">
                         <thead>
                         <tr>
+                            <th><i class="fa fa-hashtag"></i></th>
                             <th><i class="fa fa-flag"></i></th>
                             <th><i class="fa fa-line-chart"></i></th>
                         </tr>
                         </thead>
                         <tbody>
-                        {% for kingdom in world.kingdoms %}
+                        {% for kingdomByNetworth in kingdomsByNetworth %}
                             <tr>
-                                <td><a href="{{ path("kingdom_show", {'id': kingdom.id}) }}">{{ kingdom.name }}</a></td>
-                                <td>{{ kingdom.netWorth }}</td>
+                                {% if kingdomByNetworth.id == kingdom.id %}
+                                    <td><strong>{{ loop.index }}</strong></td>
+                                    <td><strong><a href="{{ path("kingdom_show", {'id': kingdomByNetworth.id}) }}">{{ kingdomByNetworth.name }}</a></strong></td>
+                                    <td><strong>{{ kingdomByNetworth.netWorth }}</strong></td>
+                                {% else %}
+                                    <td>{{ loop.index }}</td>
+                                    <td><a href="{{ path("kingdom_show", {'id': kingdomByNetworth.id}) }}">{{ kingdomByNetworth.name }}</a></td>
+                                    <td>{{ kingdomByNetworth.netWorth }}</td>
+                                {% endif %}
                             </tr>
                         {% endfor %}
                         </tbody>
