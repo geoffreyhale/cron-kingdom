@@ -1,0 +1,26 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+    <div class="row-fluid">
+        <div class="col-md-12">
+            <h1>Welcome to CronKD!</h1>
+            <p>CronKD is a free multi-player online game involving resource management and strategic interactions with other kingdoms to become the strongest in the world.</p>
+            <p>The world increments in time once per hour on the hour, processing your resource queues, and updating your readiness for more strategic actions.</p>
+            <h2>Getting Started</h2>
+            <ol>
+                <li><a href="{{ path('fos_user_registration_register') }}" class="navbar-link">Create a free user account</a> by registering with your email address and password.</li>
+                <li>Create your kingdom.</li>
+            </ol>
+            <h2>Introduction</h2>
+            <ul>
+                <li>Manage a single <strong>kingdom</strong> in a <strong>world</strong> of kingdoms created by other users like yourself.</li>
+                <li>Kingdoms have <strong>resources</strong> like Civilians, Material, Housing, Military, and more.</li>
+                <li>Choose <strong>actions</strong> from the right sidebar like Produce Material, Build Housing, Train Military.</li>
+                <li>Actions may consume or occupy resources to produce others.</li>
+                <li>Build a strong <strong>Military</strong>, and <strong>Hack</strong> kingdoms for information about their Military and other resources.</li>
+                <li><strong>Attack</strong> kingdoms successfully to steal their resources and accelerate your growth.</li>
+                <li>Diligence, strategy, and political savvy will help you become the strongest kingdom in the world!</li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}
