@@ -55,46 +55,4 @@ class DefaultController extends Controller
             'recentLogs'       => $recentLogs,
         ];
     }
-
-    /**
-     * @Route("/kingdoms", name="kingdoms")
-     * @Template
-     */
-    public function kingdomsAction()
-    {
-        $em = $this->getDoctrine()->getManager();
-        $kingdoms = $em->getRepository(Kingdom::class)->findBy(['world' => 1]);
-
-        return [
-            'kingdoms' => $kingdoms,
-        ];
-    }
-
-    /**
-     * @Route("/users", name="users")
-     * @Template
-     */
-    public function usersAction()
-    {
-        $em = $this->getDoctrine()->getManager();
-        $users = $em->getRepository(User::class)->findAll();
-
-        return [
-            'users' => $users,
-        ];
-    }
-
-    /**
-     * @Route("/worlds", name="worlds")
-     * @Template
-     */
-    public function worldsAction()
-    {
-        $em = $this->getDoctrine()->getManager();
-        $worlds = $em->getRepository(World::class)->findAll();
-
-        return [
-            'worlds' => $worlds,
-        ];
-    }
 }
