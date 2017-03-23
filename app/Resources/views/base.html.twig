@@ -8,6 +8,8 @@
     {% block css %}
         <link rel="stylesheet" href="{{ asset('bundles/cronkd/css/bootstrap.css') }}">
         <link rel="stylesheet" href="{{ asset('bundles/cronkd/css/font-awesome.css') }}">
+        <link rel="stylesheet" href="{{ asset('bundles/cronkd/css/jquery.datatables.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('bundles/cronkd/css/datatables.bootstrap.min.css') }}">
     {% endblock %}
 </head>
 <body>
@@ -60,8 +62,10 @@
 {% block content %}{% endblock %}
 
 {% block js %}
-    <script type="text/javascript" src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="{{ asset('bundles/cronkd/js/jquery.min.js') }}"></script>
     <script src="{{ asset('bundles/cronkd/js/bootstrap.js') }}"></script>
+    <script src="{{ asset('bundles/cronkd/js/jquery.datatables.min.js') }}"></script>
+    <script src="{{ asset('bundles/cronkd/js/datatables.bootstrap.min.js') }}"></script>
 {% endblock %}
 </body>
 </html>

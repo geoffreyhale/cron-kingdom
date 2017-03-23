@@ -37,10 +37,14 @@
                                 <a href="{{ path('action_train_military', {id: kingdom.id}) }}" class="btn btn-info">Train Military</a>
                                 <a href="{{ path('action_train_hacker', {id: kingdom.id}) }}" class="btn btn-info">Train Hackers</a>
                             </div>
-                            <hr>
+                            <hr />
                             <div class="btn-group-vertical" role="group">
                                 <a href="{{ path('probe_send', {id: kingdom.id}) }}" class="btn btn-warning">Hack</a>
                                 <a href="{{ path('attack', {id: kingdom.id}) }}" class="btn btn-danger">Attack</a>
+                            </div>
+                            <hr />
+                            <div class="btn-group-vertical" role="group">
+                                <a href="{{ path('log_index', {id: kingdom.id}) }}" class="btn btn-default">Event Log</a>
                             </div>
                         </div>
                     </div>
@@ -60,7 +64,12 @@
                 <div class="row-fluid">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title"><i class="fa fa-search"></i> Logs</h3>
+                            <div class="pull-right">
+                                <a href="{{ path('log_index', {id: kingdom.id}) }}" class="btn btn-default btn-xs">
+                                    All Logs <i class="fa fa-external-link"></i>
+                                </a>
+                            </div>
+                            <h3 class="panel-title"><i class="fa fa-search"></i> Recent Logs</h3>
                         </div>
                         {% include 'CronkdBundle:Kingdom:logs.html.twig' %}
                     </div>

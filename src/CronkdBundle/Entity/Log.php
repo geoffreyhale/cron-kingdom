@@ -14,7 +14,7 @@ class Log
 {
     const TYPE_TICK   = 'tick';
     const TYPE_ACTION = 'action';
-    const TYPE_PROBE  = 'probe';
+    const TYPE_PROBE  = 'hack';
     const TYPE_ATTACK = 'attack';
 
     /**
