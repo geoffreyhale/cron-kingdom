@@ -47,6 +47,15 @@ class Kingdom
     private $netWorth;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="liquidity", type="integer")
+     *
+     * @Jms\Expose()
+     */
+    private $liquidity;
+
+    /**
      * @var World
      *
      * @ORM\ManyToOne(targetEntity="World", inversedBy="kingdoms")
@@ -139,6 +148,30 @@ class Kingdom
     public function getNetWorth()
     {
         return $this->netWorth;
+    }
+
+    /**
+     * Set liquidity
+     *
+     * @param integer $liquidity
+     *
+     * @return Kingdom
+     */
+    public function setLiquidity($liquidity)
+    {
+        $this->liquidity = $liquidity;
+
+        return $this;
+    }
+
+    /**
+     * Get liquidity
+     *
+     * @return integer
+     */
+    public function getLiquidity()
+    {
+        return $this->liquidity;
     }
 
     /**

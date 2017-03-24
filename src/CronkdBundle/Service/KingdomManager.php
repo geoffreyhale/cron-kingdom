@@ -112,18 +112,33 @@ class KingdomManager
      */
     public function calculateNetWorth(Kingdom $kingdom)
     {
-        $netWorth = 0;
-
-        /** @var KingdomResource $resource */
-        foreach ($kingdom->getResources() as $resource) {
-            $netWorth += $resource->getQuantity() * $resource->getResource()->getValue();
+        $netWorth = $this->calculateLiquidity($kingdom);
+        foreach ($kingdom->getResources() as $kingdomResource) {
+            $currentQueues = $this->em->getRepository(Queue::class)->findCurrentQueues($kingdomResource);
+            foreach ($currentQueues as $queue) {
+                $netWorth += $queue->getQuantity();
+            }
         }
 
         $kingdom->setNetWorth($netWorth);
         $this->em->persist($kingdom);
         $this->em->flush();
+    }
 
-        return $netWorth;
+    private function calculateLiquidity(Kingdom $kingdom)
+    {
+        $liquidity = 0;
+
+        /** @var KingdomResource $resource */
+        foreach ($kingdom->getResources() as $resource) {
+            $liquidity += $resource->getQuantity() * $resource->getResource()->getValue();
+        }
+
+        $kingdom->setLiquidity($liquidity);
+        $this->em->persist($kingdom);
+        $this->em->flush();
+
+        return $liquidity;
     }
 
     /**
