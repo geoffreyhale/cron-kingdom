@@ -23,7 +23,7 @@ class QueueRepository extends \Doctrine\ORM\EntityRepository
         $qb->andWhere('q.tick = :worldTick');
         $qb->setParameters([
             'world'     => $world,
-            'worldTick' => $world->getTick()+1,
+            'worldTick' => $world->getTick() + 1,
         ]);
 
         return $qb->getQuery()->getResult();
@@ -33,8 +33,13 @@ class QueueRepository extends \Doctrine\ORM\EntityRepository
      * @param KingdomResource $kingdomResource
      * @return array
      */
-    public function findCurrentQueues(KingdomResource $kingdomResource)
+    public function findCurrentQueues(KingdomResource $kingdomResource, $includeCurrentQueue = true)
     {
+        $skipCurrentQueue = 1;
+        if ($includeCurrentQueue) {
+            $skipCurrentQueue = 0;
+        }
+
         $qb = $this->createQueryBuilder('q');
         $qb->join('q.resource', 'r');
         $qb->where('q.kingdom = :kingdom');
@@ -43,9 +48,11 @@ class QueueRepository extends \Doctrine\ORM\EntityRepository
         $qb->setParameters([
             'kingdom'  => $kingdomResource->getKingdom(),
             'resource' => $kingdomResource->getResource(),
-            'tick'     => $kingdomResource->getKingdom()->getWorld()->getTick(),
+            'tick'     => $kingdomResource->getKingdom()->getWorld()->getTick() + $skipCurrentQueue,
         ]);
         $qb->orderBy('r.name', 'ASC');
+        dump($kingdomResource->getKingdom()->getWorld()->getTick() + $skipCurrentQueue);
+        die();
 
         return $qb->getQuery()->getResult();
     }

@@ -33,7 +33,7 @@ class QueuePopulatorTest extends KernelTestCase
 
     public function testDependencyInjection()
     {
-        $this->assertEquals(QueueBuilder::class, get_class($this->queuePopulator));
+        $this->assertEquals(QueuePopulator::class, get_class($this->queuePopulator));
     }
 
     public function invalidQueueSizeDataProvider()
@@ -53,7 +53,6 @@ class QueuePopulatorTest extends KernelTestCase
      */
     public function testInvalidQueueSizes($expectedQueueSize)
     {
-        $queueBuilder = $this->container->get('cronkd.queue_builder');
         $world = $this->createOrGetWorld('TestWorld');
         $kingdom = $this->createOrGetKingdom($world, 'TestKingdom');
         $resource = $this->createOrGetResource(Resource::MATERIAL);
@@ -80,7 +79,6 @@ class QueuePopulatorTest extends KernelTestCase
      */
     public function testValidQueueSizes($expectedQueueSize)
     {
-        $queueBuilder = $this->container->get('cronkd.queue_builder');
         $world = $this->createOrGetWorld('TestWorld');
         $kingdom = $this->createOrGetKingdom($world, 'TestKingdom');
         $resource = $this->createOrGetResource(Resource::MATERIAL);
@@ -110,7 +108,6 @@ class QueuePopulatorTest extends KernelTestCase
      */
     public function testBucketPlacement($queueSize, $quantity, array $expectedPlacement)
     {
-        $queueBuilder = $this->container->get('cronkd.queue_builder');
         $world = $this->createOrGetWorld('TestWorld');
         $kingdom = $this->createOrGetKingdom($world, 'TestKingdom');
         $resource = $this->createOrGetResource(Resource::MATERIAL);
@@ -137,7 +134,6 @@ class QueuePopulatorTest extends KernelTestCase
      */
     public function testQueueStructure($startingTick, $queueSize, $quantity)
     {
-        $queueBuilder = $this->container->get('cronkd.queue_builder');
         $world = $this->createOrGetWorld('TestWorld', $startingTick);
         $kingdom = $this->createOrGetKingdom($world, 'TestKingdom');
         $resource = $this->createOrGetResource(Resource::MATERIAL);
@@ -159,6 +155,8 @@ class QueuePopulatorTest extends KernelTestCase
             $world = new World();
             $world->setName($name);
             $world->setTick($tick);
+            $world->setActive(true);
+            $world->setActive(true);
             $this->em->persist($world);
             $this->em->flush();
         }
@@ -176,6 +174,8 @@ class QueuePopulatorTest extends KernelTestCase
             $kingdom = new Kingdom();
             $kingdom->setName($name);
             $kingdom->setWorld($world);
+            $kingdom->setNetWorth(0);
+            $kingdom->setLiquidity(0);
             $this->em->persist($kingdom);
             $this->em->flush();
         }
@@ -189,6 +189,8 @@ class QueuePopulatorTest extends KernelTestCase
         if (!$resource) {
             $resource = new Resource();
             $resource->setName($name);
+            $resource->setValue(1);
+            $resource->setCanBeProbed(true);
             $this->em->persist($resource);
             $this->em->flush();
         }

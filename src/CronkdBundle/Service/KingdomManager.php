@@ -114,7 +114,8 @@ class KingdomManager
     {
         $netWorth = $this->calculateLiquidity($kingdom);
         foreach ($kingdom->getResources() as $kingdomResource) {
-            $currentQueues = $this->em->getRepository(Queue::class)->findCurrentQueues($kingdomResource);
+            $currentQueues = $this->em->getRepository(Queue::class)
+                ->findCurrentQueues($kingdomResource, false);
             foreach ($currentQueues as $queue) {
                 $netWorth += $queue->getQuantity();
             }
@@ -125,6 +126,10 @@ class KingdomManager
         $this->em->flush();
     }
 
+    /**
+     * @param Kingdom $kingdom
+     * @return int
+     */
     private function calculateLiquidity(Kingdom $kingdom)
     {
         $liquidity = 0;
