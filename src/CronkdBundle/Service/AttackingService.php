@@ -70,7 +70,21 @@ class AttackingService
             $resource = $this->em->getRepository(Resource::class)->findOneByName($resourceName);
             $queue = $this->queuePopulator->build($kingdom, $resource, 24, $attackers->getQuantityOfUnit($resourceName));
             $report->addQueue($resource, $queue);
+
+            $kingdomResource = $this->em->getRepository(KingdomResource::class)->findOneBy([
+                'kingdom'  => $kingdom,
+                'resource' => $resource,
+            ]);
+            $kingdomResource->removeQuantity($attackers->getQuantityOfUnit($resourceName));
+            $this->em->persist($kingdomResource);
+
+            $this->logManager->createLog(
+                $kingdom,
+                Log::TYPE_ATTACK,
+                'Attack queued ' . $attackers->getQuantityOfUnit($resourceName) . ' ' . $resourceName
+            );
         }
+        $this->em->flush();
 
         $event = new AttackEvent($kingdom, $target);
         $this->eventDispatcher->dispatch('event.attack', $event);

@@ -21,6 +21,11 @@ class LogController extends Controller
      */
     public function indexAction(Kingdom $kingdom)
     {
+        $currentUser = $this->getUser();
+        if ($kingdom->getUser() != $currentUser) {
+            throw $this->createAccessDeniedException('Cannot view other Kingdom logs!');
+        }
+        
         $em = $this->getDoctrine()->getManager();
         $logs = $em->getRepository(Log::class)->findBy([
             'kingdom' => $kingdom,

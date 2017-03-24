@@ -2,6 +2,8 @@
 namespace CronkdBundle\Controller;
 
 use CronkdBundle\Entity\Kingdom;
+use CronkdBundle\Entity\KingdomResource;
+use CronkdBundle\Entity\Resource;
 use CronkdBundle\Form\ActionType;
 use CronkdBundle\Model\Action;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -29,6 +31,12 @@ class ActionController extends Controller
             throw $this->createAccessDeniedException('Kingdom is not yours!');
         }
 
+        $em = $this->getDoctrine()->getManager();
+        $availableCivilians = $em->getRepository(KingdomResource::class)->findOneBy([
+            'kingdom'  => $kingdom,
+            'resource' => $em->getRepository(Resource::class)->findOneByName(Resource::CIVILIAN),
+        ]);
+
         $action = new Action();
         $form = $this->createForm(ActionType::class, $action, [
             'sourceKingdom' => $kingdom,
@@ -55,10 +63,12 @@ class ActionController extends Controller
         }
 
         return [
-            'actionName' => 'Produce Material',
-            'actionDescription' => 'Production of Material requires 1 Civilian each and is spread over 8 Ticks.',
-            'form' => $form->createView(),
-            'resourceDescription' => 'Material is consumed when Building Housing.'
+            'actionDescription'   => 'Production of Material requires 1 Civilian each and is spread over 8 Ticks.',
+            'form'                => $form->createView(),
+            'maxQuantity'         => $availableCivilians->getQuantity(),
+            'resource'            => 'material',
+            'resourceDescription' => 'Material is consumed when Building Housing.',
+            'verb'                => 'produce',
         ];
     }
 
@@ -78,6 +88,16 @@ class ActionController extends Controller
         $action = new Action();
         $form = $this->createForm(ActionType::class, $action, [
             'sourceKingdom' => $kingdom,
+        ]);
+
+        $em = $this->getDoctrine()->getManager();
+        $availableCivilians = $em->getRepository(KingdomResource::class)->findOneBy([
+            'kingdom'  => $kingdom,
+            'resource' => $em->getRepository(Resource::class)->findOneByName(Resource::CIVILIAN),
+        ]);
+        $availableMaterials = $em->getRepository(KingdomResource::class)->findOneBy([
+            'kingdom'  => $kingdom,
+            'resource' => $em->getRepository(Resource::class)->findOneByName(Resource::MATERIAL),
         ]);
 
         $form->handleRequest($request);
@@ -101,10 +121,12 @@ class ActionController extends Controller
         }
 
         return [
-            'actionName' => 'Build Housing',
-            'actionDescription' => 'Building of Housing requires 1 Civilian each and consumes 1 Material each and is spread over 16 Ticks.',
-            'form' => $form->createView(),
-            'resourceDescription' => '1 Housing is required per 1 Civilian, 1 Military, 1 Hacker, etc.'
+            'actionDescription'   => 'Building of Housing requires 1 Civilian each and consumes 1 Material each and is spread over 16 Ticks.',
+            'form'                => $form->createView(),
+            'maxQuantity'         => min($availableCivilians->getQuantity(), $availableMaterials->getQuantity()),
+            'resource'            => 'housing',
+            'resourceDescription' => '1 Housing is required per 1 Civilian, 1 Military, 1 Hacker, etc.',
+            'verb'                => 'build',
         ];
     }
 
@@ -124,6 +146,12 @@ class ActionController extends Controller
         $action = new Action();
         $form = $this->createForm(ActionType::class, $action, [
             'sourceKingdom' => $kingdom,
+        ]);
+
+        $em = $this->getDoctrine()->getManager();
+        $availableCivilians = $em->getRepository(KingdomResource::class)->findOneBy([
+            'kingdom'  => $kingdom,
+            'resource' => $em->getRepository(Resource::class)->findOneByName(Resource::CIVILIAN),
         ]);
 
         $form->handleRequest($request);
@@ -147,10 +175,12 @@ class ActionController extends Controller
         }
 
         return [
-            'actionName' => 'Train Military',
-            'actionDescription' => 'Training of Military converts 1 Civilian each and is spread over 24 Ticks.',
-            'form' => $form->createView(),
-            'resourceDescription' => 'Military is required for attack and defense.'
+            'actionDescription'   => 'Training of Military converts 1 Civilian each and is spread over 24 Ticks.',
+            'form'                => $form->createView(),
+            'maxQuantity'         => $availableCivilians->getQuantity(),
+            'resource'            => 'military',
+            'resourceDescription' => 'Military is required for attack and defense.',
+            'verb'                => 'train',
         ];
     }
 
@@ -170,6 +200,12 @@ class ActionController extends Controller
         $action = new Action();
         $form = $this->createForm(ActionType::class, $action, [
             'sourceKingdom' => $kingdom,
+        ]);
+
+        $em = $this->getDoctrine()->getManager();
+        $availableMilitary = $em->getRepository(KingdomResource::class)->findOneBy([
+            'kingdom'  => $kingdom,
+            'resource' => $em->getRepository(Resource::class)->findOneByName(Resource::MILITARY),
         ]);
 
         $form->handleRequest($request);
@@ -193,10 +229,12 @@ class ActionController extends Controller
         }
 
         return [
-            'actionName' => 'Train Hacker',
-            'actionDescription' => 'Training of Hackers converts 1 Military each and is spread over 24 Ticks.',
-            'form' => $form->createView(),
-            'resourceDescription' => 'Hackers can get information about other kingdoms by Hacking.'
+            'actionDescription'   => 'Training of Hackers converts 1 Military each and is spread over 24 Ticks.',
+            'form'                => $form->createView(),
+            'maxQuantity'         => $availableMilitary->getQuantity(),
+            'resource'            => 'hacker',
+            'resourceDescription' => 'Hackers can get information about other kingdoms by Hacking.',
+            'verb'                => 'train',
         ];
     }
 }
