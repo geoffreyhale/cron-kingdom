@@ -43,22 +43,18 @@
             </div>
 
             <div class="col-md-8">
-                <div class="panel panel-default" style="display: table;">
-                    <div class="panel-heading">
-                        <h3 class="panel-title"><i class="fa fa-bar-chart"></i> Resources</h3>
-                    </div>
-                    {% include 'CronkdBundle:Kingdom:queues.html.twig' %}
-                </div>
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <div class="pull-right">
-                            <a href="{{ path('log_index', {id: kingdom.id}) }}" class="btn btn-default btn-xs">
-                                All Logs <i class="fa fa-external-link"></i>
-                            </a>
-                        </div>
-                        <h3 class="panel-title"><i class="fa fa-search"></i> Recent Logs</h3>
+                        <h3 class="panel-title"><i class="fa fa-bar-chart"></i> Available Resources</h3>
                     </div>
-                    {% include 'CronkdBundle:Kingdom:logs.html.twig' %}
+                    {% include 'CronkdBundle:Kingdom:resources.html.twig' %}
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><i class="fa fa-bar-chart"></i> Incoming Resources</h3>
+                    </div>
+                    {% include 'CronkdBundle:Kingdom:queues.html.twig' %}
                 </div>
             </div>
 
@@ -84,11 +80,11 @@
                                 {% if kingdomByNetworth.id == kingdom.id %}
                                     <td><strong>{{ loop.index }}</strong></td>
                                     <td><strong>{{ kingdomByNetworth.name }}</strong></td>
-                                    <td><strong>{{ kingdomByNetworth.netWorth }}</strong></td>
+                                    <td><strong>{{ kingdomByNetworth.netWorth|number_format }}</strong></td>
                                 {% else %}
                                     <td>{{ loop.index }}</td>
                                     <td>{{ kingdomByNetworth.name }}</td>
-                                    <td>{{ kingdomByNetworth.netWorth }}</td>
+                                    <td>{{ kingdomByNetworth.netWorth|number_format }}</td>
                                 {% endif %}
                             </tr>
                         {% endfor %}
