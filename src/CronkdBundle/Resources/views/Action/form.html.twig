@@ -3,13 +3,16 @@
 {% block content %}
     <div class="row-fluid">
         <div class="col-sm-12">
-            <h3>{{ actionName }}</h3>
-            <p>{{ resourceDescription }}</p>
-            <p>{{ actionDescription }}</p>
+            <h3>{{ verb|capitalize }} {{ resource|capitalize }}</h3>
+            <div class="alert alert-info">
+                <p>{{ resourceDescription }}</p>
+                <p>{{ actionDescription }}</p>
+                <p><strong>Max {{ resource|capitalize }} to {{ verb }}: {{ maxQuantity }}</strong></p>
+            </div>
             <hr />
             {{ form_start(form, {'attr': {'class': 'form form-horizontal'}}) }}
             <div class="form-group">
-                {{ form_row(form.quantity, {'attr': {'class': 'form-control'}}) }}
+                {{ form_row(form.quantity, {'attr': {'class': 'form-control', 'max': maxQuantity}}) }}
             </div>
             <div class="form-group">
                 {{ form_row(form.submit, {'attr': {'class': 'btn btn-primary'}}) }}
