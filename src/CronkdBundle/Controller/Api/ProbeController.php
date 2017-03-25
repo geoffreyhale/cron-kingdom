@@ -59,13 +59,9 @@ class ProbeController extends ApiController
 
         $probingService = $this->get('cronkd.service.probing');
         $report = $probingService->probe($kingdom, $targetKingdom, $quantity);
-        $timeToReturn = 8;
-        if (false === $report->getResult()) {
-            $timeToReturn = 24;
-        }
 
         $queuePopulator = $this->get('cronkd.queue_populator');
-        $hackerQueues = $queuePopulator->build($kingdom, $hackerResource, $timeToReturn, $quantity);
+        $hackerQueues = $queuePopulator->build($kingdom, $hackerResource, 1, $quantity);
 
         $availableHackers->removeQuantity($quantity);
         $em->persist($availableHackers);

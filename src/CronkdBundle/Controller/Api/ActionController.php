@@ -118,8 +118,8 @@ class ActionController extends ApiController
         }
 
         $queuePopulator = $this->get('cronkd.queue_populator');
-        $civilianQueues = $queuePopulator->build($kingdom, $civilianResource, 16, $quantity);
-        $housingQueues = $queuePopulator->build($kingdom, $housingResource, 16, $quantity);
+        $civilianQueues = $queuePopulator->build($kingdom, $civilianResource, 8, $quantity);
+        $housingQueues = $queuePopulator->build($kingdom, $housingResource, 8, $quantity);
 
         $availableMaterials->removeQuantity($quantity);
         $em->persist($availableMaterials);
@@ -179,7 +179,7 @@ class ActionController extends ApiController
         }
 
         $queuePopulator = $this->get('cronkd.queue_populator');
-        $militaryQueues = $queuePopulator->build($kingdom, $militaryResource, 24, $quantity);
+        $militaryQueues = $queuePopulator->build($kingdom, $militaryResource, 8, $quantity);
 
         $availableCivilians->removeQuantity($quantity);
         $em->persist($availableCivilians);
@@ -236,7 +236,7 @@ class ActionController extends ApiController
         }
 
         $queuePopulator = $this->get('cronkd.queue_populator');
-        $hackerQueues = $queuePopulator->build($kingdom, $hackerResource, 24, $quantity);
+        $hackerQueues = $queuePopulator->build($kingdom, $hackerResource, 8, $quantity);
 
         $availableMilitary->removeQuantity($quantity);
         $em->persist($availableMilitary);
