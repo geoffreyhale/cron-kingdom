@@ -63,7 +63,8 @@ class AttackingService
         $this->logManager->createLog(
             $targetKingdom,
             Log::TYPE_ATTACK,
-            ($report->getResult() ? 'Failed' : 'Successful') . ' defend against ' . $kingdom->getName()
+            ($report->getResult() ? 'Failed' : 'Successful') . ' defend against ' . $kingdom->getName(),
+            true
         );
 
         if (1 == $result) {

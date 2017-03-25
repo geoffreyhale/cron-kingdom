@@ -4,6 +4,7 @@ namespace CronkdBundle\Controller;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\Log;
 use CronkdBundle\Entity\World;
+use CronkdBundle\Event\ViewLogEvent;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -30,8 +31,11 @@ class LogController extends Controller
         $logs = $em->getRepository(Log::class)->findBy([
             'kingdom' => $kingdom,
         ], [
-            'tick' => 'DESC',
+            'createdAt' => 'DESC',
         ]);
+
+        $event = new ViewLogEvent($kingdom);
+        $this->get('event_dispatcher')->dispatch('event.view_log', $event);
 
         return [
             'kingdom' => $kingdom,

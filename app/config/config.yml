@@ -43,13 +43,16 @@ twig:
 # Doctrine Configuration
 doctrine:
     dbal:
-        driver: pdo_mysql
-        host: '%database_host%'
-        port: '%database_port%'
-        dbname: '%database_name%'
-        user: '%database_user%'
-        password: '%database_password%'
-        charset: UTF8
+        default_connection: cronkd
+        connections:
+            cronkd:
+                driver: pdo_mysql
+                host: '%database_host%'
+                port: '%database_port%'
+                dbname: '%database_name%'
+                user: '%database_user%'
+                password: '%database_password%'
+                charset: UTF8
 
     orm:
         auto_generate_proxy_classes: '%kernel.debug%'
@@ -71,3 +74,8 @@ fos_user:
     from_email:
         address: get@cron.kd
         sender_name: get.cron.kd
+
+stof_doctrine_extensions:
+    orm:
+        cronkd:
+            timestampable: true

@@ -12,7 +12,7 @@ use JMS\Serializer\Annotation as Jms;
  *
  * @Jms\ExclusionPolicy("all")
  */
-class Queue
+class Queue extends BaseEntity
 {
     /**
      * @var int

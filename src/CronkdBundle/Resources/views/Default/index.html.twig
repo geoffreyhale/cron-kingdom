@@ -18,7 +18,14 @@
                     <table class="table table-bordered">
                         <tbody>
                         <tr>
-                            <td title="Kingdom"><i class="fa fa-fort-awesome"></i> <strong>{{ kingdom.name }}</strong></td>
+                            <td title="Kingdom">
+                                {% if notificationCount %}
+                                <div class="pull-right">
+                                    <span class="label label-danger">{{ notificationCount }}</span>
+                                </div>
+                                {% endif %}
+                                <i class="fa fa-fort-awesome"></i> <strong>{{ kingdom.name }}</strong>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
@@ -92,7 +99,7 @@
                         </div>
                         <hr />
                         <div class="btn-group-vertical" role="group">
-                            <a href="{{ path('log_index', {id: kingdom.id}) }}" class="btn btn-default">Event Log</a>
+                            <a href="{{ path('log_index', {id: kingdom.id}) }}" class="btn btn-default">Event Log{% if notificationCount > 0 %} <span class="badge">{{ notificationCount }}</span>{% endif %}</a>
                         </div>
                     </div>
                 </div>
