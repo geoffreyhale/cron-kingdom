@@ -119,7 +119,7 @@ class AttackingService
     public function kingdomHasResourcesToAttack(Army $army)
     {
         foreach ($army->getAllTypesOfUnits() as $resourceName) {
-            $kingdomResource = $this->kingdomManager->lookupResource($kingdomResource, $resourceName);
+            $kingdomResource = $this->kingdomManager->lookupResource($army->getKingdom(), $resourceName);
             if (!$army->hasEnoughToSend($kingdomResource)) {
                 return false;
             }
