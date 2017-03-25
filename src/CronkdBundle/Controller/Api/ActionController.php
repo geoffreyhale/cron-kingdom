@@ -220,7 +220,7 @@ class ActionController extends ApiController
         $kingdomManager = $this->get('cronkd.manager.kingdom');
         $resourceManager = $this->get('cronkd.manager.resource');
 
-        $availableMilitary = $kingdomManager->lookupResources($kingdom, Resource::MILITARY);
+        $availableMilitary = $kingdomManager->lookupResource($kingdom, Resource::MILITARY);
         if (!$availableMilitary || $quantity > $availableMilitary->getQuantity()) {
             return $this->createErrorJsonResponse('Not enough military to complete action!');
         }
