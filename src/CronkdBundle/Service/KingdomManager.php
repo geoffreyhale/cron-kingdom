@@ -5,6 +5,7 @@ use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Queue;
 use CronkdBundle\Entity\Resource;
+use CronkdBundle\Entity\User;
 use CronkdBundle\Entity\World;
 use CronkdBundle\Exceptions\InvalidResourceException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -41,9 +42,10 @@ class KingdomManager
     /**
      * @param Kingdom $kingdom
      * @param World $world
+     * @param User $user
      * @return Kingdom
      */
-    public function create(Kingdom $kingdom, World $world)
+    public function createKingdom(Kingdom $kingdom, World $world, User $user)
     {
         $initialResources = [
             Resource::CIVILIAN => 10,
@@ -64,7 +66,8 @@ class KingdomManager
         }
 
         $kingdom->setWorld($world);
-        $kingdom->setUser($this->getUser());
+        $kingdom->setUser($user);
+        $kingdom->setLiquidity(0);
         $kingdom->setNetWorth(0);
 
         $this->em->persist($kingdom);
