@@ -118,12 +118,9 @@ class KingdomManager
      */
     public function isAtMaxPopulation(Kingdom $kingdom)
     {
-        $this->logger->info('Determining max population for ' . $kingdom->getName());
-
         $civilianResource = $this->resourceManager->get(Resource::CIVILIAN);
         $militaryResource = $this->resourceManager->get(Resource::MILITARY);
         $hackerResource   = $this->resourceManager->get(Resource::HACKER);
-        $housingResource  = $this->resourceManager->get(Resource::HOUSING);
 
         $activePopulationResources = $this->em->getRepository(KingdomResource::class)
                 ->findSumOfSpecificResources($kingdom, [
@@ -134,7 +131,7 @@ class KingdomManager
         );
         $activeHousingResources = $this->em->getRepository(KingdomResource::class)
                 ->findSumOfSpecificResources($kingdom, [
-                    $housingResource->getId()
+                    $this->resourceManager->get(Resource::HOUSING)->getId()
             ]
         );
 
@@ -148,8 +145,6 @@ class KingdomManager
             $inactiveHackerResources
         ;
 
-        $this->logger->info($kingdom->getName() . ': total population ' . $totalPopulation . ' ?= total active housing: ' . $activeHousingResources);
-
         return $totalPopulation >= $activeHousingResources;
     }
 
@@ -159,20 +154,31 @@ class KingdomManager
      */
     public function incrementPopulation(Kingdom $kingdom)
     {
-        /** @var KingdomResource $civilianResources */
-        $civilianResources = $this->lookupResource($kingdom, Resource::CIVILIAN);
-        $housingResources = $this->lookupResource($kingdom, Resource::HOUSING);
-
-        $difference = floor(($housingResources->getQuantity() - $civilianResources->getQuantity()) / 10);
-        if (0 == $difference) {
-            $difference = 1;
+        $civilianResource  = $this->resourceManager->get(Resource::CIVILIAN);
+        $activeCivilians   = $this->lookupResource($kingdom, Resource::CIVILIAN);
+        $inactiveCivilians = $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $civilianResource);
+        $totalCivilians    = $activeCivilians->getQuantity() + $inactiveCivilians;
+        $birthedCivilians  = floor($totalCivilians / 10);
+        if (0 == $birthedCivilians) {
+            $birthedCivilians = 1;
         }
 
-        $civilianResources->addQuantity($difference);
-        $this->em->persist($civilianResources);
+        // Make sure we don't go over our Housing limit
+        $totalHousingResources = $this->em->getRepository(KingdomResource::class)
+            ->findSumOfSpecificResources($kingdom, [
+                    $this->resourceManager->get(Resource::HOUSING)->getId()
+                ]
+            )
+        ;
+        if (($birthedCivilians + $activeCivilians->getQuantity()) > $totalHousingResources) {
+            $birthedCivilians = $totalHousingResources - $activeCivilians->getQuantity();
+        }
+
+        $activeCivilians->addQuantity($birthedCivilians);
+        $this->em->persist($activeCivilians);
         $this->em->flush();
 
-        return $difference;
+        return $birthedCivilians;
     }
 
     /**
