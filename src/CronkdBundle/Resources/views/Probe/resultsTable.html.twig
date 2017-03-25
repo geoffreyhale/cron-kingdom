@@ -1,0 +1,37 @@
+<ul>
+    {% for kingdomResource in results.data.report.data %}
+        <li>{{ kingdomResource.kingdom.name }} has {{ kingdomResource.quantity }} available {{ kingdomResource.resource.name }}</li>
+    {% endfor %}
+</ul>
+
+{% set resourceNames = ['Civilian', 'Material', 'Housing', 'Military', 'Hacker'] %}
+
+<table class="table table-bordered" style="margin-top: 15px;">
+    <tbody>
+    <tr>
+        <td><i class="fa fa-fort-awesome fa-fw"></i> {{ results.data.report.data|first.kingdom.name }}</td>
+    </tr>
+    {% for resourceName in resourceNames %}
+        <tr>
+            {% for kingdomResource in results.data.report.data %}
+                {% if kingdomResource.resource.name == resourceName %}
+                    <td>
+                        {% if kingdomResource.resource.name == 'Civilian' %}
+                            <i class="fa fa-users fa-fw"></i>
+                        {% elseif kingdomResource.resource.name == 'Housing' %}
+                            <i class="fa fa-home fa-fw"></i>
+                        {% elseif kingdomResource.resource.name == 'Material' %}
+                            <i class="fa fa-cubes fa-fw"></i>
+                        {% elseif kingdomResource.resource.name == 'Military' %}
+                            <i class="fa fa-fighter-jet fa-fw"></i>
+                        {% elseif kingdomResource.resource.name == 'Hacker' %}
+                            <i class="fa fa-user-secret fa-fw"></i>
+                        {% endif %}
+                        <strong>{{ kingdomResource.quantity|number_format }}</strong>
+                    </td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

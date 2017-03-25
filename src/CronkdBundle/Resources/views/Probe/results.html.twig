@@ -18,11 +18,7 @@
                     <h3 style="margin-top: 0px;">{{ results.data.report.result ? 'Success!' : 'Failure!' }}</h3>
                     {% if results.data.report.result %}
                         <p>Hackers uncovered the following information:</p>
-                        <ul>
-                            {% for kingdomResource in results.data.report.data %}
-                                <li>{{ kingdomResource.kingdom.name }} has {{ kingdomResource.quantity }} available {{ kingdomResource.resource.name }}</li>
-                            {% endfor %}
-                        </ul>
+                        {% include 'CronkdBundle:Probe:resultsTable.html.twig' %}
                     {% else %}
                         <p>Hackers were not able to retrieve any information.</p>
                     {% endif %}
