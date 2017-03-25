@@ -42,7 +42,7 @@ class KingdomController extends Controller
         $form->handleRequest($request);
         if ($form->isValid()) {
             $kingdomManager = $this->get('cronkd.manager.kingdom');
-            $kingdom = $kingdomManager->create($kingdom, $world);
+            $kingdom = $kingdomManager->createKingdom($kingdom, $world, $currentUser);
 
             $event = new CreateKingdomEvent($kingdom);
             $this->get('event_dispatcher')->dispatch('event.create_kingdom', $event);
