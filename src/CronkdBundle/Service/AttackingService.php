@@ -40,30 +40,30 @@ class AttackingService
 
     /**
      * @param Kingdom $kingdom
-     * @param Kingdom $target
+     * @param Kingdom $targetKingdom
      * @param Army $attackers
      * @return AttackReport
      */
-    public function attack(Kingdom $kingdom, Kingdom $target, Army $attackers)
+    public function attack(Kingdom $kingdom, Kingdom $targetKingdom, Army $attackers)
     {
-        $defendingArmy = $this->getDefendingArmy($target);
+        $defendingArmy = $this->getDefendingArmy($targetKingdom);
 
         $result = $attackers->compare($defendingArmy);
-        $report = new AttackReport($kingdom, $target, $result);
+        $report = new AttackReport($kingdom, $targetKingdom, $result);
 
         $this->logManager->createLog(
             $kingdom,
             Log::TYPE_ATTACK,
-            ($report->getResult() ? 'Successful' : 'Failed') . ' attack against ' . $target->getName()
+            ($report->getResult() ? 'Successful' : 'Failed') . ' attack against ' . $targetKingdom->getName()
         );
         $this->logManager->createLog(
-            $target,
+            $targetKingdom,
             Log::TYPE_ATTACK,
             ($report->getResult() ? 'Failed' : 'Successful') . ' defend against ' . $kingdom->getName()
         );
 
         if (1 == $result) {
-            $this->awardResources($report, $kingdom, $target);
+            $this->awardResources($report, $kingdom, $targetKingdom);
         }
 
         foreach ($attackers->getAllTypesOfUnits() as $resourceName) {
@@ -86,7 +86,7 @@ class AttackingService
         }
         $this->em->flush();
 
-        $event = new AttackEvent($kingdom, $target);
+        $event = new AttackEvent($kingdom, $targetKingdom);
         $this->eventDispatcher->dispatch('event.attack', $event);
 
         return $report;
@@ -154,50 +154,40 @@ class AttackingService
     /**
      * @param AttackReport $report
      * @param Kingdom $kingdom
-     * @param Kingdom $target
+     * @param Kingdom $targetKingdom
      */
-    private function awardResources(AttackReport $report, Kingdom $kingdom, Kingdom $target)
+    private function awardResources(AttackReport $report, Kingdom $kingdom, Kingdom $targetKingdom)
     {
-        $civilianResource = $this->em->getRepository(Resource::class)->findOneByName(Resource::CIVILIAN);
-        $opponentCivilians = $this->em->getRepository(KingdomResource::class)->findOneBy([
-            'kingdom' => $target,
-            'resource' => $civilianResource,
+        $this->awardResource($report, $kingdom, $targetKingdom, Resource::CIVILIAN, 20);
+        $this->awardResource($report, $kingdom, $targetKingdom, Resource::MATERIAL, 50);
+    }
+
+    /**
+     * @param AttackReport $report
+     * @param Kingdom $kingdom
+     * @param Kingdom $targetKingdom
+     */
+    private function awardResource(AttackReport $report, Kingdom $kingdom, Kingdom $targetKingdom, string $resourceName, int $percent)
+    {
+        $resource = $this->em->getRepository(Resource::class)->findOneByName($resourceName);
+        $targetKingdomResource = $this->em->getRepository(KingdomResource::class)->findOneBy([
+            'kingdom' => $targetKingdom,
+            'resource' => $resource,
         ]);
-        $civiliansToTransfer = ceil($opponentCivilians->getQuantity() / 5);
-        $this->kingdomManager->modifyResources($kingdom, $civilianResource, $civiliansToTransfer);
-        $this->kingdomManager->modifyResources($target, $civilianResource, -1 * $civiliansToTransfer);
-        $report->addModifiedResource($kingdom, $civilianResource, $civiliansToTransfer);
+        $resourceToTransfer = ceil($targetKingdomResource->getQuantity() * $percent / 100);
+        $this->kingdomManager->modifyResources($kingdom, $resource, $resourceToTransfer);
+        $this->kingdomManager->modifyResources($targetKingdom, $resource, -1 * $resourceToTransfer);
+        $report->addModifiedResource($kingdom, $resource, $resourceToTransfer);
 
         $this->logManager->createLog(
             $kingdom,
             Log::TYPE_ATTACK,
-            'Attack awarded ' . $civiliansToTransfer . ' ' . Resource::CIVILIAN
+            "Attack awarded $resourceToTransfer $resourceName"
         );
         $this->logManager->createLog(
-            $target,
+            $targetKingdom,
             Log::TYPE_ATTACK,
-            'Attack lost ' . $civiliansToTransfer . ' ' . Resource::CIVILIAN
-        );
-
-        $materialResource = $this->em->getRepository(Resource::class)->findOneByName(Resource::MATERIAL);
-        $opponentMaterials = $this->em->getRepository(KingdomResource::class)->findOneBy([
-            'kingdom' => $target,
-            'resource' => $materialResource,
-        ]);
-        $materialsToTransfer = ceil($opponentMaterials->getQuantity() / 2);
-        $this->kingdomManager->modifyResources($kingdom, $materialResource, $materialsToTransfer);
-        $this->kingdomManager->modifyResources($target, $materialResource, -1 * $materialsToTransfer);
-        $report->addModifiedResource($kingdom, $materialResource, $materialsToTransfer);
-
-        $this->logManager->createLog(
-            $kingdom,
-            Log::TYPE_ATTACK,
-            'Attack awarded ' . $materialsToTransfer . ' ' . Resource::MATERIAL
-        );
-        $this->logManager->createLog(
-            $target,
-            Log::TYPE_ATTACK,
-            'Attack lost ' . $materialsToTransfer . ' ' . Resource::MATERIAL
+            "Attack lost $resourceToTransfer $resourceName"
         );
     }
 }
