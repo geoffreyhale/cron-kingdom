@@ -21,6 +21,8 @@ class AttackingService
     private $queuePopulator;
     /** @var  KingdomManager */
     private $kingdomManager;
+    /** @var ResourceManager  */
+    private $resourceManager;
     /** @var  LogManager */
     private $logManager;
 
@@ -29,12 +31,14 @@ class AttackingService
         EventDispatcherInterface $dispatcher,
         QueuePopulator $queuePopulator,
         KingdomManager $kingdomManager,
+        ResourceManager $resourceManager,
         LogManager $logManager
     ) {
         $this->em              = $em;
         $this->eventDispatcher = $dispatcher;
         $this->queuePopulator  = $queuePopulator;
         $this->kingdomManager  = $kingdomManager;
+        $this->resourceManager = $resourceManager;
         $this->logManager      = $logManager;
     }
 
@@ -67,7 +71,7 @@ class AttackingService
         }
 
         foreach ($attackers->getAllTypesOfUnits() as $resourceName) {
-            $resource = $this->em->getRepository(Resource::class)->findOneByName($resourceName);
+            $resource = $this->resourceManager->get($resourceName);
             $queue = $this->queuePopulator->lump($kingdom, $resource, 8, $attackers->getQuantityOfUnit($resourceName));
             $report->addQueue($resource, $queue);
 
@@ -101,7 +105,7 @@ class AttackingService
     {
         $army = new Army($kingdom);
         foreach ($resources as $resourceName => $quantity) {
-            $resource = $this->em->getRepository(Resource::class)->findOneByName($resourceName);
+            $resource = $this->resourceManager->get($resourceName);
             $army->addResource($resource, $quantity);
         }
 
@@ -115,11 +119,7 @@ class AttackingService
     public function kingdomHasResourcesToAttack(Army $army)
     {
         foreach ($army->getAllTypesOfUnits() as $resourceName) {
-            $resource = $this->em->getRepository(Resource::class)->findOneByName($resourceName);
-            $kingdomResource = $this->em->getRepository(KingdomResource::class)->findOneBy([
-                'kingdom'  => $army->getKingdom(),
-                'resource' => $resource,
-            ]);
+            $kingdomResource = $this->kingdomManager->lookupResource($kingdomResource, $resourceName);
             if (!$army->hasEnoughToSend($kingdomResource)) {
                 return false;
             }
@@ -169,11 +169,9 @@ class AttackingService
      */
     private function awardResource(AttackReport $report, Kingdom $kingdom, Kingdom $targetKingdom, string $resourceName, int $percent)
     {
-        $resource = $this->em->getRepository(Resource::class)->findOneByName($resourceName);
-        $targetKingdomResource = $this->em->getRepository(KingdomResource::class)->findOneBy([
-            'kingdom' => $targetKingdom,
-            'resource' => $resource,
-        ]);
+        $resource = $this->resourceManager->get($resourceName);
+        $targetKingdomResource = $this->kingdomManager->lookupResource($targetKingdom, $resourceName);
+
         $resourceToTransfer = ceil($targetKingdomResource->getQuantity() * $percent / 100);
         $this->kingdomManager->modifyResources($kingdom, $resource, $resourceToTransfer);
         $this->kingdomManager->modifyResources($targetKingdom, $resource, -1 * $resourceToTransfer);

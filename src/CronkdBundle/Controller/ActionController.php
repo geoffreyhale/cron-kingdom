@@ -31,10 +31,11 @@ class ActionController extends Controller
             throw $this->createAccessDeniedException('Kingdom is not yours!');
         }
 
+        $resourceManager = $this->get('cronkd.manager.resource');
         $em = $this->getDoctrine()->getManager();
         $availableCivilians = $em->getRepository(KingdomResource::class)->findOneBy([
             'kingdom'  => $kingdom,
-            'resource' => $em->getRepository(Resource::class)->findOneByName(Resource::CIVILIAN),
+            'resource' => $resourceManager->get(Resource::CIVILIAN),
         ]);
 
         $action = new Action();
@@ -90,14 +91,15 @@ class ActionController extends Controller
             'sourceKingdom' => $kingdom,
         ]);
 
+        $resourceManager = $this->get('cronkd.manager.resource');
         $em = $this->getDoctrine()->getManager();
         $availableCivilians = $em->getRepository(KingdomResource::class)->findOneBy([
             'kingdom'  => $kingdom,
-            'resource' => $em->getRepository(Resource::class)->findOneByName(Resource::CIVILIAN),
+            'resource' => $resourceManager->get(Resource::CIVILIAN),
         ]);
         $availableMaterials = $em->getRepository(KingdomResource::class)->findOneBy([
             'kingdom'  => $kingdom,
-            'resource' => $em->getRepository(Resource::class)->findOneByName(Resource::MATERIAL),
+            'resource' => $resourceManager->get(Resource::MATERIAL),
         ]);
 
         $form->handleRequest($request);
@@ -148,10 +150,11 @@ class ActionController extends Controller
             'sourceKingdom' => $kingdom,
         ]);
 
+        $resourceManager = $this->get('cronkd.manager.resource');
         $em = $this->getDoctrine()->getManager();
         $availableCivilians = $em->getRepository(KingdomResource::class)->findOneBy([
             'kingdom'  => $kingdom,
-            'resource' => $em->getRepository(Resource::class)->findOneByName(Resource::CIVILIAN),
+            'resource' => $resourceManager->get(Resource::CIVILIAN),
         ]);
 
         $form->handleRequest($request);
@@ -202,10 +205,11 @@ class ActionController extends Controller
             'sourceKingdom' => $kingdom,
         ]);
 
+        $resourceManager = $this->get('cronkd.manager.resource');
         $em = $this->getDoctrine()->getManager();
         $availableMilitary = $em->getRepository(KingdomResource::class)->findOneBy([
             'kingdom'  => $kingdom,
-            'resource' => $em->getRepository(Resource::class)->findOneByName(Resource::MILITARY),
+            'resource' => $resourceManager->get(Resource::MILITARY),
         ]);
 
         $form->handleRequest($request);

@@ -47,12 +47,11 @@ class ProbeController extends ApiController
             return $this->createErrorJsonResponse('Invalid Target Kingdom');
         }
 
-        $hackerResource = $em->getRepository(Resource::class)->findOneBy(['name' => Resource::HACKER]);
-        $availableHackers = $em->getRepository(KingdomResource::class)->findOneBy([
-            'kingdom'  => $kingdom,
-            'resource' => $hackerResource,
-        ]);
+        $kingdomManager = $this->get('cronkd.manager.kingdom');
+        $resourceManager = $this->get('cronkd.manager.resource');
 
+        $hackerResource = $resourceManager->get(Resource::HACKER);
+        $availableHackers = $kingdomManager->lookupResource($kingdom, Resource::HACKER);
         if (!$availableHackers || $quantity > $availableHackers->getQuantity()) {
             return $this->createErrorJsonResponse('Not enough hackers to complete action!');
         }

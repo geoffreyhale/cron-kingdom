@@ -39,13 +39,12 @@ class ActionController extends ApiController
             return $this->createErrorJsonResponse('Invalid Kingdom');
         }
 
-        $materialResource = $em->getRepository(Resource::class)->findOneBy(['name' => Resource::MATERIAL]);
-        $civilianResource = $em->getRepository(Resource::class)->findOneBy(['name' => Resource::CIVILIAN]);
-        $availableCivilians = $em->getRepository(KingdomResource::class)->findOneBy([
-            'kingdom'  => $kingdom,
-            'resource' => $civilianResource,
-        ]);
+        $kingdomManager = $this->get('cronkd.manager.kingdom');
+        $resourceManager = $this->get('cronkd.manager.resource');
 
+        $materialResource = $resourceManager->get(Resource::MATERIAL);
+        $civilianResource = $resourceManager->get(Resource::CIVILIAN);
+        $availableCivilians = $kingdomManager->lookupResource($kingdom, Resource::CIVILIAN);
         if (!$availableCivilians || $quantity > $availableCivilians->getQuantity()) {
             return $this->createErrorJsonResponse('Not enough civilians to complete action!');
         }
@@ -98,17 +97,13 @@ class ActionController extends ApiController
             return $this->createErrorJsonResponse('Invalid Kingdom');
         }
 
-        $housingResource = $em->getRepository(Resource::class)->findOneBy(['name' => Resource::HOUSING]);
-        $materialResource = $em->getRepository(Resource::class)->findOneBy(['name' => Resource::MATERIAL]);
-        $civilianResource = $em->getRepository(Resource::class)->findOneBy(['name' => Resource::CIVILIAN]);
-        $availableCivilians = $em->getRepository(KingdomResource::class)->findOneBy([
-            'kingdom'  => $kingdom,
-            'resource' => $civilianResource,
-        ]);
-        $availableMaterials = $em->getRepository(KingdomResource::class)->findOneBy([
-            'kingdom'  => $kingdom,
-            'resource' => $materialResource,
-        ]);
+        $kingdomManager = $this->get('cronkd.manager.kingdom');
+        $resourceManager = $this->get('cronkd.manager.resource');
+
+        $housingResource = $resourceManager->get(Resource::HOUSING);
+        $civilianResource = $resourceManager->get(Resource::CIVILIAN);
+        $availableCivilians = $kingdomManager->lookupResource($kingdom, Resource::CIVILIAN);
+        $availableMaterials = $kingdomManager->lookupResource($kingdom, Resource::MATERIAL);
 
         if (!$availableCivilians || $quantity > $availableCivilians->getQuantity()) {
             return $this->createErrorJsonResponse('Not enough civilians to complete action');
@@ -167,13 +162,11 @@ class ActionController extends ApiController
             return $this->createErrorJsonResponse('Invalid Kingdom');
         }
 
-        $militaryResource = $em->getRepository(Resource::class)->findOneBy(['name' => Resource::MILITARY]);
-        $civilianResource = $em->getRepository(Resource::class)->findOneBy(['name' => Resource::CIVILIAN]);
-        $availableCivilians = $em->getRepository(KingdomResource::class)->findOneBy([
-            'kingdom'  => $kingdom,
-            'resource' => $civilianResource,
-        ]);
+        $kingdomManager = $this->get('cronkd.manager.kingdom');
+        $resourceManager = $this->get('cronkd.manager.resource');
 
+        $militaryResource = $resourceManager->get(Resource::MILITARY);
+        $availableCivilians = $kingdomManager->lookupResource($kingdom, Resource::CIVILIAN);
         if (!$availableCivilians || $quantity > $availableCivilians->getQuantity()) {
             return $this->createErrorJsonResponse('Not enough civilians to complete action!');
         }
@@ -224,18 +217,16 @@ class ActionController extends ApiController
             return $this->createErrorJsonResponse('Invalid Kingdom');
         }
 
-        $hackerResource = $em->getRepository(Resource::class)->findOneBy(['name' => Resource::HACKER]);
-        $militaryResource = $em->getRepository(Resource::class)->findOneBy(['name' => Resource::MILITARY]);
-        $availableMilitary = $em->getRepository(KingdomResource::class)->findOneBy([
-            'kingdom'  => $kingdom,
-            'resource' => $militaryResource,
-        ]);
+        $kingdomManager = $this->get('cronkd.manager.kingdom');
+        $resourceManager = $this->get('cronkd.manager.resource');
 
+        $availableMilitary = $kingdomManager->lookupResources($kingdom, Resource::MILITARY);
         if (!$availableMilitary || $quantity > $availableMilitary->getQuantity()) {
             return $this->createErrorJsonResponse('Not enough military to complete action!');
         }
 
         $queuePopulator = $this->get('cronkd.queue_populator');
+        $hackerResource = $resourceManager->get(Resource::HACKER);
         $hackerQueues = $queuePopulator->build($kingdom, $hackerResource, 8, $quantity);
 
         $availableMilitary->removeQuantity($quantity);
