@@ -112,17 +112,15 @@ class KingdomManager
      */
     public function calculateNetWorth(Kingdom $kingdom)
     {
-        $netWorth = 0;
+        $this->calculateLiquidity($kingdom);
+        $netWorth = $kingdom->getLiquidity();
+
         foreach ($kingdom->getResources() as $kingdomResource) {
-            $totalQueued = $this->em->getRepository(Queue::class)
-                ->findTotalQueued($kingdom, $kingdomResource->getResource());
+            $totalQueued = $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $kingdomResource->getResource());
             $this->logger->info($kingdom->getName() . ' net worth ' . $kingdomResource->getResource()->getName() . ' = ' . $totalQueued);
             $netWorth += $totalQueued;
         }
-        $this->logger->info($kingdom->getName() . ' Networth = ' . $netWorth);
 
-        $netWorth += $this->calculateLiquidity($kingdom);
-        $this->logger->info($kingdom->getName() . ' Total = ' . $netWorth);
         $kingdom->setNetWorth($netWorth);
         $this->em->persist($kingdom);
         $this->em->flush();
@@ -138,11 +136,8 @@ class KingdomManager
 
         /** @var KingdomResource $resource */
         foreach ($kingdom->getResources() as $resource) {
-            $this->logger->info($kingdom->getName() . ' liquidity ' . $resource->getQuantity() . ' ' . $resource->getResource()->getName());
             $liquidity += $resource->getQuantity() * $resource->getResource()->getValue();
         }
-
-        $this->logger->info($kingdom->getName() . ' Liquidity = ' . $liquidity);
 
         $kingdom->setLiquidity($liquidity);
         $this->em->persist($kingdom);

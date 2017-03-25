@@ -87,15 +87,15 @@ class CronkdTickCommand extends ContainerAwareCommand
                 }
             }
 
-            $event = new WorldTickEvent($world);
-            $eventDispatcher->dispatch('event.world_tick', $event);
-            $logger->info('Completed tick ' . $world->getTick());
-
             $world->addTick();
             $em->persist($world);
+            $em->flush();
+
+            $event = new WorldTickEvent($world);
+            $eventDispatcher->dispatch('event.world_tick', $event);
+            $logger->info('Completed tick ' . $world->getTick() . ' for world ' . $world->getName());
         }
 
-        $em->flush();
         $logger->info('Completed command');
     }
 }
