@@ -40,7 +40,7 @@ class AttackController extends ApiController
             return $this->createErrorJsonResponse('Invalid Kingdom');
         }
         $targetKingdom = $em->getRepository(Kingdom::class)->find($targetKingdomId);
-        if (!$kingdom) {
+        if (!$targetKingdom) {
             return $this->createErrorJsonResponse('Invalid Target Kingdom');
         }
 
@@ -50,7 +50,7 @@ class AttackController extends ApiController
             return $this->createErrorJsonResponse('No resources were sent to attack');
         }
         if (!$attackingService->kingdomHasResourcesToAttack($army)) {
-            return $this->createErrorJsonResponse('Kingdom does not have enough resources');
+            return $this->createErrorJsonResponse('Kingdom does not have enough resources to attack');
         }
 
         $attackReport = $attackingService->attack($kingdom, $targetKingdom, $army);

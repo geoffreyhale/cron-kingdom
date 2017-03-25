@@ -21,6 +21,8 @@ class AttackingService
     private $queuePopulator;
     /** @var  KingdomManager */
     private $kingdomManager;
+    /** @var ResourceManager  */
+    private $resourceManager;
     /** @var  LogManager */
     private $logManager;
 
@@ -29,46 +31,48 @@ class AttackingService
         EventDispatcherInterface $dispatcher,
         QueuePopulator $queuePopulator,
         KingdomManager $kingdomManager,
+        ResourceManager $resourceManager,
         LogManager $logManager
     ) {
         $this->em              = $em;
         $this->eventDispatcher = $dispatcher;
         $this->queuePopulator  = $queuePopulator;
         $this->kingdomManager  = $kingdomManager;
+        $this->resourceManager = $resourceManager;
         $this->logManager      = $logManager;
     }
 
     /**
      * @param Kingdom $kingdom
-     * @param Kingdom $target
+     * @param Kingdom $targetKingdom
      * @param Army $attackers
      * @return AttackReport
      */
-    public function attack(Kingdom $kingdom, Kingdom $target, Army $attackers)
+    public function attack(Kingdom $kingdom, Kingdom $targetKingdom, Army $attackers)
     {
-        $defendingArmy = $this->getDefendingArmy($target);
+        $defendingArmy = $this->getDefendingArmy($targetKingdom);
 
         $result = $attackers->compare($defendingArmy);
-        $report = new AttackReport($kingdom, $target, $result);
+        $report = new AttackReport($kingdom, $targetKingdom, $result);
 
         $this->logManager->createLog(
             $kingdom,
             Log::TYPE_ATTACK,
-            ($report->getResult() ? 'Successful' : 'Failed') . ' attack against ' . $target->getName()
+            ($report->getResult() ? 'Successful' : 'Failed') . ' attack against ' . $targetKingdom->getName()
         );
         $this->logManager->createLog(
-            $target,
+            $targetKingdom,
             Log::TYPE_ATTACK,
             ($report->getResult() ? 'Failed' : 'Successful') . ' defend against ' . $kingdom->getName()
         );
 
         if (1 == $result) {
-            $this->awardResources($report, $kingdom, $target);
+            $this->awardResources($report, $kingdom, $targetKingdom);
         }
 
         foreach ($attackers->getAllTypesOfUnits() as $resourceName) {
-            $resource = $this->em->getRepository(Resource::class)->findOneByName($resourceName);
-            $queue = $this->queuePopulator->build($kingdom, $resource, 24, $attackers->getQuantityOfUnit($resourceName));
+            $resource = $this->resourceManager->get($resourceName);
+            $queue = $this->queuePopulator->lump($kingdom, $resource, 8, $attackers->getQuantityOfUnit($resourceName));
             $report->addQueue($resource, $queue);
 
             $kingdomResource = $this->em->getRepository(KingdomResource::class)->findOneBy([
@@ -86,7 +90,7 @@ class AttackingService
         }
         $this->em->flush();
 
-        $event = new AttackEvent($kingdom, $target);
+        $event = new AttackEvent($kingdom, $targetKingdom);
         $this->eventDispatcher->dispatch('event.attack', $event);
 
         return $report;
@@ -101,7 +105,7 @@ class AttackingService
     {
         $army = new Army($kingdom);
         foreach ($resources as $resourceName => $quantity) {
-            $resource = $this->em->getRepository(Resource::class)->findOneByName($resourceName);
+            $resource = $this->resourceManager->get($resourceName);
             $army->addResource($resource, $quantity);
         }
 
@@ -115,11 +119,7 @@ class AttackingService
     public function kingdomHasResourcesToAttack(Army $army)
     {
         foreach ($army->getAllTypesOfUnits() as $resourceName) {
-            $resource = $this->em->getRepository(Resource::class)->findOneByName($resourceName);
-            $kingdomResource = $this->em->getRepository(KingdomResource::class)->findOneBy([
-                'kingdom'  => $army->getKingdom(),
-                'resource' => $resource,
-            ]);
+            $kingdomResource = $this->kingdomManager->lookupResource($kingdomResource, $resourceName);
             if (!$army->hasEnoughToSend($kingdomResource)) {
                 return false;
             }
@@ -154,50 +154,38 @@ class AttackingService
     /**
      * @param AttackReport $report
      * @param Kingdom $kingdom
-     * @param Kingdom $target
+     * @param Kingdom $targetKingdom
      */
-    private function awardResources(AttackReport $report, Kingdom $kingdom, Kingdom $target)
+    private function awardResources(AttackReport $report, Kingdom $kingdom, Kingdom $targetKingdom)
     {
-        $civilianResource = $this->em->getRepository(Resource::class)->findOneByName(Resource::CIVILIAN);
-        $opponentCivilians = $this->em->getRepository(KingdomResource::class)->findOneBy([
-            'kingdom' => $target,
-            'resource' => $civilianResource,
-        ]);
-        $civiliansToTransfer = floor($opponentCivilians->getQuantity() / 20);
-        $this->kingdomManager->modifyResources($kingdom, $civilianResource, $civiliansToTransfer);
-        $this->kingdomManager->modifyResources($target, $civilianResource, -1 * $civiliansToTransfer);
-        $report->addModifiedResource($kingdom, $civilianResource, $civiliansToTransfer);
+        $this->awardResource($report, $kingdom, $targetKingdom, Resource::CIVILIAN, 20);
+        $this->awardResource($report, $kingdom, $targetKingdom, Resource::MATERIAL, 50);
+    }
+
+    /**
+     * @param AttackReport $report
+     * @param Kingdom $kingdom
+     * @param Kingdom $targetKingdom
+     */
+    private function awardResource(AttackReport $report, Kingdom $kingdom, Kingdom $targetKingdom, string $resourceName, int $percent)
+    {
+        $resource = $this->resourceManager->get($resourceName);
+        $targetKingdomResource = $this->kingdomManager->lookupResource($targetKingdom, $resourceName);
+
+        $resourceToTransfer = ceil($targetKingdomResource->getQuantity() * $percent / 100);
+        $this->kingdomManager->modifyResources($kingdom, $resource, $resourceToTransfer);
+        $this->kingdomManager->modifyResources($targetKingdom, $resource, -1 * $resourceToTransfer);
+        $report->addModifiedResource($kingdom, $resource, $resourceToTransfer);
 
         $this->logManager->createLog(
             $kingdom,
             Log::TYPE_ATTACK,
-            'Attack awarded ' . $civiliansToTransfer . ' ' . Resource::CIVILIAN
+            "Attack awarded $resourceToTransfer $resourceName"
         );
         $this->logManager->createLog(
-            $target,
+            $targetKingdom,
             Log::TYPE_ATTACK,
-            'Attack lost ' . $civiliansToTransfer . ' ' . Resource::CIVILIAN
-        );
-
-        $materialResource = $this->em->getRepository(Resource::class)->findOneByName(Resource::MATERIAL);
-        $opponentMaterials = $this->em->getRepository(KingdomResource::class)->findOneBy([
-            'kingdom' => $target,
-            'resource' => $materialResource,
-        ]);
-        $materialsToTransfer = floor($opponentMaterials->getQuantity() / 10);
-        $this->kingdomManager->modifyResources($kingdom, $materialResource, $materialsToTransfer);
-        $this->kingdomManager->modifyResources($target, $materialResource, -1 * $materialsToTransfer);
-        $report->addModifiedResource($kingdom, $materialResource, $materialsToTransfer);
-
-        $this->logManager->createLog(
-            $kingdom,
-            Log::TYPE_ATTACK,
-            'Attack awarded ' . $materialsToTransfer . ' ' . Resource::MATERIAL
-        );
-        $this->logManager->createLog(
-            $target,
-            Log::TYPE_ATTACK,
-            'Attack lost ' . $materialsToTransfer . ' ' . Resource::MATERIAL
+            "Attack lost $resourceToTransfer $resourceName"
         );
     }
 }

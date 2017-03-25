@@ -2,34 +2,27 @@
 
 <table class="table table-bordered">
     <tbody>
-    <tr>
-        <td style="background-color: #f5f5f5;">
-            Available
-        </td>
+    <tr style="font-size: 20px;">
         {% for resourceName in resourceNames %}
             {% for resourceQueues in queues %}
                 {% if resourceQueues.kingdomResource.resource.name == resourceName %}
                     <td title="{{ resourceName }}">
-                        <strong>{{ resourceQueues.kingdomResource.quantity|number_format }}</strong>
                         {% if resourceQueues.kingdomResource.resource.name == 'Civilian' %}
-                            <i class="fa fa-user fa-fw"></i>
+                            <i class="fa fa-users fa-fw"></i>
                         {% elseif resourceQueues.kingdomResource.resource.name == 'Housing' %}
                             <i class="fa fa-home fa-fw"></i>
                         {% elseif resourceQueues.kingdomResource.resource.name == 'Material' %}
-                            <i class="fa fa-usd fa-fw"></i>
+                            <i class="fa fa-cubes fa-fw"></i>
                         {% elseif resourceQueues.kingdomResource.resource.name == 'Military' %}
                             <i class="fa fa-fighter-jet fa-fw"></i>
                         {% elseif resourceQueues.kingdomResource.resource.name == 'Hacker' %}
-                            <i class="fa fa-laptop fa-fw"></i>
+                            <i class="fa fa-user-secret fa-fw"></i>
                         {% endif %}
-                        {{ resourceName }}
+                        <strong>{{ resourceQueues.kingdomResource.quantity|number_format }}</strong>
                     </td>
                 {% endif %}
             {% endfor %}
         {% endfor %}
-        <td title="Liquid" style="background-color: #f5f5f5;">
-            <strong>{{ kingdom.networth|number_format }}</strong> <i class="fa fa-superpowers fa-fw"></i> Liquid
-        </td>
     </tr>
     </tbody>
 </table>

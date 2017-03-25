@@ -47,25 +47,20 @@ class ProbeController extends ApiController
             return $this->createErrorJsonResponse('Invalid Target Kingdom');
         }
 
-        $hackerResource = $em->getRepository(Resource::class)->findOneBy(['name' => Resource::HACKER]);
-        $availableHackers = $em->getRepository(KingdomResource::class)->findOneBy([
-            'kingdom'  => $kingdom,
-            'resource' => $hackerResource,
-        ]);
+        $kingdomManager = $this->get('cronkd.manager.kingdom');
+        $resourceManager = $this->get('cronkd.manager.resource');
 
+        $hackerResource = $resourceManager->get(Resource::HACKER);
+        $availableHackers = $kingdomManager->lookupResource($kingdom, Resource::HACKER);
         if (!$availableHackers || $quantity > $availableHackers->getQuantity()) {
             return $this->createErrorJsonResponse('Not enough hackers to complete action!');
         }
 
         $probingService = $this->get('cronkd.service.probing');
         $report = $probingService->probe($kingdom, $targetKingdom, $quantity);
-        $timeToReturn = 8;
-        if (false === $report->getResult()) {
-            $timeToReturn = 24;
-        }
 
         $queuePopulator = $this->get('cronkd.queue_populator');
-        $hackerQueues = $queuePopulator->build($kingdom, $hackerResource, $timeToReturn, $quantity);
+        $hackerQueues = $queuePopulator->build($kingdom, $hackerResource, 1, $quantity);
 
         $availableHackers->removeQuantity($quantity);
         $em->persist($availableHackers);

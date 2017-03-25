@@ -1,7 +1,7 @@
 {% set resourceNames = ['Civilian', 'Material', 'Housing', 'Military', 'Hacker'] %}
 
 {% set minTick = world.tick + 1 %}
-{% set maxTick = world.tick + 24 %}
+{% set maxTick = world.tick + 8 %}
 
 {% for resourceQueues in queues %}
     {% for queue in resourceQueues.queues %}
@@ -27,18 +27,17 @@
                 {% if resourceQueues.kingdomResource.resource.name == resourceName %}
                     <td style="white-space: nowrap; background-color: #f5f5f5;">
                         {% if resourceQueues.kingdomResource.resource.name == 'Civilian' %}
-                            <i class="fa fa-user fa-fw"></i>
+                            <i class="fa fa-users fa-fw"></i>
                         {% elseif resourceQueues.kingdomResource.resource.name == 'Housing' %}
                             <i class="fa fa-home fa-fw"></i>
                         {% elseif resourceQueues.kingdomResource.resource.name == 'Material' %}
-                            <i class="fa fa-usd fa-fw"></i>
+                            <i class="fa fa-cubes fa-fw"></i>
                         {% elseif resourceQueues.kingdomResource.resource.name == 'Military' %}
                             <i class="fa fa-fighter-jet fa-fw"></i>
                         {% elseif resourceQueues.kingdomResource.resource.name == 'Hacker' %}
-                            <i class="fa fa-laptop fa-fw"></i>
+                            <i class="fa fa-user-secret fa-fw"></i>
                         {% endif %}
                         <strong>{{ resourceQueues.kingdomResource.quantity|number_format }}</strong>
-                        <span class="pull-right" style="margin-left: 15px;">{{ resourceQueues.kingdomResource.resource.name }}</span>
                     </td>
                     {% for tick in range(minTick, maxTick) %}
                         {% set quantity = 0 %}

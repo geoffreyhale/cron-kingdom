@@ -43,21 +43,7 @@ class CronkdTickCommand extends ContainerAwareCommand
             foreach ($queues as $queue) {
                 $logger->info('Queue is for Kingdom ' . $queue->getKingdom()->getName() . ' for ' . $queue->getResource()->getName());
 
-                /** @var KingdomResource $kingdomResource */
-                $kingdomResource = $em->getRepository(KingdomResource::class)->findOneBy([
-                    'kingdom'  => $queue->getKingdom(),
-                    'resource' => $queue->getResource(),
-                ]);
-                if (!$kingdomResource) {
-                    $logger->info('Creating new KingdomResource entity');
-
-                    $kingdomResource = new KingdomResource();
-                    $kingdomResource->setQuantity(0);
-                    $kingdomResource->setKingdom($queue->getKingdom());
-                    $kingdomResource->setResource($queue->getResource());
-                    $em->persist($kingdomResource);
-                }
-
+                $kingdomResource = $kingdomManager->findOrCreateResource($queue->getKingdom(), $queue->getResource());
                 $kingdomResource->addQuantity($queue->getQuantity());
                 $em->persist($kingdomResource);
 
@@ -87,15 +73,15 @@ class CronkdTickCommand extends ContainerAwareCommand
                 }
             }
 
-            $event = new WorldTickEvent($world);
-            $eventDispatcher->dispatch('event.world_tick', $event);
-            $logger->info('Completed tick ' . $world->getTick());
-
             $world->addTick();
             $em->persist($world);
+            $em->flush();
+
+            $event = new WorldTickEvent($world);
+            $eventDispatcher->dispatch('event.world_tick', $event);
+            $logger->info('Completed tick ' . $world->getTick() . ' for world ' . $world->getName());
         }
 
-        $em->flush();
         $logger->info('Completed command');
     }
 }

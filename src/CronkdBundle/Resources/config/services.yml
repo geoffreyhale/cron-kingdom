@@ -8,8 +8,14 @@ services:
         class: CronkdBundle\Service\KingdomManager
         arguments:
             - "@doctrine.orm.default_entity_manager"
+            - "@cronkd.manager.resource"
         calls:
             - [setLogger, ["@logger"]]
+
+    cronkd.manager.resource:
+        class: CronkdBundle\Service\ResourceManager
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
 
     cronkd.manager.log:
         class: CronkdBundle\Service\LogManager
@@ -30,6 +36,7 @@ services:
             - "@event_dispatcher"
             - "@cronkd.queue_populator"
             - "@cronkd.manager.kingdom"
+            - "@cronkd.manager.resource"
             - "@cronkd.manager.log"
 
     cronkd.listener.net_worth:

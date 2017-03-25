@@ -70,4 +70,37 @@ class QueuePopulator
 
         return $queues;
     }
+
+    public function lump(Kingdom $kingdom, Resource $resource, $tickDelay, $quantity)
+    {
+        if (0 >= $tickDelay || !is_int($tickDelay)) {
+            throw new InvalidQueueIntervalException($tickDelay);
+        }
+
+        $world = $kingdom->getWorld();
+        $worldTick = $world->getTick();
+
+        $currentTick = $worldTick + $tickDelay;
+        $queue = $this->em->getRepository(Queue::class)->findOneBy([
+            'tick'     => $currentTick,
+            'kingdom'  => $kingdom,
+            'resource' => $resource,
+        ]);
+        if (!$queue) {
+            $queue = new Queue();
+            $queue->setTick($currentTick);
+            $queue->setKingdom($kingdom);
+            $queue->setResource($resource);
+            $queue->setQuantity(0);
+        }
+
+        $queue->addQuantity($quantity);
+
+        $this->em->persist($queue);
+        $this->em->flush();
+
+        $queues[$currentTick] = $queue;
+
+        return $queues;
+    }
 }

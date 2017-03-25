@@ -41,31 +41,8 @@ class KingdomController extends Controller
         $form = $this->createForm(KingdomType::class, $kingdom);
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $initialResources = [
-                Resource::CIVILIAN => 10,
-                Resource::MATERIAL => 0,
-                Resource::HOUSING  => 10,
-                Resource::MILITARY => 0,
-                Resource::HACKER   => 0,
-            ];
-            foreach ($initialResources as $resourceName => $count) {
-                $resource = $em->getRepository(Resource::class)->findOneByName($resourceName);
-                if (!$resource) {
-                    $this->createNotFoundException($resourceName . ' resource does not exist!');
-                }
-                $kingdomResource = new KingdomResource();
-                $kingdomResource->setKingdom($kingdom);
-                $kingdomResource->setResource($resource);
-                $kingdomResource->setQuantity($count);
-                $kingdom->addResource($kingdomResource);
-            }
-
-            $kingdom->setWorld($world);
-            $kingdom->setUser($this->getUser());
-            $kingdom->setNetWorth(0);
-
-            $em->persist($kingdom);
-            $em->flush();
+            $kingdomManager = $this->get('cronkd.manager.kingdom');
+            $kingdom = $kingdomManager->create($kingdom, $world);
 
             $event = new CreateKingdomEvent($kingdom);
             $this->get('event_dispatcher')->dispatch('event.create_kingdom', $event);
