@@ -3,7 +3,6 @@ namespace CronkdBundle\Repository;
 
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
-use CronkdBundle\Entity\Queue;
 use CronkdBundle\Entity\Resource;
 use CronkdBundle\Entity\World;
 
@@ -15,6 +14,10 @@ use CronkdBundle\Entity\World;
  */
 class QueueRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * @param World $world
+     * @return array
+     */
     public function findNextByWorld(World $world)
     {
         $qb = $this->createQueryBuilder('q');
@@ -33,26 +36,19 @@ class QueueRepository extends \Doctrine\ORM\EntityRepository
      * @param KingdomResource $kingdomResource
      * @return array
      */
-    public function findCurrentQueues(KingdomResource $kingdomResource, $includeCurrentQueue = true)
+    public function findCurrentQueues(KingdomResource $kingdomResource)
     {
-        $skipCurrentQueue = 1;
-        if ($includeCurrentQueue) {
-            $skipCurrentQueue = 0;
-        }
-
         $qb = $this->createQueryBuilder('q');
         $qb->join('q.resource', 'r');
         $qb->where('q.kingdom = :kingdom');
         $qb->andWhere('q.resource = :resource');
-        $qb->andWhere('q.tick >= :tick');
+        $qb->andWhere('q.tick > :tick');
         $qb->setParameters([
             'kingdom'  => $kingdomResource->getKingdom(),
             'resource' => $kingdomResource->getResource(),
-            'tick'     => $kingdomResource->getKingdom()->getWorld()->getTick() + $skipCurrentQueue,
+            'tick'     => $kingdomResource->getKingdom()->getWorld()->getTick(),
         ]);
         $qb->orderBy('r.name', 'ASC');
-        dump($kingdomResource->getKingdom()->getWorld()->getTick() + $skipCurrentQueue);
-        die();
 
         return $qb->getQuery()->getResult();
     }
@@ -68,7 +64,7 @@ class QueueRepository extends \Doctrine\ORM\EntityRepository
         $qb->select('SUM(q.quantity) as qty');
         $qb->where('q.kingdom = :kingdom');
         $qb->andWhere('q.resource = :resource');
-        $qb->andWhere('q.tick >= :currentTick');
+        $qb->andWhere('q.tick > :currentTick');
         $qb->setParameters([
             'kingdom' => $kingdom,
             'resource' => $resource,

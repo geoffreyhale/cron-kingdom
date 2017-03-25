@@ -4,6 +4,7 @@
         <td title="Kingdom"><i class="fa fa-flag"></i> <strong>{{ kingdom.name }}</strong></td>
         {% if worldNetworth is defined %}
             <td title="Net Worth"><i class="fa fa-line-chart"></i> {{ kingdom.networth|number_format }}</td>
+            <td title="Liquidity"><i class="fa fa-tint"></i> {{ kingdom.liquidity|number_format }}</td>
         {% endif %}
     </tr>
     </tbody>

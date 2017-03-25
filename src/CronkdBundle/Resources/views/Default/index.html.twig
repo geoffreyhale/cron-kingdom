@@ -74,6 +74,7 @@
                             <th><i class="fa fa-hashtag"></i></th>
                             <th><i class="fa fa-flag"></i></th>
                             <th><i class="fa fa-line-chart"></i></th>
+                            <th><i class="fa fa-tint"></i></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -83,10 +84,12 @@
                                     <td><strong>{{ loop.index }}</strong></td>
                                     <td><strong>{{ kingdomByNetworth.name }}</strong></td>
                                     <td><strong>{{ kingdomByNetworth.netWorth|number_format }}</strong></td>
+                                    <td><strong>{{ kingdomByNetworth.liquidity|number_format }}</strong></td>
                                 {% else %}
                                     <td>{{ loop.index }}</td>
                                     <td>{{ kingdomByNetworth.name }}</td>
                                     <td>{{ kingdomByNetworth.netWorth|number_format }}</td>
+                                    <td>{{ kingdomByNetworth.liquidity|number_format }}</td>
                                 {% endif %}
                             </tr>
                         {% endfor %}
