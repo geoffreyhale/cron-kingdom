@@ -1,148 +1,157 @@
 {% extends '::base.html.twig' %}
 
 {% block content %}
-
     {% if not userHasKingdom %}
-
         <div class="row-fluid text-center">
             <div class="text-center">
                 <a href="{{ path('kingdom_create') }}" class="btn btn-primary btn-lg">Create My Kingdom</a>
             </div>
         </div>
-
     {% else %}
+        <div class="row-fluid">
 
-        <div class="row-fluid clearfix" style="font-size: 24px;">
+            <!-- Kingdom -->
             <div class="col-md-9">
-                <div class="panel panel-default">
-                    <table class="table table-bordered">
-                        <tbody>
-                        <tr>
-                            <td title="Kingdom"><i class="fa fa-fort-awesome"></i> <strong>{{ kingdom.name }}</strong></td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="panel panel-default">
-                    <table class="table">
-                        <tbody>
-                        <tr>
-                            <td title="World"><i class="fa fa-globe"></i> <strong>{{ world.name }}</strong></td>
-                            <td title="Tick"><i class="fa fa-clock-o"></i> {{ world.tick }}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div class="row-fluid clearfix">
-            <div class="col-md-2">
-                <div class="panel panel-default">
-                    <table class="table">
-                        <tbody>
-                        <tr style="font-size: 20px;">
-                            <td title="Liquidity"><i class="fa fa-tint"></i> {{ kingdom.liquidity|number_format }}</td>
-                            <td title="Net Worth"><i class="fa fa-line-chart"></i> {{ kingdom.networth|number_format }}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="col-md-7">
-                <div class="panel panel-default">
-                    {% include 'CronkdBundle:Kingdom:resources.html.twig' %}
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="panel panel-default">
-                    <table class="table">
-                        <tbody>
-                        <tr style="font-size: 20px;">
-                            <td title="Kingdoms"><i class="fa fa-fort-awesome"></i> {{ world.kingdoms|length }}</td>
-                            {% if worldNetworth is defined %}
-                                <td title="Net Worth"><i class="fa fa-line-chart"></i> {{ worldNetworth|number_format }}</td>
-                            {% endif %}
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div class="row-fluid clearfix">
-            <div class="col-md-2">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title"><i class="fa fa-shield"></i> Actions</h3>
+                <div class="row-fluid clearfix" style="font-size: 24px;">
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <table class="table table-bordered">
+                                <tbody>
+                                <tr>
+                                    <td title="Kingdom"><i class="fa fa-fort-awesome"></i> <strong>{{ kingdom.name }}</strong></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="panel-body" style="text-align: center;">
-                        <div class="btn-group-vertical" role="group">
-                            <a href="{{ path('action_produce_materials', {id: kingdom.id}) }}" class="btn btn-info">Produce Materials</a>
-                            <a href="{{ path('action_build_housing', {id: kingdom.id}) }}" class="btn btn-info">Build Housing</a>
-                            <a href="{{ path('action_train_military', {id: kingdom.id}) }}" class="btn btn-info">Train Military</a>
-                            <a href="{{ path('action_train_hacker', {id: kingdom.id}) }}" class="btn btn-info">Train Hackers</a>
+                </div>
+
+                <div class="row-fluid clearfix">
+                    <div class="col-md-3">
+                        <div class="panel panel-default">
+                            <table class="table">
+                                <tbody>
+                                <tr style="font-size: 20px;">
+                                    <td title="Liquidity"><i class="fa fa-tint"></i> {{ kingdom.liquidity|number_format }}</td>
+                                    <td title="Net Worth"><i class="fa fa-line-chart"></i> {{ kingdom.networth|number_format }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <hr>
-                        <div class="btn-group-vertical" role="group">
-                            <a href="{{ path('probe_send', {id: kingdom.id}) }}" class="btn btn-warning">Hack</a>
-                            <a href="{{ path('attack', {id: kingdom.id}) }}" class="btn btn-danger">Attack</a>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="panel panel-default">
+                            {% include 'CronkdBundle:Kingdom:resources.html.twig' %}
                         </div>
-                        <hr />
-                        <div class="btn-group-vertical" role="group">
-                            <a href="{{ path('log_index', {id: kingdom.id}) }}" class="btn btn-default">Event Log</a>
+                    </div>
+                </div>
+
+                <div class="row-fluid clearfix">
+                    <div class="col-md-3">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><i class="fa fa-shield"></i> Actions</h3>
+                            </div>
+                            <div class="panel-body" style="text-align: center;">
+                                <div class="btn-group-vertical" role="group">
+                                    <a href="{{ path('action_produce_materials', {id: kingdom.id}) }}" class="btn btn-info">Produce Materials</a>
+                                    <a href="{{ path('action_build_housing', {id: kingdom.id}) }}" class="btn btn-info">Build Housing</a>
+                                    <a href="{{ path('action_train_military', {id: kingdom.id}) }}" class="btn btn-info">Train Military</a>
+                                    <a href="{{ path('action_train_hacker', {id: kingdom.id}) }}" class="btn btn-info">Train Hackers</a>
+                                </div>
+                                <hr>
+                                <div class="btn-group-vertical" role="group">
+                                    <a href="{{ path('probe_send', {id: kingdom.id}) }}" class="btn btn-warning">Hack</a>
+                                    <a href="{{ path('attack', {id: kingdom.id}) }}" class="btn btn-danger">Attack</a>
+                                </div>
+                                <hr />
+                                <div class="btn-group-vertical" role="group">
+                                    <a href="{{ path('log_index', {id: kingdom.id}) }}" class="btn btn-default">Event Log</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-9">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><i class="fa fa-bar-chart"></i> Resources Incoming</h3>
+                            </div>
+                            {% include 'CronkdBundle:Kingdom:queues.html.twig' %}
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-7">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title"><i class="fa fa-bar-chart"></i> Resources Incoming</h3>
-                    </div>
-                    {% include 'CronkdBundle:Kingdom:queues.html.twig' %}
-                </div>
-            </div>
-
+            <!-- World -->
             <div class="col-md-3">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title"><i class="fa fa-trophy"></i> Scores</h3>
+                <div class="row-fluid clearfix" style="font-size: 24px;">
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <table class="table">
+                                <tbody>
+                                <tr>
+                                    <td title="World"><i class="fa fa-globe"></i> <strong>{{ world.name }}</strong></td>
+                                    <td title="Tick"><i class="fa fa-clock-o"></i> {{ world.tick }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th title="Rank"><i class="fa fa-hashtag"></i></th>
-                            <th title="Kingdom"><i class="fa fa-fort-awesome"></i></th>
-                            <th title="Liquidity"><i class="fa fa-tint"></i></th>
-                            <th title="Networth"><i class="fa fa-line-chart"></i></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for kingdomByNetworth in kingdomsByNetworth %}
-                            <tr>
-                                {% if kingdomByNetworth.id == kingdom.id %}
-                                    <td><strong>{{ loop.index }}</strong></td>
-                                    <td><strong>{{ kingdomByNetworth.name }}</strong></td>
-                                    <td><strong>{{ kingdomByNetworth.liquidity|number_format }}</strong></td>
-                                    <td><strong>{{ kingdomByNetworth.netWorth|number_format }}</strong></td>
-                                {% else %}
-                                    <td>{{ loop.index }}</td>
-                                    <td>{{ kingdomByNetworth.name }}</td>
-                                    <td>{{ kingdomByNetworth.liquidity|number_format }}</td>
-                                    <td>{{ kingdomByNetworth.netWorth|number_format }}</td>
-                                {% endif %}
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
+                </div>
+                <div class="row-fluid" style="font-size: 24px;">
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <table class="table">
+                                <tbody>
+                                <tr style="font-size: 20px;">
+                                    <td title="Kingdoms"><i class="fa fa-fort-awesome"></i> {{ world.kingdoms|length }}</td>
+                                    {% if worldNetworth is defined %}
+                                        <td title="Net Worth"><i class="fa fa-line-chart"></i> {{ worldNetworth|number_format }}</td>
+                                    {% endif %}
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fluid clearfix">
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><i class="fa fa-trophy"></i> Scores</h3>
+                            </div>
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th title="Rank"><i class="fa fa-hashtag"></i></th>
+                                    <th title="Kingdom"><i class="fa fa-fort-awesome"></i></th>
+                                    <th title="Liquidity"><i class="fa fa-tint"></i></th>
+                                    <th title="Networth"><i class="fa fa-line-chart"></i></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for kingdomByNetworth in kingdomsByNetworth %}
+                                    <tr>
+                                        {% if kingdomByNetworth.id == kingdom.id %}
+                                            <td><strong>{{ loop.index }}</strong></td>
+                                            <td><strong>{{ kingdomByNetworth.name }}</strong></td>
+                                            <td><strong>{{ kingdomByNetworth.liquidity|number_format }}</strong></td>
+                                            <td><strong>{{ kingdomByNetworth.netWorth|number_format }}</strong></td>
+                                        {% else %}
+                                            <td>{{ loop.index }}</td>
+                                            <td>{{ kingdomByNetworth.name }}</td>
+                                            <td>{{ kingdomByNetworth.liquidity|number_format }}</td>
+                                            <td>{{ kingdomByNetworth.netWorth|number_format }}</td>
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
     {% endif %}
-
 {% endblock %}

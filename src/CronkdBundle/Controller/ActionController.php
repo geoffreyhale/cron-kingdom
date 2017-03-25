@@ -123,7 +123,7 @@ class ActionController extends Controller
         }
 
         return [
-            'actionDescription'   => 'Building of Housing requires 1 Civilian each and consumes 1 Material each and is spread over 16 Ticks.',
+            'actionDescription'   => 'Building of Housing requires 1 Civilian each and consumes 1 Material each and is spread over 8 Ticks.',
             'form'                => $form->createView(),
             'maxQuantity'         => min($availableCivilians->getQuantity(), $availableMaterials->getQuantity()),
             'resource'            => 'housing',
@@ -178,7 +178,7 @@ class ActionController extends Controller
         }
 
         return [
-            'actionDescription'   => 'Training of Military converts 1 Civilian each and is spread over 24 Ticks.',
+            'actionDescription'   => 'Training of Military converts 1 Civilian each and is spread over 8 Ticks.',
             'form'                => $form->createView(),
             'maxQuantity'         => $availableCivilians->getQuantity(),
             'resource'            => 'military',
@@ -233,7 +233,7 @@ class ActionController extends Controller
         }
 
         return [
-            'actionDescription'   => 'Training of Hackers converts 1 Military each and is spread over 24 Ticks.',
+            'actionDescription'   => 'Training of Hackers converts 1 Military each and is spread over 8 Ticks.',
             'form'                => $form->createView(),
             'maxQuantity'         => $availableMilitary->getQuantity(),
             'resource'            => 'hacker',
