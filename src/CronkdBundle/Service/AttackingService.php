@@ -68,7 +68,7 @@ class AttackingService
 
         foreach ($attackers->getAllTypesOfUnits() as $resourceName) {
             $resource = $this->em->getRepository(Resource::class)->findOneByName($resourceName);
-            $queue = $this->queuePopulator->build($kingdom, $resource, 24, $attackers->getQuantityOfUnit($resourceName));
+            $queue = $this->queuePopulator->lump($kingdom, $resource, 8, $attackers->getQuantityOfUnit($resourceName));
             $report->addQueue($resource, $queue);
 
             $kingdomResource = $this->em->getRepository(KingdomResource::class)->findOneBy([
@@ -163,7 +163,7 @@ class AttackingService
             'kingdom' => $target,
             'resource' => $civilianResource,
         ]);
-        $civiliansToTransfer = floor($opponentCivilians->getQuantity() / 20);
+        $civiliansToTransfer = ceil($opponentCivilians->getQuantity() / 5);
         $this->kingdomManager->modifyResources($kingdom, $civilianResource, $civiliansToTransfer);
         $this->kingdomManager->modifyResources($target, $civilianResource, -1 * $civiliansToTransfer);
         $report->addModifiedResource($kingdom, $civilianResource, $civiliansToTransfer);
@@ -184,7 +184,7 @@ class AttackingService
             'kingdom' => $target,
             'resource' => $materialResource,
         ]);
-        $materialsToTransfer = floor($opponentMaterials->getQuantity() / 10);
+        $materialsToTransfer = ceil($opponentMaterials->getQuantity() / 2);
         $this->kingdomManager->modifyResources($kingdom, $materialResource, $materialsToTransfer);
         $this->kingdomManager->modifyResources($target, $materialResource, -1 * $materialsToTransfer);
         $report->addModifiedResource($kingdom, $materialResource, $materialsToTransfer);
