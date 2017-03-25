@@ -21,13 +21,14 @@ class LogManager
      * @param string $message
      * @return Log
      */
-    public function createLog(Kingdom $kingdom, string $type, string $message)
+    public function createLog(Kingdom $kingdom, string $type, string $message, $notify = false)
     {
         $log = new Log();
         $log->setKingdom($kingdom);
         $log->setTick($kingdom->getWorld()->getTick());
         $log->setType($type);
         $log->setLog($message);
+        $log->setImportant($notify);
 
         $this->em->persist($log);
         $this->em->flush();

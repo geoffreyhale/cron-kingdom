@@ -10,7 +10,7 @@ use JMS\Serializer\Annotation as Jms;
  *
  * @Jms\ExclusionPolicy("all")
  */
-class Log
+class Log extends BaseEntity
 {
     const TYPE_TICK   = 'tick';
     const TYPE_ACTION = 'action';
@@ -46,6 +46,20 @@ class Log
      * @ORM\Column(name="tick", type="bigint")
      */
     private $tick;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="important", type="boolean", options={"default" = 0})
+     */
+    private $important;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="read_at", type="datetime", nullable=true)
+     */
+    private $readAt;
 
     /**
      * @var Kingdom
@@ -135,6 +149,54 @@ class Log
     public function getLog()
     {
         return $this->log;
+    }
+
+    /**
+     * Set important
+     *
+     * @param boolean $important
+     *
+     * @return Log
+     */
+    public function setImportant($important)
+    {
+        $this->important = $important;
+
+        return $this;
+    }
+
+    /**
+     * Get important
+     *
+     * @return boolean
+     */
+    public function getImportant()
+    {
+        return $this->important;
+    }
+
+    /**
+     * Set readAt
+     *
+     * @param \DateTime $readAt
+     *
+     * @return Log
+     */
+    public function setReadAt($readAt)
+    {
+        $this->readAt = $readAt;
+
+        return $this;
+    }
+
+    /**
+     * Get readAt
+     *
+     * @return \DateTime
+     */
+    public function getReadAt()
+    {
+        return $this->readAt;
     }
 
     /**

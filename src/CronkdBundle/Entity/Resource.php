@@ -13,7 +13,7 @@ use JMS\Serializer\Annotation as Jms;
  *
  * @Jms\ExclusionPolicy("all")
  */
-class Resource
+class Resource extends BaseEntity
 {
     const CIVILIAN = 'Civilian';
     const MATERIAL = 'Material';

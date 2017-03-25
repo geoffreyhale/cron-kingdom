@@ -1,9 +1,3 @@
-<ul>
-    {% for kingdomResource in results.data.report.data %}
-        <li>{{ kingdomResource.kingdom.name }} has {{ kingdomResource.quantity }} available {{ kingdomResource.resource.name }}</li>
-    {% endfor %}
-</ul>
-
 {% set resourceNames = ['Civilian', 'Material', 'Housing', 'Military', 'Hacker'] %}
 
 <table class="table table-bordered" style="margin-top: 15px;">

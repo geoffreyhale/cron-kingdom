@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @Jms\ExclusionPolicy("all")
  */
-class Kingdom
+class Kingdom extends BaseEntity
 {
     /**
      * @var int

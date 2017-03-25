@@ -7,17 +7,19 @@
                 <h3 class="panel-title"><i class="fa fa-search"></i> Logs</h3>
             </div>
             <div class="panel-body">
-                <table class="datatable table table-bordered">
+                <table class="datatable table table-bordered table-striped">
                     <thead>
                     <tr>
+                        <th>Time</th>
                         <th>Tick</th>
-                        <th>Log Type</th>
+                        <th>Type</th>
                         <th>Message</th>
                     </tr>
                     </thead>
                     <tbody>
                     {% for log in logs %}
-                    <tr>
+                    <tr class="{{ log.readAt is null ? 'info' }} {{ log.important ? 'danger' }}">
+                        <td>{{ log.createdAt|date('Y-m-d h:i:s A') }}</td>
                         <td>{{ log.tick }}</td>
                         <td>{{ log.type }}</td>
                         <td>{{ log.log }}</td>
@@ -32,6 +34,8 @@
 {% block js %}
     {{ parent() }}
     <script type="text/javascript">
-        $('.datatable').DataTable();
+        $('.datatable').DataTable({
+            'order': [ 0, 'DESC' ]
+        });
     </script>
 {% endblock %}

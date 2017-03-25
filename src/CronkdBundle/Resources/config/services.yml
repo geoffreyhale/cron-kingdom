@@ -49,3 +49,10 @@ services:
             - {name: kernel.event_listener, event: event.action, method: onAction}
             - {name: kernel.event_listener, event: event.probe, method: onProbe}
             - {name: kernel.event_listener, event: event.attack, method: onAttack}
+
+    cronkd.listener.notification:
+        class: CronkdBundle\Listener\NotificationListener
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
+        tags:
+            - {name: kernel.event_listener, event: event.view_log, method: onViewLogPage}

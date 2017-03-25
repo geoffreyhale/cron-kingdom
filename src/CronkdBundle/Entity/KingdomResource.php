@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="kingdom_resource")
  * @ORM\Entity(repositoryClass="CronkdBundle\Repository\KingdomResourceRepository")
  */
-class KingdomResource
+class KingdomResource extends BaseEntity
 {
     /**
      * @var int

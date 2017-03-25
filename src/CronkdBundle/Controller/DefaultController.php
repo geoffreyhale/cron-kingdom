@@ -41,24 +41,24 @@ class DefaultController extends Controller
 
         $kingdomResources = [];
         $queues = [];
-        $recentLogs = [];
+        $notificationCount = 0;
         if ($kingdom) {
             $kingdomResources = $em->getRepository(KingdomResource::class)->findByKingdom($kingdom);
             $queues = $this->get('cronkd.manager.kingdom')->getResourceQueues($kingdom);
-            $recentLogs = $em->getRepository(Log::class)->findByRecent($kingdom, 10);
+            $notificationCount = $em->getRepository(Log::class)->findNotificationCount($kingdom);
         }
 
         return [
-            'user'             => $user,
-            'kingdom'          => $kingdom,
-            'queues'           => $queues,
-            'world'            => $world,
-            'worldNetworth'    => $worldNetworth,
-            'kingdoms'         => $world->getKingdoms(),
+            'user'               => $user,
+            'kingdom'            => $kingdom,
+            'queues'             => $queues,
+            'world'              => $world,
+            'worldNetworth'      => $worldNetworth,
+            'kingdoms'           => $world->getKingdoms(),
             'kingdomsByNetworth' => $kingdomsByNetworth,
-            'kingdomResources' => $kingdomResources,
-            'userHasKingdom'   => $userHasKingdom,
-            'recentLogs'       => $recentLogs,
+            'kingdomResources'   => $kingdomResources,
+            'userHasKingdom'     => $userHasKingdom,
+            'notificationCount'  => $notificationCount,
         ];
     }
 
