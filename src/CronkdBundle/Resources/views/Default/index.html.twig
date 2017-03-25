@@ -12,13 +12,68 @@
 
     {% else %}
 
-        <div class="row-fluid">
-            <div class="col-md-2">
-
+        <div class="row-fluid clearfix" style="font-size: 24px;">
+            <div class="col-md-9">
                 <div class="panel panel-default">
-                    {% include 'CronkdBundle:Kingdom:infoBar.html.twig' %}
+                    <table class="table table-bordered">
+                        <tbody>
+                        <tr>
+                            <td title="Kingdom"><i class="fa fa-fort-awesome"></i> <strong>{{ kingdom.name }}</strong></td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
+            </div>
+            <div class="col-md-3">
+                <div class="panel panel-default">
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <td title="World"><i class="fa fa-globe"></i> <strong>{{ world.name }}</strong></td>
+                            <td title="Tick"><i class="fa fa-clock-o"></i> {{ world.tick }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
+        <div class="row-fluid clearfix">
+            <div class="col-md-2">
+                <div class="panel panel-default">
+                    <table class="table">
+                        <tbody>
+                        <tr style="font-size: 20px;">
+                            <td title="Liquidity"><i class="fa fa-tint"></i> {{ kingdom.liquidity|number_format }}</td>
+                            <td title="Net Worth"><i class="fa fa-line-chart"></i> {{ kingdom.networth|number_format }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-7">
+                <div class="panel panel-default">
+                    {% include 'CronkdBundle:Kingdom:resources.html.twig' %}
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="panel panel-default">
+                    <table class="table">
+                        <tbody>
+                        <tr style="font-size: 20px;">
+                            <td title="Kingdoms"><i class="fa fa-fort-awesome"></i> {{ world.kingdoms|length }}</td>
+                            {% if worldNetworth is defined %}
+                                <td title="Net Worth"><i class="fa fa-line-chart"></i> {{ worldNetworth|number_format }}</td>
+                            {% endif %}
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row-fluid clearfix">
+            <div class="col-md-2">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title"><i class="fa fa-shield"></i> Actions</h3>
@@ -39,31 +94,20 @@
                         <div class="btn-group-vertical" role="group">
                             <a href="{{ path('log_index', {id: kingdom.id}) }}" class="btn btn-default">Event Log</a>
                         </div>
-                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-8">
+            <div class="col-md-7">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title"><i class="fa fa-bar-chart"></i> Available Resources</h3>
-                    </div>
-                    {% include 'CronkdBundle:Kingdom:resources.html.twig' %}
-                </div>
-
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title"><i class="fa fa-bar-chart"></i> Incoming Resources</h3>
+                        <h3 class="panel-title"><i class="fa fa-bar-chart"></i> Resources Incoming</h3>
                     </div>
                     {% include 'CronkdBundle:Kingdom:queues.html.twig' %}
                 </div>
             </div>
 
-            <div class="col-md-2">
-                <div class="panel panel-default">
-                    {% include 'CronkdBundle:World:infoBar.html.twig' %}
-                </div>
+            <div class="col-md-3">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title"><i class="fa fa-trophy"></i> Scores</h3>
@@ -71,10 +115,10 @@
                     <table class="table">
                         <thead>
                         <tr>
-                            <th><i class="fa fa-hashtag"></i></th>
-                            <th><i class="fa fa-flag"></i></th>
-                            <th><i class="fa fa-line-chart"></i></th>
-                            <th><i class="fa fa-tint"></i></th>
+                            <th title="Rank"><i class="fa fa-hashtag"></i></th>
+                            <th title="Kingdom"><i class="fa fa-fort-awesome"></i></th>
+                            <th title="Liquidity"><i class="fa fa-tint"></i></th>
+                            <th title="Networth"><i class="fa fa-line-chart"></i></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -83,13 +127,13 @@
                                 {% if kingdomByNetworth.id == kingdom.id %}
                                     <td><strong>{{ loop.index }}</strong></td>
                                     <td><strong>{{ kingdomByNetworth.name }}</strong></td>
-                                    <td><strong>{{ kingdomByNetworth.netWorth|number_format }}</strong></td>
                                     <td><strong>{{ kingdomByNetworth.liquidity|number_format }}</strong></td>
+                                    <td><strong>{{ kingdomByNetworth.netWorth|number_format }}</strong></td>
                                 {% else %}
                                     <td>{{ loop.index }}</td>
                                     <td>{{ kingdomByNetworth.name }}</td>
-                                    <td>{{ kingdomByNetworth.netWorth|number_format }}</td>
                                     <td>{{ kingdomByNetworth.liquidity|number_format }}</td>
+                                    <td>{{ kingdomByNetworth.netWorth|number_format }}</td>
                                 {% endif %}
                             </tr>
                         {% endfor %}
