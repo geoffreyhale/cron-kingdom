@@ -69,9 +69,10 @@ class ProbingService
      */
     private function calculateProbeAttemptOutcome($quantity)
     {
-        $successful = (int) number_format(100 * (1 - (1 / $quantity)), 0);
+        $successChance = (int) number_format(100 * (1 - (1 / pow(2, $quantity))), 0);
         $actual = random_int(0, 100);
-        if ($successful > $actual) {
+
+        if ($successChance > $actual) {
             return true;
         }
 

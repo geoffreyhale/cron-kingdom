@@ -4,6 +4,7 @@ namespace CronkdBundle\Controller\Api;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Resource;
+use CronkdBundle\Service\ProbingService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -56,6 +57,7 @@ class ProbeController extends ApiController
             return $this->createErrorJsonResponse('Not enough hackers to complete action!');
         }
 
+        /** @var ProbingService $probingService */
         $probingService = $this->get('cronkd.service.probing');
         $report = $probingService->probe($kingdom, $targetKingdom, $quantity);
 
