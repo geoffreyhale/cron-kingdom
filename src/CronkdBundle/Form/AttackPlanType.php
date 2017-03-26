@@ -40,7 +40,8 @@ class AttackPlanType extends AbstractType
                 },
             ])
             ->add('militaryAllocations', NumberType::class, [
-
+                'label' => 'Military',
+                'required' => true,
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Attack',

@@ -1,6 +1,7 @@
 <?php
 namespace CronkdBundle\Controller;
 
+use CronkdBundle\Entity\AttackLog;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Log;
@@ -46,19 +47,23 @@ class DefaultController extends Controller
             $kingdomResources = $em->getRepository(KingdomResource::class)->findByKingdom($kingdom);
             $queues = $this->get('cronkd.manager.kingdom')->getResourceQueues($kingdom);
             $notificationCount = $em->getRepository(Log::class)->findNotificationCount($kingdom);
+            $kingdomHasAvailableAttack = $em->getRepository(AttackLog::class)->hasAvailableAttack($kingdom);
+            $kingdomWinLossRecord = $em->getRepository(AttackLog::class)->getWinLossRecord($kingdom);
         }
 
         return [
-            'user'               => $user,
-            'kingdom'            => $kingdom,
-            'queues'             => $queues,
-            'world'              => $world,
-            'worldNetworth'      => $worldNetworth,
-            'kingdoms'           => $world->getKingdoms(),
-            'kingdomsByNetworth' => $kingdomsByNetworth,
-            'kingdomResources'   => $kingdomResources,
-            'userHasKingdom'     => $userHasKingdom,
-            'notificationCount'  => $notificationCount,
+            'user'                      => $user,
+            'kingdom'                   => $kingdom,
+            'queues'                    => $queues,
+            'world'                     => $world,
+            'worldNetworth'             => $worldNetworth,
+            'kingdoms'                  => $world->getKingdoms(),
+            'kingdomsByNetworth'        => $kingdomsByNetworth,
+            'kingdomResources'          => $kingdomResources,
+            'userHasKingdom'            => $userHasKingdom,
+            'notificationCount'         => $notificationCount,
+            'kingdomHasAvailableAttack' => $kingdomHasAvailableAttack,
+            'kingdomWinLossRecord'      => $kingdomWinLossRecord,
         ];
     }
 
