@@ -25,6 +25,8 @@ services:
         class: CronkdBundle\Service\GraphingService
         arguments:
             - "@doctrine.orm.default_entity_manager"
+            - "@cronkd.manager.kingdom"
+            - "@cronkd.manager.resource"
 
     # Managers
     cronkd.manager.world:

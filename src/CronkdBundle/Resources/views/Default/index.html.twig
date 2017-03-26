@@ -77,6 +77,12 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row-fluid clearfix">
+                            <div class="col-md-12">
+                                <canvas id="kingdomCompositionChart" width="400" height="300"></canvas>
+                                <br />
+                            </div>
+                        </div>
                     </div>
 
                     <div class="col-md-9">
@@ -166,6 +172,31 @@
 {% block js %}
     {{ parent() }}
     <script type="text/javascript">
-
+        var ctx = document.getElementById("kingdomCompositionChart");
+        $.ajax({
+            url: '{{ path('data_kingdom_composition', {'kingdom': kingdom.id}) }}',
+            method: 'POST',
+            success: function(response) {
+                if (!response.error) {
+                    var myChart = new Chart(ctx, {
+                        type: 'radar',
+                        data: response,
+                        options: {
+                            legend: {
+                                display: false
+                            },
+                            scale: {
+                                reverse: false,
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    $(ctx).hide();
+                }
+            }
+        });
     </script>
 {% endblock %}

@@ -1,19 +1,34 @@
 <?php
 namespace CronkdBundle\Service;
 
+use CronkdBundle\Entity\Kingdom;
+use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\NetWorthLog;
+use CronkdBundle\Entity\Queue;
+use CronkdBundle\Entity\Resource;
 use CronkdBundle\Entity\World;
 use CronkdBundle\Exceptions\EmptyGraphingDatasetException;
+use CronkdBundle\Manager\KingdomManager;
+use CronkdBundle\Manager\ResourceManager;
 use Doctrine\ORM\EntityManagerInterface;
 
 class GraphingService
 {
     /** @var EntityManagerInterface  */
     private $em;
+    /** @var KingdomManager  */
+    private $kingdomManager;
+    /** @var ResourceManager  */
+    private $resourceManager;
 
-    public function __construct(EntityManagerInterface $em)
-    {
-        $this->em = $em;
+    public function __construct(
+        EntityManagerInterface $em,
+        KingdomManager $kingdomManager,
+        ResourceManager $resourceManager
+    ) {
+        $this->em              = $em;
+        $this->kingdomManager  = $kingdomManager;
+        $this->resourceManager = $resourceManager;
     }
 
     /**
@@ -68,6 +83,48 @@ class GraphingService
 
         $dataStructure['labels'] = array_values($dataStructure['labels']);
         $dataStructure['datasets'] = array_values($dataStructure['datasets']);
+
+        return $dataStructure;
+    }
+
+    public function fetchKingdomCompositionData(Kingdom $kingdom)
+    {
+        $data = [
+            'Civilians'  =>
+                $this->kingdomManager->lookupResource($kingdom, Resource::CIVILIAN)->getQuantity()
+                    +
+                $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $this->resourceManager->get(Resource::CIVILIAN))
+            ,
+            'Materials'  =>
+                $this->kingdomManager->lookupResource($kingdom, Resource::MATERIAL)->getQuantity()
+                    +
+                $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $this->resourceManager->get(Resource::MATERIAL))
+            ,
+            'Hackers'    =>
+                $this->kingdomManager->lookupResource($kingdom, Resource::HACKER)->getQuantity()
+                    +
+                $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $this->resourceManager->get(Resource::HACKER))
+            ,
+            'Military'   =>
+                $this->kingdomManager->lookupResource($kingdom, Resource::MILITARY)->getQuantity()
+                    +
+                $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $this->resourceManager->get(Resource::MILITARY))
+            ,
+        ];
+
+        $dataStructure = [
+            'labels' => array_keys($data),
+            'datasets' => [[
+                'label' => $kingdom->getName(),
+                'backgroundColor' => "rgba(255,99,132,0.2)",
+                'borderColor' => "rgba(255,99,132,1)",
+                'pointBackgroundColor' => "rgba(255,99,132,1)",
+                'pointBorderColor' => "#fff",
+                'pointHoverBackgroundColor' => "#fff",
+                'pointHoverBorderColor' => "rgba(255,99,132,1)",
+                'data' => array_values($data),
+            ]]
+        ];
 
         return $dataStructure;
     }

@@ -75,7 +75,7 @@
     <script type="text/javascript">
         var ctx = document.getElementById("netWorthChart");
         $.ajax({
-            url: '{{ path('networth_data', {'world': world.id}) }}',
+            url: '{{ path('data_world_net_worth', {'world': world.id}) }}',
             method: 'POST',
             success: function(response) {
                 if (!response.error) {
@@ -88,8 +88,5 @@
                 }
             }
         });
-
-
-
     </script>
 {% endblock %}
