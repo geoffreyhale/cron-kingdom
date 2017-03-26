@@ -38,15 +38,28 @@ class AttackLogRepository extends EntityRepository
         $qb->where('al.attacker = :kingdom');
         $qb->setParameter('kingdom', $kingdom);
         $qb->groupBy('al.success');
+        $attackResults = $qb->getQuery()->getArrayResult();
+        $qb2 = $this->createQueryBuilder('al');
+        $qb2->select('al.success, COUNT(al.id) AS ResultCount');
+        $qb2->where('al.defender = :kingdom');
+        $qb2->setParameter('kingdom', $kingdom);
+        $qb2->groupBy('al.success');
+        $defendResults = $qb2->getQuery()->getArrayResult();
 
-        $results = $qb->getQuery()->getArrayResult();
         $successes = 0;
         $failures = 0;
-        foreach ($results as $result) {
+        foreach ($attackResults as $result) {
             if (true == $result['success']) {
-                $successes = $result['ResultCount'];
+                $successes += $result['ResultCount'];
             } else {
-                $failures = $result['ResultCount'];
+                $failures += $result['ResultCount'];
+            }
+        }
+        foreach ($defendResults as $result) {
+            if (true == $result['success']) {
+                $failures += $result['ResultCount'];
+            } else {
+                $successes += $result['ResultCount'];
             }
         }
 

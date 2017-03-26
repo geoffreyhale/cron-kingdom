@@ -90,12 +90,7 @@ class AttackingService
                 'Attack queued ' . $attackers->getQuantityOfUnit($resourceName) . ' ' . $resourceName
             );
 
-            $attackLog = new AttackLog();
-            $attackLog->setAttacker($kingdom);
-            $attackLog->setDefender($targetKingdom);
-            $attackLog->setTick($kingdom->getWorld()->getTick());
-            $attackLog->setSuccess($report->getResult());
-            $this->em->persist($attackLog);
+            $this->logAttackResult($report, $kingdom, $targetKingdom);
         }
         $this->em->flush();
 
@@ -196,5 +191,23 @@ class AttackingService
             Log::TYPE_ATTACK,
             "Attack lost $resourceToTransfer $resourceName"
         );
+    }
+
+    /**
+     * @param AttackReport $report
+     * @param Kingdom $kingdom
+     * @param Kingdom $targetKingdom
+     * @return AttackLog
+     */
+    private function logAttackResult(AttackReport $report, Kingdom $kingdom, Kingdom $targetKingdom)
+    {
+        $attackLog = new AttackLog();
+        $attackLog->setAttacker($kingdom);
+        $attackLog->setDefender($targetKingdom);
+        $attackLog->setTick($kingdom->getWorld()->getTick());
+        $attackLog->setSuccess($report->getResult());
+        $this->em->persist($attackLog);
+
+        return $attackLog;
     }
 }
