@@ -71,12 +71,8 @@ class GraphingService
 
             $dataStructure['labels'][$netWorthLog->getTick()] = $netWorthLog->getTick();
             $dataStructure['datasets'][$netWorthLog->getKingdom()->getId()]['label'] = $netWorthLog->getKingdom()->getName();
-            $dataStructure['datasets'][$netWorthLog->getKingdom()->getId()]['backgroundColor'] = [
-                $backgroundColors[$players[$netWorthLog->getKingdom()->getId()] % count($backgroundColors)],
-            ];
-            $dataStructure['datasets'][$netWorthLog->getKingdom()->getId()]['borderColor'] = [
-                $borderColors[$players[$netWorthLog->getKingdom()->getId()] % count($backgroundColors)],
-            ];
+            $dataStructure['datasets'][$netWorthLog->getKingdom()->getId()]['backgroundColor'] = $backgroundColors[$players[$netWorthLog->getKingdom()->getId()] % count($backgroundColors)];
+            $dataStructure['datasets'][$netWorthLog->getKingdom()->getId()]['borderColor'] = $borderColors[$players[$netWorthLog->getKingdom()->getId()] % count($backgroundColors)];
             $dataStructure['datasets'][$netWorthLog->getKingdom()->getId()]['borderWidth'] = 1;
             $dataStructure['datasets'][$netWorthLog->getKingdom()->getId()]['data'][] = $netWorthLog->getNetWorth();
         }
