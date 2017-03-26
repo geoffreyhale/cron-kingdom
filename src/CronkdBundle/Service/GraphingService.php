@@ -36,10 +36,10 @@ class GraphingService
      * @return array
      * @throws EmptyGraphingDatasetException
      */
-    public function fetchNetWorthGraphData(World $world)
+    public function fetchNetWorthGraphData(World $world, $minTick, $maxTick)
     {
         $data = $this->em->getRepository(NetWorthLog::class)
-            ->findByWorld($world, $world->getTick()-25, $world->getTick());
+            ->findByWorld($world, $minTick, $maxTick);
         if (empty($data)) {
             throw new EmptyGraphingDatasetException($world->getName());
         }

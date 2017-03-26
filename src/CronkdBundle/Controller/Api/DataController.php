@@ -26,9 +26,15 @@ class DataController extends Controller
         $worldId = $request->get('world');
         $world = $em->getRepository(World::class)->find($worldId);
 
+        $maxTick = $world->getTick();
+        $minTick = $maxTick - $request->get('ticks');
+        if ($maxTick == $minTick) {
+            $minTick = $maxTick - 25;
+        }
+
         $graphingService = $this->get('cronkd.service.graphing');
         try {
-            $netWorthData = $graphingService->fetchNetWorthGraphData($world);
+            $netWorthData = $graphingService->fetchNetWorthGraphData($world, $minTick, $maxTick);
         } catch (EmptyGraphingDatasetException $e) {
             return JsonResponse::create(['error' => 'no data']);
         }

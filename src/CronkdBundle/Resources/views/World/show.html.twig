@@ -23,8 +23,24 @@
                         </div>
                     </div>
                 </div>
+                <div class="row-fluid clearfix">
+                    <div class="col-md-12">
+                        <table class="table">
+                            <tbody>
+                            <tr>
+                                <td><h4 class="text-center"><h4>Adjust Graph Scope:</h4></td>
+                                <td><div class="text-center"><button class="btn btn-default updateGraph" data-ticks="10">Past 10 Ticks</button></div></td>
+                                <td><div class="text-center"><button class="btn btn-default updateGraph" data-ticks="25">Past 25 Ticks</button></div></td>
+                                <td><div class="text-center"><button class="btn btn-default updateGraph" data-ticks="100">Past 100 Ticks</button></div></td>
+                                <td><div class="text-center"><button class="btn btn-default updateGraph" data-ticks="all">All Time</button></div></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
                 <div class="col-md-12">
                     <canvas id="netWorthChart" width="400" height="300"></canvas>
+                    <br />
                 </div>
             </div>
 
@@ -74,19 +90,28 @@
     {{ parent() }}
     <script type="text/javascript">
         var ctx = document.getElementById("netWorthChart");
-        $.ajax({
-            url: '{{ path('data_world_net_worth', {'world': world.id}) }}',
-            method: 'POST',
-            success: function(response) {
-                if (!response.error) {
-                    var myChart = new Chart(ctx, {
-                        type: 'line',
-                        data: response,
-                    });
-                } else {
-                    $(ctx).hide();
-                }
-            }
+        renderGraph(25);
+
+        $('.updateGraph').click(function() {
+            renderGraph($(this).data('ticks'));
         });
+
+        function renderGraph(ticks) {
+            $.ajax({
+                url: '{{ path('data_world_net_worth', {'world': world.id}) }}',
+                method: 'POST',
+                data: {ticks: ticks},
+                success: function(response) {
+                    if (!response.error) {
+                        var myChart = new Chart(ctx, {
+                            type: 'line',
+                            data: response,
+                        });
+                    } else {
+                        $(ctx).hide();
+                    }
+                }
+            });
+        }
     </script>
 {% endblock %}
