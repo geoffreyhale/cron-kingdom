@@ -6,6 +6,9 @@ use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Log;
 use CronkdBundle\Entity\Resource;
 use CronkdBundle\Event\AttackEvent;
+use CronkdBundle\Manager\KingdomManager;
+use CronkdBundle\Manager\LogManager;
+use CronkdBundle\Manager\ResourceManager;
 use CronkdBundle\Model\Army;
 use CronkdBundle\Model\AttackReport;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,7 +26,7 @@ class AttackingService
     private $kingdomManager;
     /** @var ResourceManager  */
     private $resourceManager;
-    /** @var  LogManager */
+    /** @var LogManager */
     private $logManager;
 
     public function __construct(

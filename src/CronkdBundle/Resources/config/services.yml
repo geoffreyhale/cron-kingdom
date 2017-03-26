@@ -4,24 +4,6 @@ services:
         arguments:
             - "@doctrine.orm.default_entity_manager"
 
-    cronkd.manager.kingdom:
-        class: CronkdBundle\Service\KingdomManager
-        arguments:
-            - "@doctrine.orm.default_entity_manager"
-            - "@cronkd.manager.resource"
-        calls:
-            - [setLogger, ["@logger"]]
-
-    cronkd.manager.resource:
-        class: CronkdBundle\Service\ResourceManager
-        arguments:
-            - "@doctrine.orm.default_entity_manager"
-
-    cronkd.manager.log:
-        class: CronkdBundle\Service\LogManager
-        arguments:
-            - "@doctrine.orm.default_entity_manager"
-
     cronkd.service.probing:
         class: CronkdBundle\Service\ProbingService
         arguments:
@@ -39,10 +21,45 @@ services:
             - "@cronkd.manager.resource"
             - "@cronkd.manager.log"
 
+    cronkd.service.graphing:
+        class: CronkdBundle\Service\GraphingService
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
+
+    # Managers
+    cronkd.manager.world:
+        class: CronkdBundle\Manager\WorldManager
+
+    cronkd.manager.kingdom:
+        class: CronkdBundle\Manager\KingdomManager
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
+            - "@cronkd.manager.resource"
+        calls:
+            - [setLogger, ["@logger"]]
+
+    cronkd.manager.resource:
+        class: CronkdBundle\Manager\ResourceManager
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
+
+    cronkd.manager.log:
+        class: CronkdBundle\Manager\LogManager
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
+
+    cronkd.manager.net_worth:
+        class: CronkdBundle\Manager\NetWorthLogManager
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
+
+    # Listeners
     cronkd.listener.net_worth:
         class: CronkdBundle\Listener\NetWorthListener
         arguments:
+            - "@doctrine.orm.default_entity_manager"
             - "@cronkd.manager.kingdom"
+            - "@cronkd.manager.net_worth"
         tags:
             - {name: kernel.event_listener, event: event.world_tick, method: onTick}
             - {name: kernel.event_listener, event: event.create_kingdom, method: onCreateKingdom}

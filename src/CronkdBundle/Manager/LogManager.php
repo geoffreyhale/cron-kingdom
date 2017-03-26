@@ -1,5 +1,5 @@
 <?php
-namespace CronkdBundle\Service;
+namespace CronkdBundle\Manager;
 
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\Log;

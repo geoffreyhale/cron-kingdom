@@ -1,5 +1,5 @@
 <?php
-namespace CronkdBundle\Service;
+namespace CronkdBundle\Manager;
 
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
@@ -265,5 +265,19 @@ class KingdomManager
         $this->em->flush();
 
         return $kingdomResource;
+    }
+
+    /**
+     * @param World $world
+     * @return Kingdom[]
+     */
+    public function calculateKingdomsByNetWorth(World $world)
+    {
+        $kingdomsByNetWorth = $world->getKingdoms()->toArray();
+        usort($kingdomsByNetWorth, function ($item1, $item2) {
+            return $item2->getNetworth() <=> $item1->getNetworth();
+        });
+
+        return $kingdomsByNetWorth;
     }
 }
