@@ -28,11 +28,11 @@
                         <table class="table">
                             <tbody>
                             <tr>
-                                <td><h4 class="text-center"><h4>Adjust Graph Scope:</h4></td>
-                                <td><div class="text-center"><button class="btn btn-default updateGraph" data-ticks="10">Past 10 Ticks</button></div></td>
-                                <td><div class="text-center"><button class="btn btn-default updateGraph" data-ticks="25">Past 25 Ticks</button></div></td>
-                                <td><div class="text-center"><button class="btn btn-default updateGraph" data-ticks="100">Past 100 Ticks</button></div></td>
-                                <td><div class="text-center"><button class="btn btn-default updateGraph" data-ticks="all">All Time</button></div></td>
+                                <td><div class="text-center"><h4>Adjust Graph Scope:</h4></div></td>
+                                <td><div class="text-center"><button class="btn btn-default updateChart" data-ticks="10">Past 10 Ticks</button></div></td>
+                                <td><div class="text-center"><button id="defaultChartScope" class="btn btn-default updateChart" data-ticks="25">Past 25 Ticks</button></div></td>
+                                <td><div class="text-center"><button class="btn btn-default updateChart" data-ticks="100">Past 100 Ticks</button></div></td>
+                                <td><div class="text-center"><button class="btn btn-default updateChart" data-ticks="all">All Time</button></div></td>
                             </tr>
                             </tbody>
                         </table>
@@ -90,28 +90,64 @@
     {{ parent() }}
     <script type="text/javascript">
         var ctx = document.getElementById("netWorthChart");
-        renderGraph(25);
+        var chartData = [];
+        var chart = null;
 
-        $('.updateGraph').click(function() {
-            renderGraph($(this).data('ticks'));
+        $(document).ready(function() {
+            $('.updateChart').click(function() {
+                var ticks = 25;
+                if ($(this).data('ticks')) {
+                    ticks = $(this).data('ticks');
+                }
+
+                fetchChartData(ticks);
+            });
+
+            $('#defaultChartScope').trigger('click');
         });
 
-        function renderGraph(ticks) {
+
+        function fetchChartData(ticks) {
             $.ajax({
                 url: '{{ path('data_world_net_worth', {'world': world.id}) }}',
                 method: 'POST',
                 data: {ticks: ticks},
-                success: function(response) {
+                success: function (response) {
+                    chartData = [];
                     if (!response.error) {
-                        var myChart = new Chart(ctx, {
-                            type: 'line',
-                            data: response,
-                        });
-                    } else {
-                        $(ctx).hide();
+                        chartData = response;
+                        renderChart();
                     }
                 }
             });
+        }
+
+        function renderChart() {
+            if (chartData == []) {
+                $(ctx).hide();
+                return null;
+            }
+
+            var displayLabels = 100 > chartData.labels.length;
+            var options = {
+                scales: {
+                    xAxes: [{
+                        display: displayLabels,
+                    }]
+                }
+            };
+
+            if (chart != null) {
+                chart.config.data = chartData;
+                chart.options.scales.xAxes[0].display = 100 > chartData.labels.length;
+                chart.update();
+            } else {
+                chart = new Chart(ctx, {
+                    type: 'line',
+                    data: chartData,
+                    options: options
+                });
+            }
         }
     </script>
 {% endblock %}

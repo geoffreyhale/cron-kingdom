@@ -26,10 +26,11 @@ class DataController extends Controller
         $worldId = $request->get('world');
         $world = $em->getRepository(World::class)->find($worldId);
 
-        $maxTick = $world->getTick();
-        $minTick = $maxTick - $request->get('ticks');
-        if ($maxTick == $minTick) {
-            $minTick = $maxTick - 25;
+        $minTick   = 0;
+        $maxTick   = $world->getTick();
+        $pastTicks = empty($request->get('ticks')) ? 25 : $request->get('ticks');
+        if ('all' != $pastTicks) {
+            $minTick = $maxTick - $pastTicks;
         }
 
         $graphingService = $this->get('cronkd.service.graphing');
