@@ -26,14 +26,13 @@
                     <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="{{ path('homepage') }}">CronKD</a>
-                <ul class="nav navbar-nav">
-                    <li><a href="{{ path('help') }}" class="navbar-link">Help</a></li>
-                    <li><a href="https://cronkd.slack.com/" class="navbar-link" target="_blank">Chat <i class="fa fa-external-link" aria-hidden="true"></i></a></li>
-                </ul>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="cronkd-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li><a href="{{ path('help') }}" class="navbar-link">Help</a></li>
+                </ul>
                 <ul class="nav navbar-nav navbar-right">
                     {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
                         <li class="navbar-text hidden-sm hidden-xs">{{ app.user.username }}</li>

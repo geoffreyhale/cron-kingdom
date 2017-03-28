@@ -167,6 +167,7 @@ class AttackingService
     {
         $this->awardResource($report, $kingdom, $targetKingdom, Resource::CIVILIAN, 20);
         $this->awardResource($report, $kingdom, $targetKingdom, Resource::MATERIAL, 50);
+        $this->awardResource($report, $kingdom, $targetKingdom, Resource::HOUSING, 1);
     }
 
     /**
