@@ -21,17 +21,17 @@ Go into the Symfony root directory and run the following command:
     
 Run the following commands on the database:
 
-    INSERT INTO `resource` (`id`, `name`, `value`, `can_be_probed`)
+    INSERT INTO `resource` (`id`, `name`, `value`, `can_be_probed`, `created_at`, `updated_at`)
     VALUES
-    	(1, 'Civilian', 1, 1),
-    	(2, 'Material', 1, 1),
-    	(3, 'Housing', 2, 0),
-    	(4, 'Military', 2, 1),
-    	(5, 'Hacker', 3, 1);
-
-    INSERT INTO `world` (`id`, `tick`, `name`, `active`)
+        (1, 'Civilian', 1, 1, NOW(), NOW()),
+        (2, 'Material', 1, 1, NOW(), NOW()),
+        (3, 'Housing', 2, 0, NOW(), NOW()),
+        (4, 'Military', 2, 1, NOW(), NOW()),
+        (5, 'Hacker', 3, 1, NOW(), NOW());
+    
+    INSERT INTO `world` (`id`, `tick`, `name`, `active`, `created_at`, `updated_at`)
     VALUES
-    	(1, 1, 'Earth', 1);
+        (1, 1, 'Earth', 1, NOW(), NOW());
 
 #### Create your account
 You can now create your account and kingdom and start playing!
