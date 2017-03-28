@@ -10,7 +10,7 @@
                 <p><strong>Max {{ resource|capitalize }} to {{ verb }}: {{ maxQuantity }}</strong></p>
             </div>
             <hr />
-            {{ form_start(form, {'attr': {'class': 'form form-horizontal'}}) }}
+            {{ form_start(form, {'attr': {'class': 'form-inline'}}) }}
             <div class="form-group">
             {{ form_row(form.quantity, {'attr': {'class': 'form-control', 'max': maxQuantity}}) }}
             </div>

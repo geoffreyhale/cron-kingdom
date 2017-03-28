@@ -5,7 +5,10 @@
         <div class="col-sm-12">
             <h3>Attempt Attack</h3>
             <hr />
-            {{ form_start(form, {'attr': {'class': 'form form-horizontal'}}) }}
+            <div class="alert alert-info">
+                <p>Send Military to attack another Kingdom.  Use caution: you may only attack once per Tick!</p>
+            </div>
+            {{ form_start(form, {'attr': {'class': 'form-inline'}}) }}
             <div class="form-group">
                 {{ form_row(form.target, {'attr': {'class': 'form-control'}}) }}
             </div>
