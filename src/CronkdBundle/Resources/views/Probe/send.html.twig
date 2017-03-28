@@ -5,7 +5,10 @@
         <div class="col-sm-12">
             <h3>Attempt Hack</h3>
             <hr />
-            {{ form_start(form, {'attr': {'class': 'form form-horizontal'}}) }}
+            <div class="alert alert-info">
+                <p>Send Hackers to spy on another Kingdom.  If you're successful, you will gain information about the current status of their resources.  If you fail, they will know you tried to hack them!  The more Hackers you send, the more likely it is you will succeed.</p>
+            </div>
+            {{ form_start(form, {'attr': {'class': 'form-inline'}}) }}
             <div class="form-group">
                 {{ form_row(form.target, {'attr': {'class': 'form-control'}}) }}
             </div>

@@ -1,6 +1,7 @@
 <?php
 namespace CronkdBundle\Service;
 
+use CronkdBundle\Entity\AttackLog;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Log;
@@ -76,7 +77,7 @@ class AttackingService
 
         foreach ($attackers->getAllTypesOfUnits() as $resourceName) {
             $resource = $this->resourceManager->get($resourceName);
-            $queue = $this->queuePopulator->lump($kingdom, $resource, 8, $attackers->getQuantityOfUnit($resourceName));
+            $queue = $this->queuePopulator->build($kingdom, $resource, 8, $attackers->getQuantityOfUnit($resourceName));
             $report->addQueue($resource, $queue);
 
             $kingdomResource = $this->em->getRepository(KingdomResource::class)->findOneBy([
@@ -91,6 +92,8 @@ class AttackingService
                 Log::TYPE_ATTACK,
                 'Attack queued ' . $attackers->getQuantityOfUnit($resourceName) . ' ' . $resourceName
             );
+
+            $this->logAttackResult($report, $kingdom, $targetKingdom);
         }
         $this->em->flush();
 
@@ -191,5 +194,23 @@ class AttackingService
             Log::TYPE_ATTACK,
             "Attack lost $resourceToTransfer $resourceName"
         );
+    }
+
+    /**
+     * @param AttackReport $report
+     * @param Kingdom $kingdom
+     * @param Kingdom $targetKingdom
+     * @return AttackLog
+     */
+    private function logAttackResult(AttackReport $report, Kingdom $kingdom, Kingdom $targetKingdom)
+    {
+        $attackLog = new AttackLog();
+        $attackLog->setAttacker($kingdom);
+        $attackLog->setDefender($targetKingdom);
+        $attackLog->setTick($kingdom->getWorld()->getTick());
+        $attackLog->setSuccess($report->getResult());
+        $this->em->persist($attackLog);
+
+        return $attackLog;
     }
 }
