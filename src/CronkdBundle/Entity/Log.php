@@ -107,7 +107,7 @@ class Log extends BaseEntity
      *
      * @param integer $tick
      *
-     * @return Queue
+     * @return Log
      */
     public function setTick($tick)
     {
@@ -204,7 +204,7 @@ class Log extends BaseEntity
      *
      * @param Kingdom $kingdom
      *
-     * @return Queue
+     * @return Log
      */
     public function setKingdom(Kingdom $kingdom = null)
     {

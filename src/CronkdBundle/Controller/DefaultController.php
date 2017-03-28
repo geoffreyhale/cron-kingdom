@@ -1,6 +1,7 @@
 <?php
 namespace CronkdBundle\Controller;
 
+use CronkdBundle\Entity\AttackLog;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Log;
@@ -20,21 +21,13 @@ class DefaultController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $user = $this->getUser();
+        $worldManager = $this->get('cronkd.manager.world');
+        $kingdomManager = $this->get('cronkd.manager.kingdom');
 
         $world = $em->getRepository(World::class)->findOneBy(['active' => true]);
         if (!$world) {
             throw $this->createNotFoundException('No active world found!');
         }
-
-        $worldNetworth = 0;
-        foreach ($world->getKingdoms() as $kingdom) {
-            $worldNetworth += $kingdom->getNetworth();
-        }
-
-        $kingdomsByNetworth = $world->getKingdoms()->toArray();
-        usort($kingdomsByNetworth, function ($item1, $item2) {
-            return $item2->getNetworth() <=> $item1->getNetworth();
-        });
 
         $kingdom = $em->getRepository(Kingdom::class)->findOneByUserWorld($user, $world);
         $userHasKingdom = $em->getRepository(Kingdom::class)->userHasKingdom($user, $world);
@@ -46,19 +39,23 @@ class DefaultController extends Controller
             $kingdomResources = $em->getRepository(KingdomResource::class)->findByKingdom($kingdom);
             $queues = $this->get('cronkd.manager.kingdom')->getResourceQueues($kingdom);
             $notificationCount = $em->getRepository(Log::class)->findNotificationCount($kingdom);
+            $kingdomHasAvailableAttack = $em->getRepository(AttackLog::class)->hasAvailableAttack($kingdom);
+            $kingdomWinLossRecord = $em->getRepository(AttackLog::class)->getWinLossRecord($kingdom);
         }
 
         return [
-            'user'               => $user,
-            'kingdom'            => $kingdom,
-            'queues'             => $queues,
-            'world'              => $world,
-            'worldNetworth'      => $worldNetworth,
-            'kingdoms'           => $world->getKingdoms(),
-            'kingdomsByNetworth' => $kingdomsByNetworth,
-            'kingdomResources'   => $kingdomResources,
-            'userHasKingdom'     => $userHasKingdom,
-            'notificationCount'  => $notificationCount,
+            'user'                      => $user,
+            'kingdom'                   => $kingdom,
+            'queues'                    => $queues,
+            'world'                     => $world,
+            'worldNetworth'             => $worldNetworth,
+            'kingdoms'                  => $world->getKingdoms(),
+            'kingdomsByNetworth'        => $kingdomsByNetworth,
+            'kingdomResources'          => $kingdomResources,
+            'userHasKingdom'            => $userHasKingdom,
+            'notificationCount'         => $notificationCount,
+            'kingdomHasAvailableAttack' => $kingdomHasAvailableAttack,
+            'kingdomWinLossRecord'      => $kingdomWinLossRecord,
         ];
     }
 

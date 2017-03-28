@@ -1,7 +1,6 @@
 <?php
 namespace CronkdBundle\Command;
 
-use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Log;
 use CronkdBundle\Entity\Queue;
 use CronkdBundle\Entity\Resource;
