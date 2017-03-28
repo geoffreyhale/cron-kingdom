@@ -4,6 +4,7 @@ namespace CronkdBundle\Controller\Api;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Resource;
+use CronkdBundle\Service\AttackingService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,6 +21,7 @@ class AttackController extends ApiController
      */
     public function attackAction(Request $request)
     {
+        /** @var AttackingService $attackingService */
         $attackingService = $this->get('cronkd.service.attacking');
         $kingdomId = (int) $request->get('kingdomId');
         $targetKingdomId = (int) $request->get('targetKingdomId');
