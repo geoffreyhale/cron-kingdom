@@ -1,5 +1,5 @@
 <?php
-namespace CronkdBundle\Service;
+namespace CronkdBundle\Manager;
 
 use CronkdBundle\Entity\Resource;
 use CronkdBundle\Exceptions\InvalidResourceException;

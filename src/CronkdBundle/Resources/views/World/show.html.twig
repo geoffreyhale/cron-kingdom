@@ -1,0 +1,153 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+        <div class="row-fluid">
+
+            <!-- World -->
+            <div class="col-md-9">
+                <div class="row-fluid clearfix" style="font-size: 24px;">
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <table class="table">
+                                <tbody>
+                                <tr>
+                                    <td title="World"><i class="fa fa-globe"></i> <strong>{{ world.name }}</strong></td>
+                                    <td title="Tick"><i class="fa fa-clock-o"></i> {{ world.tick }}</td>
+                                    <td title="Kingdoms"><i class="fa fa-fort-awesome"></i> {{ world.kingdoms|length }}</td>
+                                    {% if worldNetworth is defined %}
+                                        <td title="Net Worth"><i class="fa fa-line-chart"></i> {{ worldNetworth|number_format }}</td>
+                                    {% endif %}
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fluid clearfix">
+                    <div class="col-md-12">
+                        <table class="table">
+                            <tbody>
+                            <tr>
+                                <td><div class="text-center"><h4>Adjust Graph Scope:</h4></div></td>
+                                <td><div class="text-center"><button class="btn btn-default updateChart" data-ticks="10">Past 10 Ticks</button></div></td>
+                                <td><div class="text-center"><button id="defaultChartScope" class="btn btn-default updateChart" data-ticks="25">Past 25 Ticks</button></div></td>
+                                <td><div class="text-center"><button class="btn btn-default updateChart" data-ticks="100">Past 100 Ticks</button></div></td>
+                                <td><div class="text-center"><button class="btn btn-default updateChart" data-ticks="all">All Time</button></div></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <canvas id="netWorthChart" width="400" height="300"></canvas>
+                    <br />
+                </div>
+            </div>
+
+            <!-- World -->
+            <div class="col-md-3">
+                <div class="row-fluid clearfix">
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><i class="fa fa-trophy"></i> Scores</h3>
+                            </div>
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th title="Rank"><i class="fa fa-hashtag"></i></th>
+                                    <th title="Kingdom"><i class="fa fa-fort-awesome"></i></th>
+                                    <th title="Liquidity"><i class="fa fa-tint"></i></th>
+                                    <th title="Networth"><i class="fa fa-line-chart"></i></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for kingdomByNetworth in kingdomsByNetworth %}
+                                    <tr>
+                                        {% if kingdomByNetworth.id == kingdom.id %}
+                                            <td><strong>{{ loop.index }}</strong></td>
+                                            <td><strong>{{ kingdomByNetworth.name }}</strong></td>
+                                            <td><strong>{{ kingdomByNetworth.liquidity|number_format }}</strong></td>
+                                            <td><strong>{{ kingdomByNetworth.netWorth|number_format }}</strong></td>
+                                        {% else %}
+                                            <td>{{ loop.index }}</td>
+                                            <td>{{ kingdomByNetworth.name }}</td>
+                                            <td>{{ kingdomByNetworth.liquidity|number_format }}</td>
+                                            <td>{{ kingdomByNetworth.netWorth|number_format }}</td>
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}
+
+{% block js %}
+    {{ parent() }}
+    <script type="text/javascript">
+        var ctx = document.getElementById("netWorthChart");
+        var chartData = [];
+        var chart = null;
+
+        $(document).ready(function() {
+            $('.updateChart').click(function() {
+                var ticks = 25;
+                if ($(this).data('ticks')) {
+                    ticks = $(this).data('ticks');
+                }
+
+                fetchChartData(ticks);
+            });
+
+            $('#defaultChartScope').trigger('click');
+        });
+
+
+        function fetchChartData(ticks) {
+            $.ajax({
+                url: '{{ path('data_world_net_worth', {'world': world.id}) }}',
+                method: 'POST',
+                data: {ticks: ticks},
+                success: function (response) {
+                    chartData = [];
+                    if (!response.error) {
+                        chartData = response;
+                        renderChart();
+                    }
+                }
+            });
+        }
+
+        function renderChart() {
+            if (chartData == []) {
+                $(ctx).hide();
+                return null;
+            }
+
+            var displayLabels = 100 > chartData.labels.length;
+            var options = {
+                scales: {
+                    xAxes: [{
+                        display: displayLabels,
+                    }]
+                }
+            };
+
+            if (chart != null) {
+                chart.config.data = chartData;
+                chart.options.scales.xAxes[0].display = 100 > chartData.labels.length;
+                chart.update();
+            } else {
+                chart = new Chart(ctx, {
+                    type: 'line',
+                    data: chartData,
+                    options: options
+                });
+            }
+        }
+    </script>
+{% endblock %}

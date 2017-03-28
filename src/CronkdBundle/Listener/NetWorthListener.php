@@ -1,27 +1,42 @@
 <?php
 namespace CronkdBundle\Listener;
 
+use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Event\ActionEvent;
 use CronkdBundle\Event\AttackEvent;
 use CronkdBundle\Event\CreateKingdomEvent;
 use CronkdBundle\Event\ProbeEvent;
 use CronkdBundle\Event\WorldTickEvent;
-use CronkdBundle\Service\KingdomManager;
+use CronkdBundle\Manager\KingdomManager;
+use CronkdBundle\Manager\NetWorthLogManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 class NetWorthListener
 {
+    /** @var EntityManagerInterface  */
+    private $em;
     /** @var KingdomManager */
     private $kingdomManager;
+    /** @var NetWorthLogManager  */
+    private $netWorthLogManager;
 
-    public function __construct(KingdomManager $kingdomManager)
+    public function __construct(
+        EntityManagerInterface $em,
+        KingdomManager $kingdomManager,
+        NetWorthLogManager $netWorthLogManager
+    )
     {
-        $this->kingdomManager = $kingdomManager;
+        $this->em                 = $em;
+        $this->kingdomManager     = $kingdomManager;
+        $this->netWorthLogManager = $netWorthLogManager;
     }
 
     public function onTick(WorldTickEvent $event)
     {
+        /** @var Kingdom $kingdom */
         foreach ($event->world->getKingdoms() as $kingdom) {
             $this->kingdomManager->calculateNetWorth($kingdom);
+            $this->netWorthLogManager->logNetWorth($kingdom);
         }
     }
 

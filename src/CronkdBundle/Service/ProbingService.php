@@ -5,6 +5,7 @@ use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Log;
 use CronkdBundle\Event\ProbeEvent;
+use CronkdBundle\Manager\LogManager;
 use CronkdBundle\Model\ProbeReport;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
