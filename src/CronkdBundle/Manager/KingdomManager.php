@@ -48,9 +48,9 @@ class KingdomManager
     public function createKingdom(Kingdom $kingdom, World $world, User $user)
     {
         $initialResources = [
-            Resource::CIVILIAN => 10,
-            Resource::MATERIAL => 0,
-            Resource::HOUSING  => 10,
+            Resource::CIVILIAN => 16,
+            Resource::MATERIAL => 8,
+            Resource::HOUSING  => 24,
             Resource::MILITARY => 0,
             Resource::HACKER   => 0,
         ];
