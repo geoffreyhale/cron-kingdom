@@ -35,6 +35,8 @@ class DefaultController extends Controller
         $kingdomResources = [];
         $queues = [];
         $notificationCount = 0;
+        $kingdomHasAvailableAttack = false;
+        $kingdomWinLossRecord = null;
         if ($kingdom) {
             $kingdomResources = $em->getRepository(KingdomResource::class)->findByKingdom($kingdom);
             $queues = $this->get('cronkd.manager.kingdom')->getResourceQueues($kingdom);

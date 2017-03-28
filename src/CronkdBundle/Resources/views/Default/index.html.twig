@@ -176,6 +176,7 @@
 
 {% block js %}
     {{ parent() }}
+    {% if kingdom is not null %}
     <script type="text/javascript">
         var ctx = document.getElementById("kingdomCompositionChart");
         $.ajax({
@@ -204,4 +205,5 @@
             }
         });
     </script>
+    {% endif %}
 {% endblock %}
