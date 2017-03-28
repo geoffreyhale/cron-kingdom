@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="world")
  * @ORM\Entity(repositoryClass="CronkdBundle\Repository\WorldRepository")
  */
-class World
+class World extends BaseEntity
 {
     /**
      * @var int
