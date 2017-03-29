@@ -2,10 +2,7 @@
 namespace CronkdBundle\Controller;
 
 use CronkdBundle\Entity\Kingdom;
-use CronkdBundle\Entity\KingdomResource;
-use CronkdBundle\Entity\Resource;
 use CronkdBundle\Entity\World;
-use CronkdBundle\Event\CreateKingdomEvent;
 use CronkdBundle\Form\KingdomType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -42,10 +39,7 @@ class KingdomController extends Controller
         $form->handleRequest($request);
         if ($form->isValid()) {
             $kingdomManager = $this->get('cronkd.manager.kingdom');
-            $kingdom = $kingdomManager->createKingdom($kingdom, $world, $currentUser);
-
-            $event = new CreateKingdomEvent($kingdom);
-            $this->get('event_dispatcher')->dispatch('event.create_kingdom', $event);
+            $kingdomManager->createKingdom($kingdom, $world, $currentUser);
 
             return $this->redirectToRoute('homepage');
         }

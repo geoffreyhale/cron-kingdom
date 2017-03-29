@@ -9,13 +9,29 @@ class ResourceManager
 {
     /** @var EntityManagerInterface */
     private $em;
+    /** @var array  */
+    private $cronKdSettings;
     /** @var  array */
     private $cachedResources;
 
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(EntityManagerInterface $em, array $cronKdSettings)
     {
         $this->em              = $em;
+        $this->cronKdSettings  = $cronKdSettings;
         $this->cachedResources = [];
+    }
+
+    /**
+     * @return array
+     */
+    public function getKingdomStartingResources()
+    {
+        $initialResources = [];
+        foreach ($this->cronKdSettings['resources'] as $resourceName => $resourceData) {
+            $initialResources[$resourceName] = $resourceData['initial'];
+        }
+
+        return $initialResources;
     }
 
     /**

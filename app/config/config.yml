@@ -72,10 +72,23 @@ fos_user:
     firewall_name: main
     user_class: CronkdBundle\Entity\User
     from_email:
-        address: get@cron.kd
-        sender_name: get.cron.kd
+        address: get@cronkd.com
+        sender_name: get@cronkd.com
 
 stof_doctrine_extensions:
     orm:
         cronkd:
             timestampable: true
+
+cronkd:
+    resources:
+        Civilian:
+            initial: 16
+        Material:
+            initial: 8
+        Housing:
+            initial: 24
+        Military:
+            initial: 0
+        Hacker:
+            initial: 0

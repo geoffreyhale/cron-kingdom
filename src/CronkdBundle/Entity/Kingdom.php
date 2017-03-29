@@ -13,6 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="kingdom")
  * @ORM\Entity(repositoryClass="CronkdBundle\Repository\KingdomRepository")
  * @UniqueEntity("name")
+ * @ORM\HasLifecycleCallbacks()
  *
  * @Jms\ExclusionPolicy("all")
  */
@@ -40,7 +41,7 @@ class Kingdom extends BaseEntity
     /**
      * @var int
      *
-     * @ORM\Column(name="net_worth", type="integer")
+     * @ORM\Column(name="net_worth", type="integer", options={"default": 0})
      *
      * @Jms\Expose()
      */
@@ -49,7 +50,7 @@ class Kingdom extends BaseEntity
     /**
      * @var int
      *
-     * @ORM\Column(name="liquidity", type="integer")
+     * @ORM\Column(name="liquidity", type="integer", options={"default": 0})
      *
      * @Jms\Expose()
      */
@@ -127,6 +128,20 @@ class Kingdom extends BaseEntity
     }
 
     /**
+     * @ORM\PrePersist()
+     *
+     * @return Kingdom
+     */
+    public function setDefaultNetWorth()
+    {
+        if (null === $this->getNetWorth()) {
+            $this->setNetWorth(0);
+        }
+
+        return $this;
+    }
+
+    /**
      * Set netWorth
      *
      * @param integer $netWorth
@@ -148,6 +163,20 @@ class Kingdom extends BaseEntity
     public function getNetWorth()
     {
         return $this->netWorth;
+    }
+
+    /**
+     * @ORM\PrePersist()
+     *
+     * @return Kingdom
+     */
+    public function setDefaultLiquidity()
+    {
+        if (null === $this->getLiquidity()) {
+            $this->setLiquidity(0);
+        }
+
+        return $this;
     }
 
     /**
