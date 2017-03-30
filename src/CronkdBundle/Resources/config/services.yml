@@ -37,6 +37,7 @@ services:
         arguments:
             - "@doctrine.orm.default_entity_manager"
             - "@cronkd.manager.resource"
+            - "@event_dispatcher"
         calls:
             - [setLogger, ["@logger"]]
 
@@ -44,6 +45,7 @@ services:
         class: CronkdBundle\Manager\ResourceManager
         arguments:
             - "@doctrine.orm.default_entity_manager"
+            - "%cronkd.settings%"
 
     cronkd.manager.log:
         class: CronkdBundle\Manager\LogManager
@@ -75,3 +77,12 @@ services:
             - "@doctrine.orm.default_entity_manager"
         tags:
             - {name: kernel.event_listener, event: event.view_log, method: onViewLogPage}
+
+    cronkd.listener.resource:
+        class: CronkdBundle\Listener\ResourceListener
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
+            - "@cronkd.manager.kingdom"
+            - "@cronkd.manager.resource"
+        tags:
+            - {name: kernel.event_listener, event: event.create_kingdom, method: onCreateKingdom, priority: 100}

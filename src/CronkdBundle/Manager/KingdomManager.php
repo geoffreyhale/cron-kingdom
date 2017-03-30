@@ -7,10 +7,12 @@ use CronkdBundle\Entity\Queue;
 use CronkdBundle\Entity\Resource;
 use CronkdBundle\Entity\User;
 use CronkdBundle\Entity\World;
+use CronkdBundle\Event\CreateKingdomEvent;
 use CronkdBundle\Exceptions\InvalidResourceException;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class KingdomManager
 {
@@ -18,13 +20,19 @@ class KingdomManager
     private $em;
     /** @var ResourceManager  */
     private $resourceManager;
+    /** @var EventDispatcherInterface  */
+    private $eventDispatcher;
     /** @var NullLogger  */
     private $logger;
 
-    public function __construct(EntityManagerInterface $em, ResourceManager $resourceManager)
-    {
+    public function __construct(
+        EntityManagerInterface $em,
+        ResourceManager $resourceManager,
+        EventDispatcherInterface $eventDispatcher
+    ) {
         $this->em              = $em;
         $this->resourceManager = $resourceManager;
+        $this->eventDispatcher = $eventDispatcher;
         $this->logger          = new NullLogger();
     }
 
@@ -47,31 +55,14 @@ class KingdomManager
      */
     public function createKingdom(Kingdom $kingdom, World $world, User $user)
     {
-        $initialResources = [
-            Resource::CIVILIAN => 16,
-            Resource::MATERIAL => 8,
-            Resource::HOUSING  => 24,
-            Resource::MILITARY => 0,
-            Resource::HACKER   => 0,
-        ];
-        foreach ($initialResources as $resourceName => $count) {
-            $resource = $this->resourceManager->get($resourceName);
-            if (!$resource) {
-                $this->createNotFoundException($resourceName . ' resource does not exist!');
-            }
-
-            $kingdomResource = $this->findOrCreateResource($kingdom, $resource);
-            $kingdomResource->setQuantity($count);
-            $kingdom->addResource($kingdomResource);
-        }
-
         $kingdom->setWorld($world);
         $kingdom->setUser($user);
-        $kingdom->setLiquidity(0);
-        $kingdom->setNetWorth(0);
 
         $this->em->persist($kingdom);
         $this->em->flush();
+
+        $event = new CreateKingdomEvent($kingdom);
+        $this->eventDispatcher->dispatch('event.create_kingdom', $event);
 
         return $kingdom;
     }
