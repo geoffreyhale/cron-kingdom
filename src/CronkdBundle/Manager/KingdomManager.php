@@ -108,26 +108,36 @@ class KingdomManager
 
     /**
      * @param Kingdom $kingdom
-     * @return bool
+     * @return integer
      */
-    public function isAtMaxPopulation(Kingdom $kingdom)
+    public function getPopulationCapacity(Kingdom $kingdom)
+    {
+        $activeHousingResources = $this->em->getRepository(KingdomResource::class)
+            ->findSumOfSpecificResources($kingdom, [
+                    $this->resourceManager->get(Resource::HOUSING)->getId()
+                ]
+            );
+
+        return $activeHousingResources;
+    }
+
+    /**
+     * @param Kingdom $kingdom
+     * @return integer
+     */
+    public function getPopulation(Kingdom $kingdom)
     {
         $civilianResource = $this->resourceManager->get(Resource::CIVILIAN);
         $militaryResource = $this->resourceManager->get(Resource::MILITARY);
         $hackerResource   = $this->resourceManager->get(Resource::HACKER);
 
         $activePopulationResources = $this->em->getRepository(KingdomResource::class)
-                ->findSumOfSpecificResources($kingdom, [
+            ->findSumOfSpecificResources($kingdom, [
                     $civilianResource->getId(),
                     $militaryResource->getId(),
                     $hackerResource->getId()
-            ]
-        );
-        $activeHousingResources = $this->em->getRepository(KingdomResource::class)
-                ->findSumOfSpecificResources($kingdom, [
-                    $this->resourceManager->get(Resource::HOUSING)->getId()
-            ]
-        );
+                ]
+            );
 
         $inactiveCivilianResources = $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $civilianResource);
         $inactiveMilitaryResources = $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $militaryResource);
@@ -138,6 +148,30 @@ class KingdomManager
             $inactiveMilitaryResources +
             $inactiveHackerResources
         ;
+
+        return $totalPopulation;
+    }
+
+    /**
+     * @param Kingdom $kingdom
+     * @return integer
+     */
+    public function getPopulationCapacityRemaining(Kingdom $kingdom)
+    {
+        $totalPopulation = $this->getPopulation($kingdom);
+        $activeHousingResources = $this->getPopulationCapacity($kingdom);
+
+        return $activeHousingResources - $totalPopulation;
+    }
+
+    /**
+     * @param Kingdom $kingdom
+     * @return bool
+     */
+    public function isAtMaxPopulation(Kingdom $kingdom)
+    {
+        $totalPopulation = $this->getPopulation($kingdom);
+        $activeHousingResources = $this->getPopulationCapacity($kingdom);
 
         return $totalPopulation >= $activeHousingResources;
     }
