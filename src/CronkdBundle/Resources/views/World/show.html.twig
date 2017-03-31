@@ -3,7 +3,13 @@
 {% block content %}
         <div class="row-fluid">
 
-            <!-- World -->
+            <div class="col-sm-12">
+                <ol class="breadcrumb">
+                    <li><a href="{{ path('world_index') }}">Worlds</a></li>
+                    <li class="active">{{ world.name }}</li>
+                </ol>
+            </div>
+
             <div class="col-md-9">
                 <div class="row-fluid clearfix" style="font-size: 24px;">
                     <div class="col-md-12">
@@ -64,7 +70,7 @@
                                 <tbody>
                                 {% for kingdomByNetworth in kingdomsByNetworth %}
                                     <tr>
-                                        {% if kingdomByNetworth.id == kingdom.id %}
+                                        {% if kingdom is not null and kingdomByNetworth.id == kingdom.id %}
                                             <td><strong>{{ loop.index }}</strong></td>
                                             <td><strong>{{ kingdomByNetworth.name }}</strong></td>
                                             <td><strong>{{ kingdomByNetworth.liquidity|number_format }}</strong></td>

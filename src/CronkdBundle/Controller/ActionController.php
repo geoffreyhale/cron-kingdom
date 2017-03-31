@@ -10,13 +10,12 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route("/action")
  */
-class ActionController extends Controller
+class ActionController extends CronkdController
 {
     /**
      * @Route("/{id}/produce", name="action_produce_materials")
@@ -26,10 +25,8 @@ class ActionController extends Controller
      */
     public function produceMaterialAction(Request $request, Kingdom $kingdom)
     {
-        $currentUser = $this->getUser();
-        if ($currentUser != $kingdom->getUser()) {
-            throw $this->createAccessDeniedException('Kingdom is not yours!');
-        }
+        $this->validateWorldIsActive($kingdom);
+        $this->validateUserOwnsKingdom($kingdom);
 
         $resourceManager = $this->get('cronkd.manager.resource');
         $em = $this->getDoctrine()->getManager();
@@ -81,10 +78,8 @@ class ActionController extends Controller
      */
     public function buildHousingAction(Request $request, Kingdom $kingdom)
     {
-        $currentUser = $this->getUser();
-        if ($currentUser != $kingdom->getUser()) {
-            throw $this->createAccessDeniedException('Kingdom is not yours!');
-        }
+        $this->validateWorldIsActive($kingdom);
+        $this->validateUserOwnsKingdom($kingdom);
 
         $action = new Action();
         $form = $this->createForm(ActionType::class, $action, [
@@ -140,10 +135,8 @@ class ActionController extends Controller
      */
     public function trainMilitaryAction(Request $request, Kingdom $kingdom)
     {
-        $currentUser = $this->getUser();
-        if ($currentUser != $kingdom->getUser()) {
-            throw $this->createAccessDeniedException('Kingdom is not yours!');
-        }
+        $this->validateWorldIsActive($kingdom);
+        $this->validateUserOwnsKingdom($kingdom);
 
         $action = new Action();
         $form = $this->createForm(ActionType::class, $action, [
@@ -199,10 +192,8 @@ class ActionController extends Controller
      */
     public function trainHackerAction(Request $request, Kingdom $kingdom)
     {
-        $currentUser = $this->getUser();
-        if ($currentUser != $kingdom->getUser()) {
-            throw $this->createAccessDeniedException('Kingdom is not yours!');
-        }
+        $this->validateWorldIsActive($kingdom);
+        $this->validateUserOwnsKingdom($kingdom);
 
         $action = new Action();
         $form = $this->createForm(ActionType::class, $action, [

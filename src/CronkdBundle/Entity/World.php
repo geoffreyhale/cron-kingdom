@@ -43,6 +43,20 @@ class World extends BaseEntity
     private $active;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="start_time", type="datetime", nullable=true)
+     */
+    private $startTime;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="end_time", type="datetime", nullable=true)
+     */
+    private $endTime;
+
+    /**
      * @var Kingdom[]
      *
      * @ORM\OneToMany(targetEntity="Kingdom", mappedBy="world")
@@ -152,6 +166,54 @@ class World extends BaseEntity
     }
 
     /**
+     * Set startTime
+     *
+     * @param \DateTime $startTime
+     *
+     * @return World
+     */
+    public function setStartTime($startTime)
+    {
+        $this->startTime = $startTime;
+
+        return $this;
+    }
+
+    /**
+     * Get startTime
+     *
+     * @return \DateTime
+     */
+    public function getStartTime()
+    {
+        return $this->startTime;
+    }
+
+    /**
+     * Set endTime
+     *
+     * @param \DateTime $endTime
+     *
+     * @return World
+     */
+    public function setEndTime($endTime)
+    {
+        $this->endTime = $endTime;
+
+        return $this;
+    }
+
+    /**
+     * Get endTime
+     *
+     * @return \DateTime
+     */
+    public function getEndTime()
+    {
+        return $this->endTime;
+    }
+
+    /**
      * Add kingdom
      *
      * @param Kingdom $kingdom
@@ -183,5 +245,36 @@ class World extends BaseEntity
     public function getKingdoms()
     {
         return $this->kingdoms;
+    }
+
+    /**
+     * @return bool
+     */
+    public function shouldBeActivated()
+    {
+        $now = new \DateTime();
+        if (!$this->getActive() &&
+            $now > $this->getStartTime() &&
+            $now < $this->getEndTime()
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function shouldBeDeactivated()
+    {
+        $now = new \DateTime();
+        if ($this->getActive() &&
+            $now > $this->getEndTime()
+        ) {
+            return true;
+        }
+
+        return false;
     }
 }

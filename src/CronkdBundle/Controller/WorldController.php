@@ -18,8 +18,21 @@ use Symfony\Component\HttpFoundation\Request;
 class WorldController extends Controller
 {
     /**
+     * @Route("/", name="world_index")
+     * @Template()
+     */
+    public function indexAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        return [
+            'activeWorlds'   => $em->getRepository(World::class)->findByActive(true),
+            'inactiveWorlds' => $em->getRepository(World::class)->findByActive(false),
+        ];
+    }
+
+    /**
      * @Route("/{id}", name="world_show")
-     * @Method({"GET"})
      * @ParamConverter(name="id", class="CronkdBundle:World")
      * @Template()
      */
@@ -30,7 +43,10 @@ class WorldController extends Controller
         $worldManager = $this->get('cronkd.manager.world');
         $kingdomManager = $this->get('cronkd.manager.kingdom');
 
-        $kingdom = $em->getRepository(Kingdom::class)->findOneByUserWorld($user, $world);
+        $kingdom = null;
+        if (null !== $user) {
+            $kingdom = $em->getRepository(Kingdom::class)->findOneByUserWorld($user, $world);
+        }
 
         return [
             'world'              => $world,

@@ -27,7 +27,9 @@ class CronkdTickCommand extends ContainerAwareCommand
         $kingdomManager = $this->getContainer()->get('cronkd.manager.kingdom');
         $logger = $this->getContainer()->get('logger');
         $logManager = $this->getContainer()->get('cronkd.manager.log');
-        $worlds = $em->getRepository(World::class)->findAll();
+
+        $this->calculateWorldStatuses();
+        $worlds = $em->getRepository(World::class)->findByActive(true);
 
         $logger->info('Starting tick command');
 
@@ -82,5 +84,26 @@ class CronkdTickCommand extends ContainerAwareCommand
         }
 
         $logger->info('Completed command');
+    }
+
+    protected function calculateWorldStatuses()
+    {
+        $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
+        $logger = $this->getContainer()->get('logger');
+
+        $worlds = $em->getRepository(World::class)->findAll();
+        /** @var World $world */
+        foreach ($worlds as $world) {
+            if ($world->shouldBeActivated()) {
+                $logger->info('Activating ' . $world->getName());
+                $world->setActive(true);
+            } elseif ($world->shouldBeDeactivated()) {
+                $logger->info('Deactivating ' . $world->getName());
+                $world->setActive(false);
+            }
+            $em->persist($world);
+        }
+
+        $em->flush();
     }
 }
