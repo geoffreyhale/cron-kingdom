@@ -285,4 +285,14 @@ class World extends BaseEntity
     {
         return !$this->getActive() && time() < strtotime($this->startTime->format('Y-m-d h:i A'));
     }
+
+    /**
+     * @return bool
+     */
+    public function isEndingSoon()
+    {
+        $soon = (new \DateTime)->add(new \DateInterval('P3D'));
+
+        return $soon > $this->getEndTime();
+    }
 }
