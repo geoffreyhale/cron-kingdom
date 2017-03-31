@@ -3,12 +3,13 @@
 {% block content %}
     <div class="row-fluid">
         <div class="col-sm-12">
-            <h3>Hack Results</h3>
             <ol class="breadcrumb">
                 <li><a href="{{ path('homepage') }}">Dashboard</a></li>
                 <li><a href="{{ path('probe_send', {'id': kingdom.id}) }}">Probe Attempt</a></li>
                 <li class="active">Probe Results</li>
             </ol>
+
+            <h3>Hack Results</h3>
             {% if results.error is defined and results.error is not null %}
                 <div class="alert alert-danger">
                     {{ results.error }}

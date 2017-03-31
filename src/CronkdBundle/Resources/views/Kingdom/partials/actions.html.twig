@@ -6,9 +6,9 @@
 </div>
 <hr>
 <div class="btn-group-vertical" role="group">
-    <a href="{{ path('probe_send', {id: kingdom.id}) }}" class="btn btn-warning">Hack</a>
+    <a href="{{ path('probe_send', {id: kingdom.id}) }}" class="btn btn-warning">Attempt Hack</a>
     {% if kingdomHasAvailableAttack %}
-        <a href="{{ path('attack', {id: kingdom.id}) }}" class="btn btn-danger">Attack</a>
+        <a href="{{ path('attack', {id: kingdom.id}) }}" class="btn btn-danger">Plan Attack</a>
     {% endif %}
 </div>
 <hr />
