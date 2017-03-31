@@ -3,19 +3,28 @@
 {% block content %}
     <div class="row-fluid">
         <div class="col-md-12">
+
             <div class="col-md-8 col-md-offset-2">
-            {% if activeWorlds|length > 0 %}
-                <h2>Active Worlds</h2>
-                {% include '@Cronkd/World/partials/worldTable.html.twig' with {'worlds': activeWorlds} %}
-            {% endif %}
+                {% if activeWorlds|length > 0 %}
+                    <h2>Active Worlds</h2>
+                    {% include '@Cronkd/World/partials/worldTable.html.twig' with {'worlds': activeWorlds} %}
+                {% endif %}
             </div>
 
             <div class="col-md-8 col-md-offset-2">
-            {% if inactiveWorlds|length > 0 %}
-                <h2>Inactive Worlds</h2>
-                {% include '@Cronkd/World/partials/worldTable.html.twig' with {'worlds': inactiveWorlds} %}
-            {% endif %}
+                {% if upcomingWorlds|length > 0 %}
+                    <h2>Upcoming Worlds</h2>
+                    {% include '@Cronkd/World/partials/worldTable.html.twig' with {'worlds': upcomingWorlds} %}
+                {% endif %}
             </div>
+
+            <div class="col-md-8 col-md-offset-2">
+                {% if inactiveWorlds|length > 0 %}
+                    <h2>Inactive Worlds</h2>
+                    {% include '@Cronkd/World/partials/worldTable.html.twig' with {'worlds': inactiveWorlds} %}
+                {% endif %}
+            </div>
+
         </div>
     </div>
 {% endblock %}

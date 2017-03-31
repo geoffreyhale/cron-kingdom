@@ -277,4 +277,12 @@ class World extends BaseEntity
 
         return false;
     }
+
+    /**
+     * @return bool
+     */
+    public function isUpcoming()
+    {
+        return !$this->getActive() && time() < strtotime($this->startTime->format('Y-m-d h:i A'));
+    }
 }

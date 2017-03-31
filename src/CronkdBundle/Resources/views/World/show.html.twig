@@ -1,15 +1,16 @@
 {% extends '::base.html.twig' %}
 
 {% block content %}
-        <div class="row-fluid">
+    <div class="row-fluid">
 
-            <div class="col-sm-12">
-                <ol class="breadcrumb">
-                    <li><a href="{{ path('world_index') }}">Worlds</a></li>
-                    <li class="active">{{ world.name }}</li>
-                </ol>
-            </div>
+        <div class="col-sm-12">
+            <ol class="breadcrumb">
+                <li><a href="{{ path('world_index') }}">Worlds</a></li>
+                <li class="active">{{ world.name }}</li>
+            </ol>
+        </div>
 
+        {% if world.active %}
             <div class="col-md-9">
                 <div class="row-fluid clearfix" style="font-size: 24px;">
                     <div class="col-md-12">
@@ -89,7 +90,22 @@
                     </div>
                 </div>
             </div>
-        </div>
+        {% elseif world.isUpcoming() and kingdom is null %}
+            <div class="col-sm-12">
+                <p class="text-center">
+                    Sign up early for this kingdom!
+                    <br /><br />
+                    <a href="{{ path('kingdom_create', {'id': world.id}) }}" class="btn btn-lg btn-primary">Create Kingdom</a>
+                </p>
+            </div>
+        {% elseif world.isUpcoming() %}
+            <div class="col-sm-12">
+                <div class="alert alert-info">
+                    {{ world.name }} will begin at {{ world.startTime|date('Y-m-d h:i A') }}.  You are already signed up!
+                </div>
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}
 
 {% block js %}

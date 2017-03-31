@@ -42,7 +42,9 @@ class NetWorthListener
 
     public function onCreateKingdom(CreateKingdomEvent $event)
     {
-        $this->kingdomManager->calculateNetWorth($event->kingdom);
+        if ($event->kingdom->getWorld()->getActive()) {
+            $this->kingdomManager->calculateNetWorth($event->kingdom);
+        }
     }
 
     public function onAction(ActionEvent $event)

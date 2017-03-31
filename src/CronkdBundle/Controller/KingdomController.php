@@ -16,14 +16,18 @@ use Symfony\Component\HttpFoundation\Request;
 class KingdomController extends Controller
 {
     /**
-     * @Route("/create", name="kingdom_create")
+     * @Route("/create/{id}", name="kingdom_create")
      * @Method({"GET", "POST"})
      * @Template()
      */
-    public function createAction(Request $request)
+    public function createAction(Request $request, $id = null)
     {
         $em = $this->getDoctrine()->getManager();
-        $world = $em->getRepository(World::class)->findOneBy(['active' => true]);
+        if (null !== $id) {
+            $world = $em->getRepository(World::class)->find($id);
+        } else {
+            $world = $em->getRepository(World::class)->findOneBy(['active' => true]);
+        }
         if (!$world) {
             throw $this->createNotFoundException('No active world found!');
         }

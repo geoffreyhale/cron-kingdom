@@ -34,6 +34,10 @@ class ResourceListener
      */
     public function onCreateKingdom(CreateKingdomEvent $event)
     {
+        if (!$event->kingdom->getWorld()->getActive()) {
+            return;
+        }
+
         $kingdom = $event->kingdom;
 
         $initialResources = $this->resourceManager->getKingdomStartingResources();

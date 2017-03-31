@@ -26,8 +26,9 @@ class WorldController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         return [
-            'activeWorlds'   => $em->getRepository(World::class)->findByActive(true),
-            'inactiveWorlds' => $em->getRepository(World::class)->findByActive(false),
+            'upcomingWorlds' => $em->getRepository(World::class)->findUpcomingWorlds(),
+            'activeWorlds'   => $em->getRepository(World::class)->findActiveWorlds(),
+            'inactiveWorlds' => $em->getRepository(World::class)->findInactiveWorlds(),
         ];
     }
 
