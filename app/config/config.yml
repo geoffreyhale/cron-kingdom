@@ -87,8 +87,8 @@ cronkd:
         Material:
             initial: 8
         Housing:
-            initial: 24
+            initial: 25
         Military:
-            initial: 0
+            initial: 8
         Hacker:
-            initial: 0
+            initial: 1
