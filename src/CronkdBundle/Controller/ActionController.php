@@ -150,8 +150,10 @@ class ActionController extends Controller
             'sourceKingdom' => $kingdom,
         ]);
 
-        $resourceManager = $this->get('cronkd.manager.resource');
         $em = $this->getDoctrine()->getManager();
+        $kingdomManager = $this->get('cronkd.manager.kingdom');
+        $resourceManager = $this->get('cronkd.manager.resource');
+
         $availableCivilians = $em->getRepository(KingdomResource::class)->findOneBy([
             'kingdom'  => $kingdom,
             'resource' => $resourceManager->get(Resource::CIVILIAN),
@@ -177,10 +179,12 @@ class ActionController extends Controller
             return $this->redirectToRoute('homepage');
         }
 
+        $maxQuantity = $kingdomManager->isAtMaxPopulation($kingdom) ? 0 : $availableCivilians->getQuantity();
+
         return [
             'actionDescription'   => 'Training of Military converts 1 Civilian each and is spread over 8 Ticks.',
             'form'                => $form->createView(),
-            'maxQuantity'         => $availableCivilians->getQuantity(),
+            'maxQuantity'         => $maxQuantity,
             'resource'            => 'military',
             'resourceDescription' => 'Military is required for attack and defense.',
             'verb'                => 'train',
@@ -205,8 +209,10 @@ class ActionController extends Controller
             'sourceKingdom' => $kingdom,
         ]);
 
-        $resourceManager = $this->get('cronkd.manager.resource');
         $em = $this->getDoctrine()->getManager();
+        $kingdomManager = $this->get('cronkd.manager.kingdom');
+        $resourceManager = $this->get('cronkd.manager.resource');
+
         $availableMilitary = $em->getRepository(KingdomResource::class)->findOneBy([
             'kingdom'  => $kingdom,
             'resource' => $resourceManager->get(Resource::MILITARY),
@@ -232,10 +238,12 @@ class ActionController extends Controller
             return $this->redirectToRoute('homepage');
         }
 
+        $maxQuantity = $kingdomManager->isAtMaxPopulation($kingdom) ? 0 : $availableMilitary->getQuantity();
+
         return [
             'actionDescription'   => 'Training of Hackers converts 1 Military each and is spread over 8 Ticks.',
             'form'                => $form->createView(),
-            'maxQuantity'         => $availableMilitary->getQuantity(),
+            'maxQuantity'         => $maxQuantity,
             'resource'            => 'hacker',
             'resourceDescription' => 'Hackers can get information about other kingdoms by Hacking.',
             'verb'                => 'train',
