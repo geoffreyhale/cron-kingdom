@@ -3,12 +3,12 @@
 {% block content %}
     <div class="row-fluid">
         <div class="col-sm-12">
-            <h3>Attack Results</h3>
             <ol class="breadcrumb">
                 <li><a href="{{ path('homepage') }}">Dashboard</a></li>
-                <li><a href="{{ path('attack', {'id': kingdom.id}) }}">Attack Attempt</a></li>
+                <li><a href="{{ path('attack', {'id': kingdom.id}) }}">Plan Attack</a></li>
                 <li class="active">Attack Results</li>
             </ol>
+            <h3>Attack Results</h3>
             {% if results.error is defined and results.error is not null %}
             <div class="alert alert-danger">
                 {{ results.error }}
