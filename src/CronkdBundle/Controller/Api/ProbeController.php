@@ -62,7 +62,7 @@ class ProbeController extends ApiController
         $report = $probingService->probe($kingdom, $targetKingdom, $quantity);
 
         $queuePopulator = $this->get('cronkd.queue_populator');
-        $hackerQueues = $queuePopulator->build($kingdom, $hackerResource, 1, $quantity);
+        $hackerQueues = $queuePopulator->build($kingdom, $hackerResource, 8, $quantity);
 
         $availableHackers->removeQuantity($quantity);
         $em->persist($availableHackers);
