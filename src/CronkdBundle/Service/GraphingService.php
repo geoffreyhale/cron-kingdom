@@ -93,6 +93,10 @@ class GraphingService
         return $dataStructure;
     }
 
+    /**
+     * @param Kingdom $kingdom
+     * @return array
+     */
     public function fetchKingdomCompositionData(Kingdom $kingdom)
     {
         $data = [
@@ -133,5 +137,19 @@ class GraphingService
         ];
 
         return $dataStructure;
+    }
+
+    /**
+     * @param Kingdom $kingdom
+     * @return array
+     */
+    public function fetchPopulationCapacityGraphData(Kingdom $kingdom)
+    {
+        $capacity = $this->kingdomManager->getPopulationCapacity($kingdom);
+        $population = $this->kingdomManager->getPopulation($kingdom);
+
+        return [
+            'population' => round($population / $capacity * 100, 0),
+        ];
     }
 }
