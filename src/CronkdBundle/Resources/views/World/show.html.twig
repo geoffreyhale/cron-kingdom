@@ -5,12 +5,12 @@
 
         <div class="col-sm-12">
             <ol class="breadcrumb">
-                <li><a href="{{ path('world_index') }}">Worlds</a></li>
+                <li>{% if world.active %}<a href="{{ path('homepage') }}">Dashboard</a>{% else %}<a href="{{ path('world_index') }}">Worlds</a>{% endif %}</li>
                 <li class="active">{{ world.name }}</li>
             </ol>
         </div>
 
-        {% if world.active %}
+        {% if not world.isUpcoming() %}
             <div class="col-md-9">
                 <div class="row-fluid clearfix" style="font-size: 24px;">
                     <div class="col-md-12">
@@ -90,7 +90,8 @@
                     </div>
                 </div>
             </div>
-        {% elseif world.isUpcoming() and kingdom is null %}
+        {% else %}
+            {% if kingdom is null %}
             <div class="col-sm-12">
                 <p class="text-center">
                     Sign up early for this kingdom!
@@ -98,12 +99,13 @@
                     <a href="{{ path('kingdom_create', {'id': world.id}) }}" class="btn btn-lg btn-primary">Create Kingdom</a>
                 </p>
             </div>
-        {% elseif world.isUpcoming() %}
+            {% else %}
             <div class="col-sm-12">
                 <div class="alert alert-info">
-                    {{ world.name }} will begin at {{ world.startTime|date('Y-m-d h:i A') }}.  You are already signed up!
+                    Thanks for signing up, {{ kingdom.name }}!  {{ world.name }} will begin at {{ world.startTime|date('Y-m-d h:i A') }}.
                 </div>
             </div>
+            {% endif %}
         {% endif %}
     </div>
 {% endblock %}

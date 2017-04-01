@@ -5,6 +5,7 @@ use CronkdBundle\Entity\Log;
 use CronkdBundle\Entity\Queue;
 use CronkdBundle\Entity\Resource;
 use CronkdBundle\Entity\World;
+use CronkdBundle\Event\ActivateWorldEvent;
 use CronkdBundle\Event\WorldTickEvent;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -90,6 +91,7 @@ class CronkdTickCommand extends ContainerAwareCommand
     {
         $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
         $logger = $this->getContainer()->get('logger');
+        $eventDispatcher = $this->getContainer()->get('event_dispatcher');
 
         $worlds = $em->getRepository(World::class)->findAll();
         /** @var World $world */
@@ -97,6 +99,9 @@ class CronkdTickCommand extends ContainerAwareCommand
             if ($world->shouldBeActivated()) {
                 $logger->info('Activating ' . $world->getName());
                 $world->setActive(true);
+
+                $event = new ActivateWorldEvent($world);
+                $eventDispatcher->dispatch('event.activate_world', $event);
             } elseif ($world->shouldBeDeactivated()) {
                 $logger->info('Deactivating ' . $world->getName());
                 $world->setActive(false);

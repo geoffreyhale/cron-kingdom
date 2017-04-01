@@ -86,3 +86,11 @@ services:
             - "@cronkd.manager.resource"
         tags:
             - {name: kernel.event_listener, event: event.create_kingdom, method: onCreateKingdom, priority: 100}
+
+    cronkd.listener.world:
+        class: CronkdBundle\Listener\WorldListener
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
+            - "@event_dispatcher"
+        tags:
+            - {name: kernel.event_listener, event: event.activate_world, method: onActivateWorld}

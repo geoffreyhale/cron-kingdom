@@ -293,6 +293,6 @@ class World extends BaseEntity
     {
         $soon = (new \DateTime)->add(new \DateInterval('P3D'));
 
-        return $soon > $this->getEndTime();
+        return $this->getActive() && $soon > $this->getEndTime();
     }
 }
