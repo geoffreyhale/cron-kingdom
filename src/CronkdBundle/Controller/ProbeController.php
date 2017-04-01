@@ -3,6 +3,7 @@ namespace CronkdBundle\Controller;
 
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Form\ProbeAttemptType;
+use CronkdBundle\Form\ProbeRetryType;
 use CronkdBundle\Model\ProbeAttempt;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -41,9 +42,16 @@ class ProbeController extends CronkdController
 
             $results = $response->getContent();
             $results = json_decode($results, true);
+
+            $form = $this->createForm(ProbeRetryType::class, [
+                'target'   => $probeAttempt->getTarget()->getId(),
+                'quantity' => $probeAttempt->getQuantity(),
+            ]);
             return $this->render('@Cronkd/Probe/results.html.twig', [
-                'results' => $results,
-                'kingdom' => $kingdom,
+                'results'     => $results,
+                'kingdom'     => $kingdom,
+                'probeReport' => $probeAttempt,
+                'form'        => $form->createView(),
             ]);
         }
 

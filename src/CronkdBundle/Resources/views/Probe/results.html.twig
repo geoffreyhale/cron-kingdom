@@ -29,7 +29,15 @@
     </div>
     <div class="row-fluid">
         <div class="col-sm-12">
-            <a href="{{ path('probe_send', {'id': kingdom.id}) }}" class="btn btn-primary">Hack Again</a>
+            {% if not results.data.report.result %}
+                {{ form_start(form) }}
+                {{ form_row(form.target) }}
+                {{ form_row(form.quantity) }}
+                {{ form_row(form.submit, {'attr': {'class': 'btn btn-primary'}}) }}
+                {{ form_end(form) }}
+            {% else %}
+                <a href="{{ path('probe_send', {'id': kingdom.id}) }}" class="btn btn-primary">Attack Another Kingdom</a>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
