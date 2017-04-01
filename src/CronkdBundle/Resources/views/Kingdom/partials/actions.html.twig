@@ -1,0 +1,17 @@
+<div class="btn-group-vertical" role="group">
+    <a href="{{ path('action_produce_materials', {id: kingdom.id}) }}" class="btn btn-info">Produce Materials</a>
+    <a href="{{ path('action_build_housing', {id: kingdom.id}) }}" class="btn btn-info">Build Housing</a>
+    <a href="{{ path('action_train_military', {id: kingdom.id}) }}" class="btn btn-info">Train Military</a>
+    <a href="{{ path('action_train_hacker', {id: kingdom.id}) }}" class="btn btn-info">Train Hackers</a>
+</div>
+<hr>
+<div class="btn-group-vertical" role="group">
+    <a href="{{ path('probe_send', {id: kingdom.id}) }}" class="btn btn-warning">Attempt Hack</a>
+    {% if kingdomHasAvailableAttack %}
+        <a href="{{ path('attack', {id: kingdom.id}) }}" class="btn btn-danger">Plan Attack</a>
+    {% endif %}
+</div>
+<hr />
+<div class="btn-group-vertical" role="group">
+    <a href="{{ path('log_index', {id: kingdom.id}) }}" class="btn btn-default">Event Log{% if notificationCount > 0 %} <span class="badge">{{ notificationCount }}</span>{% endif %}</a>
+</div>

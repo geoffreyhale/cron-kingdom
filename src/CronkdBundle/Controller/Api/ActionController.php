@@ -171,6 +171,10 @@ class ActionController extends ApiController
             return $this->createErrorJsonResponse('Not enough civilians to complete action!');
         }
 
+        if ($kingdomManager->isAtMaxPopulation($kingdom)) {
+            return $this->createErrorJsonResponse('Cannot train military while housing capacity is insufficient!');
+        }
+
         $queuePopulator = $this->get('cronkd.queue_populator');
         $militaryQueues = $queuePopulator->build($kingdom, $militaryResource, 8, $quantity);
 
@@ -223,6 +227,10 @@ class ActionController extends ApiController
         $availableMilitary = $kingdomManager->lookupResource($kingdom, Resource::MILITARY);
         if (!$availableMilitary || $quantity > $availableMilitary->getQuantity()) {
             return $this->createErrorJsonResponse('Not enough military to complete action!');
+        }
+
+        if ($kingdomManager->isAtMaxPopulation($kingdom)) {
+            return $this->createErrorJsonResponse('Cannot train hackers while housing capacity is insufficient!');
         }
 
         $queuePopulator = $this->get('cronkd.queue_populator');

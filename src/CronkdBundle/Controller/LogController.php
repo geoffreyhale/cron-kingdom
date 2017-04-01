@@ -3,17 +3,15 @@ namespace CronkdBundle\Controller;
 
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\Log;
-use CronkdBundle\Entity\World;
 use CronkdBundle\Event\ViewLogEvent;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 /**
  * @Route("/log")
  */
-class LogController extends Controller
+class LogController extends CronkdController
 {
     /**
      * @Route("/{id}", name="log_index")
@@ -22,10 +20,8 @@ class LogController extends Controller
      */
     public function indexAction(Kingdom $kingdom)
     {
-        $currentUser = $this->getUser();
-        if ($kingdom->getUser() != $currentUser) {
-            throw $this->createAccessDeniedException('Cannot view other Kingdom logs!');
-        }
+        $this->validateWorldIsActive($kingdom);
+        $this->validateUserOwnsKingdom($kingdom);
         
         $em = $this->getDoctrine()->getManager();
         $logs = $em->getRepository(Log::class)->findBy([

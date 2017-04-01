@@ -2,10 +2,7 @@
 namespace CronkdBundle\Controller;
 
 use CronkdBundle\Entity\Kingdom;
-use CronkdBundle\Entity\KingdomResource;
-use CronkdBundle\Entity\Resource;
 use CronkdBundle\Entity\World;
-use CronkdBundle\Event\CreateKingdomEvent;
 use CronkdBundle\Form\KingdomType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -19,14 +16,18 @@ use Symfony\Component\HttpFoundation\Request;
 class KingdomController extends Controller
 {
     /**
-     * @Route("/create", name="kingdom_create")
+     * @Route("/create/{id}", name="kingdom_create")
      * @Method({"GET", "POST"})
      * @Template()
      */
-    public function createAction(Request $request)
+    public function createAction(Request $request, $id = null)
     {
         $em = $this->getDoctrine()->getManager();
-        $world = $em->getRepository(World::class)->findOneBy(['active' => true]);
+        if (null !== $id) {
+            $world = $em->getRepository(World::class)->find($id);
+        } else {
+            $world = $em->getRepository(World::class)->findOneBy(['active' => true]);
+        }
         if (!$world) {
             throw $this->createNotFoundException('No active world found!');
         }
@@ -42,12 +43,13 @@ class KingdomController extends Controller
         $form->handleRequest($request);
         if ($form->isValid()) {
             $kingdomManager = $this->get('cronkd.manager.kingdom');
-            $kingdom = $kingdomManager->createKingdom($kingdom, $world, $currentUser);
+            $kingdomManager->createKingdom($kingdom, $world, $currentUser);
 
-            $event = new CreateKingdomEvent($kingdom);
-            $this->get('event_dispatcher')->dispatch('event.create_kingdom', $event);
+            if ($world->getActive()) {
+                return $this->redirectToRoute('homepage');
+            }
 
-            return $this->redirectToRoute('homepage');
+            return $this->redirectToRoute('world_show', ['id' => $world->getId()]);
         }
 
         return [

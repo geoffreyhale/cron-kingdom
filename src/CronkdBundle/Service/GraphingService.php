@@ -74,7 +74,17 @@ class GraphingService
             $dataStructure['datasets'][$netWorthLog->getKingdom()->getId()]['backgroundColor'] = $backgroundColors[$players[$netWorthLog->getKingdom()->getId()] % count($backgroundColors)];
             $dataStructure['datasets'][$netWorthLog->getKingdom()->getId()]['borderColor'] = $borderColors[$players[$netWorthLog->getKingdom()->getId()] % count($backgroundColors)];
             $dataStructure['datasets'][$netWorthLog->getKingdom()->getId()]['borderWidth'] = 1;
-            $dataStructure['datasets'][$netWorthLog->getKingdom()->getId()]['data'][] = $netWorthLog->getNetWorth();
+            $dataStructure['datasets'][$netWorthLog->getKingdom()->getId()]['data'][$netWorthLog->getTick()] = $netWorthLog->getNetWorth();
+        }
+
+        // Zero fill values that don't exist
+        foreach ($dataStructure['datasets'] as $kingdomId => $dataSet) {
+            foreach ($dataStructure['labels'] as $tick) {
+                if (!isset($dataStructure['datasets'][$kingdomId]['data'][$tick])) {
+                    $dataStructure['datasets'][$kingdomId]['data'][$tick] = 0;
+                }
+            }
+            sort($dataStructure['datasets'][$kingdomId]['data']);
         }
 
         $dataStructure['labels'] = array_values($dataStructure['labels']);

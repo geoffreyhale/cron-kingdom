@@ -5,7 +5,6 @@ use CronkdBundle\Entity\AttackLog;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Log;
-use CronkdBundle\Entity\User;
 use CronkdBundle\Entity\World;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -26,7 +25,7 @@ class DefaultController extends Controller
 
         $world = $em->getRepository(World::class)->findOneBy(['active' => true]);
         if (!$world) {
-            throw $this->createNotFoundException('No active world found!');
+            return $this->redirect($this->generateUrl('world_index'));
         }
 
         $kingdom = $em->getRepository(Kingdom::class)->findOneByUserWorld($user, $world);

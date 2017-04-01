@@ -8,13 +8,12 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route("/probe")
  */
-class ProbeController extends Controller
+class ProbeController extends CronkdController
 {
     /**
      * @Route("/{id}/send", name="probe_send")
@@ -24,10 +23,8 @@ class ProbeController extends Controller
      */
     public function sendAction(Request $request, Kingdom $kingdom)
     {
-        $currentUser = $this->getUser();
-        if ($currentUser != $kingdom->getUser()) {
-            throw $this->createAccessDeniedException('Kingdom is not yours!');
-        }
+        $this->validateWorldIsActive($kingdom);
+        $this->validateUserOwnsKingdom($kingdom);
 
         $probeAttempt = new ProbeAttempt();
         $form = $this->createForm(ProbeAttemptType::class, $probeAttempt, [

@@ -25,9 +25,9 @@ Run the following commands on the database:
     VALUES
         (1, 'Civilian', 1, 1, NOW(), NOW()),
         (2, 'Material', 1, 1, NOW(), NOW()),
-        (3, 'Housing', 2, 0, NOW(), NOW()),
+        (3, 'Housing', 2, 1, NOW(), NOW()),
         (4, 'Military', 2, 1, NOW(), NOW()),
-        (5, 'Hacker', 3, 1, NOW(), NOW());
+        (5, 'Hacker', 3, 0, NOW(), NOW());
     
     INSERT INTO `world` (`id`, `tick`, `name`, `active`, `created_at`, `updated_at`)
     VALUES

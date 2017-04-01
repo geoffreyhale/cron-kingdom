@@ -10,13 +10,12 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route("/action")
  */
-class ActionController extends Controller
+class ActionController extends CronkdController
 {
     /**
      * @Route("/{id}/produce", name="action_produce_materials")
@@ -26,10 +25,8 @@ class ActionController extends Controller
      */
     public function produceMaterialAction(Request $request, Kingdom $kingdom)
     {
-        $currentUser = $this->getUser();
-        if ($currentUser != $kingdom->getUser()) {
-            throw $this->createAccessDeniedException('Kingdom is not yours!');
-        }
+        $this->validateWorldIsActive($kingdom);
+        $this->validateUserOwnsKingdom($kingdom);
 
         $resourceManager = $this->get('cronkd.manager.resource');
         $em = $this->getDoctrine()->getManager();
@@ -81,10 +78,8 @@ class ActionController extends Controller
      */
     public function buildHousingAction(Request $request, Kingdom $kingdom)
     {
-        $currentUser = $this->getUser();
-        if ($currentUser != $kingdom->getUser()) {
-            throw $this->createAccessDeniedException('Kingdom is not yours!');
-        }
+        $this->validateWorldIsActive($kingdom);
+        $this->validateUserOwnsKingdom($kingdom);
 
         $action = new Action();
         $form = $this->createForm(ActionType::class, $action, [
@@ -140,18 +135,18 @@ class ActionController extends Controller
      */
     public function trainMilitaryAction(Request $request, Kingdom $kingdom)
     {
-        $currentUser = $this->getUser();
-        if ($currentUser != $kingdom->getUser()) {
-            throw $this->createAccessDeniedException('Kingdom is not yours!');
-        }
+        $this->validateWorldIsActive($kingdom);
+        $this->validateUserOwnsKingdom($kingdom);
 
         $action = new Action();
         $form = $this->createForm(ActionType::class, $action, [
             'sourceKingdom' => $kingdom,
         ]);
 
-        $resourceManager = $this->get('cronkd.manager.resource');
         $em = $this->getDoctrine()->getManager();
+        $kingdomManager = $this->get('cronkd.manager.kingdom');
+        $resourceManager = $this->get('cronkd.manager.resource');
+
         $availableCivilians = $em->getRepository(KingdomResource::class)->findOneBy([
             'kingdom'  => $kingdom,
             'resource' => $resourceManager->get(Resource::CIVILIAN),
@@ -177,10 +172,12 @@ class ActionController extends Controller
             return $this->redirectToRoute('homepage');
         }
 
+        $maxQuantity = $kingdomManager->isAtMaxPopulation($kingdom) ? 0 : $availableCivilians->getQuantity();
+
         return [
             'actionDescription'   => 'Training of Military converts 1 Civilian each and is spread over 8 Ticks.',
             'form'                => $form->createView(),
-            'maxQuantity'         => $availableCivilians->getQuantity(),
+            'maxQuantity'         => $maxQuantity,
             'resource'            => 'military',
             'resourceDescription' => 'Military is required for attack and defense.',
             'verb'                => 'train',
@@ -195,18 +192,18 @@ class ActionController extends Controller
      */
     public function trainHackerAction(Request $request, Kingdom $kingdom)
     {
-        $currentUser = $this->getUser();
-        if ($currentUser != $kingdom->getUser()) {
-            throw $this->createAccessDeniedException('Kingdom is not yours!');
-        }
+        $this->validateWorldIsActive($kingdom);
+        $this->validateUserOwnsKingdom($kingdom);
 
         $action = new Action();
         $form = $this->createForm(ActionType::class, $action, [
             'sourceKingdom' => $kingdom,
         ]);
 
-        $resourceManager = $this->get('cronkd.manager.resource');
         $em = $this->getDoctrine()->getManager();
+        $kingdomManager = $this->get('cronkd.manager.kingdom');
+        $resourceManager = $this->get('cronkd.manager.resource');
+
         $availableMilitary = $em->getRepository(KingdomResource::class)->findOneBy([
             'kingdom'  => $kingdom,
             'resource' => $resourceManager->get(Resource::MILITARY),
@@ -232,10 +229,12 @@ class ActionController extends Controller
             return $this->redirectToRoute('homepage');
         }
 
+        $maxQuantity = $kingdomManager->isAtMaxPopulation($kingdom) ? 0 : $availableMilitary->getQuantity();
+
         return [
             'actionDescription'   => 'Training of Hackers converts 1 Military each and is spread over 8 Ticks.',
             'form'                => $form->createView(),
-            'maxQuantity'         => $availableMilitary->getQuantity(),
+            'maxQuantity'         => $maxQuantity,
             'resource'            => 'hacker',
             'resourceDescription' => 'Hackers can get information about other kingdoms by Hacking.',
             'verb'                => 'train',

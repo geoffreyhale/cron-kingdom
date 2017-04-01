@@ -2,6 +2,7 @@
 namespace CronkdBundle\Repository;
 
 use CronkdBundle\Entity\Kingdom;
+use Doctrine\ORM\NoResultException;
 
 /**
  * KingdomResourceRepository
@@ -67,6 +68,10 @@ class KingdomResourceRepository extends \Doctrine\ORM\EntityRepository
         $qb->setParameter('kingdom', $kingdom);
         $qb->groupBy('kr.kingdom');
 
-        return (int) $qb->getQuery()->getSingleScalarResult();
+        try {
+            return (int) $qb->getQuery()->getSingleScalarResult();
+        } catch (NoResultException $e) {
+            return 0;
+        }
     }
 }

@@ -15,15 +15,16 @@
                 <div class="row-fluid clearfix" style="font-size: 24px;">
                     <div class="col-md-12">
                         <div class="panel panel-default">
-                            <table class="table table-bordered">
+                            <table class="table">
                                 <tbody>
                                 <tr>
                                     <td title="Kingdom">
                                         {% if notificationCount %}
-                                            <div class="pull-right">
+                                            <div class="pull-left">
                                                 <a href="{{ path('log_index', {'id': kingdom.id}) }}"><span class="label label-danger">{{ notificationCount }}</span></a>
                                             </div>
                                         {% endif %}
+                                        &nbsp;
                                         <i class="fa fa-fort-awesome"></i> <strong>{{ kingdom.name }}</strong>
                                     </td>
                                 </tr>
@@ -51,7 +52,7 @@
                     </div>
                     <div class="col-md-9">
                         <div class="panel panel-default">
-                            {% include 'CronkdBundle:Kingdom:resources.html.twig' %}
+                            {% include 'CronkdBundle:Kingdom:partials/resources.html.twig' %}
                         </div>
                     </div>
                 </div>
@@ -63,29 +64,12 @@
                                 <h3 class="panel-title"><i class="fa fa-shield"></i> Actions</h3>
                             </div>
                             <div class="panel-body" style="text-align: center;">
-                                <div class="btn-group-vertical" role="group">
-                                    <a href="{{ path('action_produce_materials', {id: kingdom.id}) }}" class="btn btn-info">Produce Materials</a>
-                                    <a href="{{ path('action_build_housing', {id: kingdom.id}) }}" class="btn btn-info">Build Housing</a>
-                                    <a href="{{ path('action_train_military', {id: kingdom.id}) }}" class="btn btn-info">Train Military</a>
-                                    <a href="{{ path('action_train_hacker', {id: kingdom.id}) }}" class="btn btn-info">Train Hackers</a>
-                                </div>
-                                <hr>
-                                <div class="btn-group-vertical" role="group">
-                                    <a href="{{ path('probe_send', {id: kingdom.id}) }}" class="btn btn-warning">Hack</a>
-                                    {% if kingdomHasAvailableAttack %}
-                                    <a href="{{ path('attack', {id: kingdom.id}) }}" class="btn btn-danger">Attack</a>
-                                    {% endif %}
-                                </div>
-                                <hr />
-                                <div class="btn-group-vertical" role="group">
-                                    <a href="{{ path('log_index', {id: kingdom.id}) }}" class="btn btn-default">Event Log{% if notificationCount > 0 %} <span class="badge">{{ notificationCount }}</span>{% endif %}</a>
-                                </div>
+                                {% include 'CronkdBundle:Kingdom:partials/actions.html.twig' %}
                             </div>
                         </div>
                         <div class="row-fluid clearfix">
                             <div class="col-md-12">
-                                <canvas id="kingdomCompositionChart" width="400" height="300"></canvas>
-                                <br />
+                                {% include 'CronkdBundle:Kingdom:partials/compositionChart.html.twig' %}
                             </div>
                         </div>
                     </div>
@@ -95,7 +79,7 @@
                             <div class="panel-heading">
                                 <h3 class="panel-title"><i class="fa fa-bar-chart"></i> Resources Incoming</h3>
                             </div>
-                            {% include 'CronkdBundle:Kingdom:queues.html.twig' %}
+                            {% include 'CronkdBundle:Kingdom:partials/queues.html.twig' %}
                         </div>
                     </div>
                 </div>

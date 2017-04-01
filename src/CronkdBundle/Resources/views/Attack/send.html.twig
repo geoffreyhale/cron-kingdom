@@ -3,7 +3,11 @@
 {% block content %}
     <div class="row-fluid">
         <div class="col-sm-12">
-            <h3>Attempt Attack</h3>
+            <ol class="breadcrumb">
+                <li><a href="{{ path('homepage') }}">Dashboard</a></li>
+                <li class="active">Plan Attack</li>
+            </ol>
+            <h3>Plan Attack</h3>
             <hr />
             <div class="alert alert-info">
                 <p>Send Military to attack another Kingdom.  Use caution: you may only attack once per Tick!</p>
