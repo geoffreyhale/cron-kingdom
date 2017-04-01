@@ -191,15 +191,10 @@ class KingdomManager
             $birthedCivilians = 1;
         }
 
-        // Make sure we don't go over our Housing limit
-        $totalHousingResources = $this->em->getRepository(KingdomResource::class)
-            ->findSumOfSpecificResources($kingdom, [
-                    $this->resourceManager->get(Resource::HOUSING)->getId()
-                ]
-            )
-        ;
-        if (($birthedCivilians + $activeCivilians->getQuantity()) > $totalHousingResources) {
-            $birthedCivilians = $totalHousingResources - $activeCivilians->getQuantity();
+        $currentPopulation = $this->getPopulation($kingdom);
+        $totalCapacity = $this->getPopulationCapacity($kingdom);
+        if (($birthedCivilians + $currentPopulation) > $totalCapacity) {
+            $birthedCivilians = $this->getPopulationCapacityRemaining($kingdom);
         }
 
         $activeCivilians->addQuantity($birthedCivilians);
