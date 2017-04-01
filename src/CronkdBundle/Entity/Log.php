@@ -64,7 +64,8 @@ class Log extends BaseEntity
     /**
      * @var Kingdom
      *
-     * @ORM\ManyToOne(targetEntity="Kingdom", inversedBy="logs")
+     * @ORM\ManyToOne(targetEntity="Kingdom")
+     * @ORM\JoinColumn(name="kingdom_id", referencedColumnName="id")
      */
     private $kingdom;
 
