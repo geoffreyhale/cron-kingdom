@@ -4,6 +4,7 @@ namespace CronkdBundle\Controller\Api;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Log;
+use CronkdBundle\Entity\Policy;
 use CronkdBundle\Entity\Resource;
 use CronkdBundle\Event\ActionEvent;
 use CronkdBundle\Repository\LogRepository;
@@ -49,9 +50,15 @@ class ActionController extends ApiController
             return $this->createErrorJsonResponse('Not enough civilians to complete action!');
         }
 
+        $policyManager = $this->get('cronkd.manager.policy');
+        $queueLength = 8;
+        if ($policyManager->kingdomHasActivePolicy($kingdom, Policy::ECONOMIST)) {
+            $queueLength -= 2;
+        }
+
         $queuePopulator = $this->get('cronkd.queue_populator');
-        $civilianQueues = $queuePopulator->build($kingdom, $civilianResource, 8, $quantity);
-        $materialQueues = $queuePopulator->build($kingdom, $materialResource, 8, $quantity);
+        $civilianQueues = $queuePopulator->build($kingdom, $civilianResource, $queueLength, $quantity);
+        $materialQueues = $queuePopulator->build($kingdom, $materialResource, $queueLength, $quantity);
 
         $availableCivilians->removeQuantity($quantity);
         $em->persist($availableCivilians);
@@ -112,9 +119,15 @@ class ActionController extends ApiController
             return $this->createErrorJsonResponse('Note enough materials to complete action');
         }
 
+        $policyManager = $this->get('cronkd.manager.policy');
+        $queueLength = 8;
+        if ($policyManager->kingdomHasActivePolicy($kingdom, Policy::ECONOMIST)) {
+            $queueLength -= 2;
+        }
+
         $queuePopulator = $this->get('cronkd.queue_populator');
-        $civilianQueues = $queuePopulator->build($kingdom, $civilianResource, 8, $quantity);
-        $housingQueues = $queuePopulator->build($kingdom, $housingResource, 8, $quantity);
+        $civilianQueues = $queuePopulator->build($kingdom, $civilianResource, $queueLength, $quantity);
+        $housingQueues = $queuePopulator->build($kingdom, $housingResource, $queueLength, $quantity);
 
         $availableMaterials->removeQuantity($quantity);
         $em->persist($availableMaterials);
@@ -175,8 +188,14 @@ class ActionController extends ApiController
             return $this->createErrorJsonResponse('Cannot train military while housing capacity is insufficient!');
         }
 
+        $policyManager = $this->get('cronkd.manager.policy');
+        $queueLength = 8;
+        if ($policyManager->kingdomHasActivePolicy($kingdom, Policy::ECONOMIST)) {
+            $queueLength += 2;
+        }
+
         $queuePopulator = $this->get('cronkd.queue_populator');
-        $militaryQueues = $queuePopulator->build($kingdom, $militaryResource, 8, $quantity);
+        $militaryQueues = $queuePopulator->build($kingdom, $militaryResource, $queueLength, $quantity);
 
         $availableCivilians->removeQuantity($quantity);
         $em->persist($availableCivilians);
@@ -233,9 +252,15 @@ class ActionController extends ApiController
             return $this->createErrorJsonResponse('Cannot train hackers while housing capacity is insufficient!');
         }
 
+        $policyManager = $this->get('cronkd.manager.policy');
+        $queueLength = 8;
+        if ($policyManager->kingdomHasActivePolicy($kingdom, Policy::ECONOMIST)) {
+            $queueLength += 2;
+        }
+
         $queuePopulator = $this->get('cronkd.queue_populator');
         $hackerResource = $resourceManager->get(Resource::HACKER);
-        $hackerQueues = $queuePopulator->build($kingdom, $hackerResource, 8, $quantity);
+        $hackerQueues = $queuePopulator->build($kingdom, $hackerResource, $queueLength, $quantity);
 
         $availableMilitary->removeQuantity($quantity);
         $em->persist($availableMilitary);
