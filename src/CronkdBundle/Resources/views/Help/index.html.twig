@@ -5,18 +5,36 @@
         <div class="col-md-12">
             <h1>Welcome to CronKD!</h1>
             <p>CronKD is a free multi-player online game involving resource management and strategic interactions with other kingdoms to become the strongest in the world.</p>
-            <p>The world increments in time once per hour on the hour, processing your resource queues, and updating your readiness for more strategic actions.</p>
+
+            <h2>Introduction</h2>
+            {% include 'CronkdBundle:Help:partials/introduction.html.twig' %}
+
+            <h2>Overview</h2>
+            {% include 'CronkdBundle:Help:partials/overview.html.twig' %}
+
             <h2>Getting Started</h2>
             <ol>
                 <li><a href="{{ path('fos_user_registration_register') }}" class="navbar-link">Create a free user account</a> by registering with your email address and password.</li>
-                <li>Create your kingdom.</li>
+                <li>Choose a name for your kingdom.</li>
+                <li>Choose actions to allocate your resources.  For example, build 8 housing and produce 8 materials.</li>
             </ol>
-            <h2>Introduction</h2>
+
+            <h2>Goals</h2>
             <ul>
-                <li>Manage a single <strong>kingdom</strong> in a <strong>world</strong> of kingdoms created by other users like yourself.</li>
-                <li>View other kingdoms' <i class="fa fa-tint"></i> <strong>Liquidity</strong> and <i class="fa fa-line-chart"></i> <strong>Net Worth</strong> to determine kingdom strength and vulnerability.</li>
-                <li>Diligence, strategy, and political savvy will help you become the strongest kingdom in the world!</li>
+                <li>Compete for the highest <i class="fa fa-line-chart"></i> <strong>Net Worth</strong> in the world.</li>
+                <li>Compete for the highest Win-Loss Ratio in the world.</li>
+                <li>Improve your strategy and beat your past performance.</li>
             </ul>
+
+            <h2>A Turn</h2>
+            <p>Sign on each hour, or at least every 8 hours, to make an attack and put your resources back to work for you.</p>
+            <ol>
+                <li>When you have military to spare, use your hackers to find out how much military a kingdom currently has at home and attack them with at least one extra point of military to win the battle.  Send an extra 10% if you think they may have Defender Policy enabled.</li>
+                <li>Use your resources wisely, building housing, producing materials, training military and hackers.</li>
+            </ol>
+
+            <hr />
+
             <h2>Resources</h2>
             <ul>
                 <li>Kingdoms have <strong>resources</strong> like Civilians, Material, Housing, Military, and more.</li>
@@ -28,20 +46,23 @@
                         <li>One Military can be trained into one Hacker over 8 Ticks</li>
                     </ul>
                 </li>
+                <li>Each hour, on the hour, the world will take one step forward in <strong>time</strong> and <strong>resources</strong> will move one step in their <strong>queues</strong>.</li>
                 <li>Resources will be dispersed evenly over time.  For example, producing 8 Material will disperse 1 Civilian and 1 Material every Tick for 8 Ticks.</li>
+                <li>As your kingdom grows, you will acquire more and more resources via the queueing system.</li>
             </ul>
             <h2>Hacking Information</h2>
             <ul>
                 <li><strong>Hack</strong> other kingdoms for information about their Military and other resources.</li>
                 <li>The more Hackers you assign to hack another kingdom, the more likely it is your hack attempt will succeed.</li>
-                <li>Hackers you send on a hacking attempt will be available again in one Tick.</li>
+                <li>Hackers you send on a hacking attempt are queued for return over 8 hours (like other resources).</li>
             </ul>
             <h2>Attacking other Kingdoms</h2>
             <ul>
                 <li><strong>Attack</strong> kingdoms successfully to steal their resources and accelerate your growth.</li>
                 <li>Build a strong <strong>Military</strong> so that you may defeat other kingdoms' defending army on the battlefield.  If you send more Military in your attack, you will be the victor.</li>
-                <li>If you win an attack, you will be awarded with 20% of your opponent's available Civilians and 50% of their available Material.</li>
+                <li>If you win an attack, you will be awarded with 20% of your opponent's available Civilians, 50% of their available Material, and 1% of their Housing.</li>
                 <li>You may only attack once per Tick, so make it count!</li>
+                <li>View other kingdoms' <i class="fa fa-tint"></i> <strong>Liquidity</strong> and <i class="fa fa-line-chart"></i> <strong>Net Worth</strong> to determine kingdom strength and vulnerability.</li>
             </ul>
         </div>
     </div>
