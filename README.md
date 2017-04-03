@@ -32,6 +32,13 @@ Run the following commands on the database:
     INSERT INTO `world` (`id`, `tick`, `name`, `active`, `created_at`, `updated_at`)
     VALUES
         (1, 1, 'Earth', 1, NOW(), NOW());
+    
+    INSERT INTO `policy` (`id`, `created_at`, `updated_at`, `name`, `description`)
+    VALUES
+    	    (1, NOW(), NOW(), 'Warmonger', 'Double the amount of housing received after a successful attack.'),
+    	    (2, NOW(), NOW(), 'Defender', 'Military forces defend attacks with greater vigilance.  Defense increases by 10%.'),
+    	    (3, NOW(), NOW(), 'Economist', 'Producing Materials and Building Housing takes 2 fewer ticks.  Training Military and Hackers takes 2 additional ticks.');
+
 
 #### Create your account
 You can now create your account and kingdom and start playing!
