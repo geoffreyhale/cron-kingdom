@@ -65,7 +65,7 @@ class DefaultController extends Controller
 
     /**
      * @Route("/help", name="help")
-     * @Template
+     * @Template("CronkdBundle:Help:index.html.twig")
      */
     public function helpAction()
     {
