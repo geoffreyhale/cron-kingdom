@@ -36,12 +36,14 @@ class DefaultController extends Controller
         $notificationCount = 0;
         $kingdomHasAvailableAttack = false;
         $kingdomWinLossRecord = null;
+        $kingdomHasActivePolicy = false;
         if ($kingdom) {
             $kingdomResources = $em->getRepository(KingdomResource::class)->findByKingdom($kingdom);
             $queues = $this->get('cronkd.manager.kingdom')->getResourceQueues($kingdom);
             $notificationCount = $em->getRepository(Log::class)->findNotificationCount($kingdom);
             $kingdomHasAvailableAttack = $em->getRepository(AttackLog::class)->hasAvailableAttack($kingdom);
             $kingdomWinLossRecord = $em->getRepository(AttackLog::class)->getWinLossRecord($kingdom);
+            $kingdomHasActivePolicy = $this->get('cronkd.manager.policy')->kingdomHasActivePolicy($kingdom);
         }
 
         return [
@@ -57,6 +59,7 @@ class DefaultController extends Controller
             'notificationCount'         => $notificationCount,
             'kingdomHasAvailableAttack' => $kingdomHasAvailableAttack,
             'kingdomWinLossRecord'      => $kingdomWinLossRecord,
+            'kingdomHasActivePolicy'    => $kingdomHasActivePolicy,
         ];
     }
 

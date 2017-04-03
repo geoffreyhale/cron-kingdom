@@ -1,13 +1,12 @@
 <?php
 namespace CronkdBundle\Controller\Api;
 
+use CronkdBundle\Entity\AttackLog;
 use CronkdBundle\Entity\Kingdom;
-use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Resource;
 use CronkdBundle\Service\AttackingService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -53,6 +52,14 @@ class AttackController extends ApiController
         }
         if (!$attackingService->kingdomHasResourcesToAttack($army)) {
             return $this->createErrorJsonResponse('Kingdom does not have enough resources to attack');
+        }
+
+        $previousAttack = $em->getRepository(AttackLog::class)->findOneBy([
+            'attacker' => $kingdom,
+            'tick'     => $kingdom->getWorld()->getTick(),
+        ]);
+        if (null !== $previousAttack) {
+            return $this->createErrorJsonResponse('Kingdom has already attacked this tick');
         }
 
         $attackReport = $attackingService->attack($kingdom, $targetKingdom, $army);

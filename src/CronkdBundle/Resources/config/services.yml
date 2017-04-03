@@ -20,6 +20,7 @@ services:
             - "@cronkd.manager.kingdom"
             - "@cronkd.manager.resource"
             - "@cronkd.manager.log"
+            - "@cronkd.manager.policy"
 
     cronkd.service.graphing:
         class: CronkdBundle\Service\GraphingService
@@ -54,6 +55,11 @@ services:
 
     cronkd.manager.net_worth:
         class: CronkdBundle\Manager\NetWorthLogManager
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
+
+    cronkd.manager.policy:
+        class: CronkdBundle\Manager\PolicyManager
         arguments:
             - "@doctrine.orm.default_entity_manager"
 
