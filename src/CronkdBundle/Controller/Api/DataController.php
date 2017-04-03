@@ -67,4 +67,29 @@ class DataController extends Controller
 
         return JsonResponse::create($kingdomCompositionData);
     }
+
+    /**
+     * @Route("/population_capacity", name="data_population_capacity")
+     * @Method("POST")
+     */
+    public function populationCapacityAction(Request $request)
+    {
+        $user = $this->getUser();
+        $em = $this->getDoctrine()->getManager();
+
+        $kingdomId = $request->get('kingdom');
+        $kingdom = $em->getRepository(Kingdom::class)->find($kingdomId);
+        if ($user != $kingdom->getUser()) {
+            return JsonResponse::create(['error' => 'invalid user']);
+        }
+
+        $graphingService = $this->get('cronkd.service.graphing');
+        try {
+            $populationCapacityData = $graphingService->fetchPopulationCapacityGraphData($kingdom);
+        } catch (EmptyGraphingDatasetException $e) {
+            return JsonResponse::create(['error' => 'no data']);
+        }
+
+        return JsonResponse::create($populationCapacityData);
+    }
 }
