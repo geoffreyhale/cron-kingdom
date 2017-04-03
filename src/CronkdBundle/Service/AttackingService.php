@@ -5,10 +5,12 @@ use CronkdBundle\Entity\AttackLog;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Log;
+use CronkdBundle\Entity\Policy;
 use CronkdBundle\Entity\Resource;
 use CronkdBundle\Event\AttackEvent;
 use CronkdBundle\Manager\KingdomManager;
 use CronkdBundle\Manager\LogManager;
+use CronkdBundle\Manager\PolicyManager;
 use CronkdBundle\Manager\ResourceManager;
 use CronkdBundle\Model\Army;
 use CronkdBundle\Model\AttackReport;
@@ -29,6 +31,8 @@ class AttackingService
     private $resourceManager;
     /** @var LogManager */
     private $logManager;
+    /** @var PolicyManager */
+    private $policyManager;
 
     public function __construct(
         EntityManagerInterface $em,
@@ -36,7 +40,8 @@ class AttackingService
         QueuePopulator $queuePopulator,
         KingdomManager $kingdomManager,
         ResourceManager $resourceManager,
-        LogManager $logManager
+        LogManager $logManager,
+        PolicyManager $policyManager
     ) {
         $this->em              = $em;
         $this->eventDispatcher = $dispatcher;
@@ -44,6 +49,7 @@ class AttackingService
         $this->kingdomManager  = $kingdomManager;
         $this->resourceManager = $resourceManager;
         $this->logManager      = $logManager;
+        $this->policyManager   = $policyManager;
     }
 
     /**
@@ -148,9 +154,14 @@ class AttackingService
         $kingdomResources = $this->em->getRepository(KingdomResource::class)
             ->findSpecificResources($kingdom, $militaryResources);
 
+        $defenderBonus = 1.0;
+        if ($this->policyManager->kingdomHasActivePolicy($kingdom, Policy::DEFENDER)) {
+            $defenderBonus = 1.1;
+        }
+
         $resourceMap = [];
         foreach ($kingdomResources as $kingdomResource) {
-            $resourceMap[$kingdomResource->getResource()->getName()] = $kingdomResource->getQuantity();
+            $resourceMap[$kingdomResource->getResource()->getName()] = floor($defenderBonus * $kingdomResource->getQuantity());
         }
 
         $army = $this->buildArmy($kingdom, $resourceMap);
@@ -165,9 +176,14 @@ class AttackingService
      */
     private function awardResources(AttackReport $report, Kingdom $kingdom, Kingdom $targetKingdom)
     {
+        $housingPercentage = 1;
+        if ($this->policyManager->kingdomHasActivePolicy($kingdom, Policy::WARMONGER)) {
+            $housingPercentage *= 2;
+        }
+
         $this->awardResource($report, $kingdom, $targetKingdom, Resource::CIVILIAN, 20);
         $this->awardResource($report, $kingdom, $targetKingdom, Resource::MATERIAL, 50);
-        $this->awardResource($report, $kingdom, $targetKingdom, Resource::HOUSING, 1);
+        $this->awardResource($report, $kingdom, $targetKingdom, Resource::HOUSING, $housingPercentage);
     }
 
     /**

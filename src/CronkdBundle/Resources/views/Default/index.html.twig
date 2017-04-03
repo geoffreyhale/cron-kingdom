@@ -61,15 +61,19 @@
                     <div class="col-md-3">
                         <div class="panel panel-default">
                             <div class="panel-heading">
+                                <h3 class="panel-title"><i class="fa fa-flag"></i> Policy</h3>
+                            </div>
+                            <div class="panel-body" style="text-align: center;">
+                                {% include 'CronkdBundle:Kingdom:partials/policy.html.twig' %}
+                            </div>
+                        </div>
+
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
                                 <h3 class="panel-title"><i class="fa fa-shield"></i> Actions</h3>
                             </div>
                             <div class="panel-body" style="text-align: center;">
                                 {% include 'CronkdBundle:Kingdom:partials/actions.html.twig' %}
-                            </div>
-                        </div>
-                        <div class="row-fluid clearfix">
-                            <div class="col-md-12">
-                                {% include 'CronkdBundle:Kingdom:partials/compositionChart.html.twig' %}
                             </div>
                         </div>
                     </div>
@@ -81,7 +85,15 @@
                             </div>
                             {% include 'CronkdBundle:Kingdom:partials/queues.html.twig' %}
                         </div>
+
+                        <div class="col-md-6">
+                            {% include 'CronkdBundle:Kingdom:partials/compositionChart.html.twig' %}
+                        </div>
+                        <div class="col-md-6 clearfix">
+                            {% include 'CronkdBundle:Kingdom:partials/populationChart.html.twig' %}
+                        </div>
                     </div>
+
                 </div>
             </div>
 
@@ -162,13 +174,13 @@
     {{ parent() }}
     {% if kingdom is not null %}
     <script type="text/javascript">
-        var ctx = document.getElementById("kingdomCompositionChart");
+        var comp = document.getElementById("kingdomCompositionChart");
         $.ajax({
             url: '{{ path('data_kingdom_composition', {'kingdom': kingdom.id}) }}',
             method: 'POST',
             success: function(response) {
                 if (!response.error) {
-                    var myChart = new Chart(ctx, {
+                    var myChart = new Chart(comp, {
                         type: 'radar',
                         data: response,
                         options: {
@@ -184,7 +196,52 @@
                         }
                     });
                 } else {
-                    $(ctx).hide();
+                    $(comp).hide();
+                }
+            }
+        });
+
+        var pop = document.getElementById("populationChart");
+        $.ajax({
+            url: '{{ path('data_population_capacity', {'kingdom': kingdom.id}) }}',
+            method: 'POST',
+            success: function(response) {
+                if (!response.error) {
+                    var myChart = new Chart(pop, {
+                        type: 'bar',
+                        data: {
+                            labels: ["Population Capacity %",],
+                            datasets: [
+                                {
+                                    label: "{{ kingdom.name }}",
+                                    backgroundColor: [
+                                        100 <= response.population ? 'rgba(255, 99, 132, 0.2)' : 'rgba(54, 162, 235, 0.2)'
+                                    ],
+                                    borderColor: [
+                                        100 <= response.population ? 'rgba(255,99,132,1)' : 'rgba(54, 162, 235, 1)'
+                                    ],
+                                    borderWidth: 1,
+                                    data: [response.population],
+                                }
+                            ]
+                        },
+                        options: {
+                            legend: {
+                                display: false
+                            },
+                            scales: {
+                                yAxes: [{
+                                    display: true,
+                                    ticks: {
+                                        suggestedMin: 0,
+                                        suggestedMax: 100,
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                } else {
+                    $(pop).hide();
                 }
             }
         });

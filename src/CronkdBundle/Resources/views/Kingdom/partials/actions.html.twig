@@ -4,7 +4,7 @@
     <a href="{{ path('action_train_military', {id: kingdom.id}) }}" class="btn btn-info">Train Military</a>
     <a href="{{ path('action_train_hacker', {id: kingdom.id}) }}" class="btn btn-info">Train Hackers</a>
 </div>
-<hr>
+<hr />
 <div class="btn-group-vertical" role="group">
     <a href="{{ path('probe_send', {id: kingdom.id}) }}" class="btn btn-warning">Attempt Hack</a>
     {% if kingdomHasAvailableAttack %}

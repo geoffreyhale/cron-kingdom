@@ -1,6 +1,7 @@
 <?php
 namespace CronkdBundle\Controller;
 
+use CronkdBundle\Entity\AttackLog;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Form\AttackPlanType;
 use CronkdBundle\Model\AttackPlan;
@@ -25,6 +26,15 @@ class AttackController extends CronkdController
     {
         $this->validateWorldIsActive($kingdom);
         $this->validateUserOwnsKingdom($kingdom);
+
+        $em = $this->getDoctrine()->getManager();
+        $previousAttack = $em->getRepository(AttackLog::class)->findOneBy([
+            'attacker' => $kingdom,
+            'tick'     => $kingdom->getWorld()->getTick(),
+        ]);
+        if (null !== $previousAttack) {
+            throw $this->createAccessDeniedException("You may only attack once per tick");
+        }
 
         $attackPlan = new AttackPlan();
         $form = $this->createForm(AttackPlanType::class, $attackPlan, [

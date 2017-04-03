@@ -1,0 +1,5 @@
+{% if kingdomHasActivePolicy is defined and not kingdomHasActivePolicy %}
+    <a href="{{ path('policy_select', {id: kingdom.id}) }}" class="btn btn-success">Select Policy</a>
+{% else %}
+    {{ kingdom.activePolicy.policy.name }}
+{% endif %}

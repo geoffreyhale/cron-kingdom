@@ -93,6 +93,10 @@ class GraphingService
         return $dataStructure;
     }
 
+    /**
+     * @param Kingdom $kingdom
+     * @return array
+     */
     public function fetchKingdomCompositionData(Kingdom $kingdom)
     {
         $data = [
@@ -106,10 +110,10 @@ class GraphingService
                     +
                 $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $this->resourceManager->get(Resource::MATERIAL))
             ,
-            'Hackers'    =>
-                $this->kingdomManager->lookupResource($kingdom, Resource::HACKER)->getQuantity()
+            'Housing'    =>
+                $this->kingdomManager->lookupResource($kingdom, Resource::HOUSING)->getQuantity()
                     +
-                $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $this->resourceManager->get(Resource::HACKER))
+                $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $this->resourceManager->get(Resource::HOUSING))
             ,
             'Military'   =>
                 $this->kingdomManager->lookupResource($kingdom, Resource::MILITARY)->getQuantity()
@@ -133,5 +137,19 @@ class GraphingService
         ];
 
         return $dataStructure;
+    }
+
+    /**
+     * @param Kingdom $kingdom
+     * @return array
+     */
+    public function fetchPopulationCapacityGraphData(Kingdom $kingdom)
+    {
+        $capacity = $this->kingdomManager->getPopulationCapacity($kingdom);
+        $population = $this->kingdomManager->getPopulation($kingdom);
+
+        return [
+            'population' => round($population / $capacity * 100, 0),
+        ];
     }
 }

@@ -1,0 +1,35 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+    <div class="row-fluid">
+        <div class="col-sm-12">
+            <ol class="breadcrumb">
+                <li><a href="{{ path('homepage') }}">Dashboard</a></li>
+                <li class="active">Select Policy</li>
+            </ol>
+            <h3>Select Policy</h3>
+            <hr />
+            <div class="alert alert-info">
+                <p>
+                    Policies provide a 24 hour bonus to your kingdom.  You may have only one policy active.  After 24 hours, you can select another policy.
+                    <br />
+                    <ul>
+                    {% for policy in policies %}
+                        <li style="list-style: none;">
+                            <strong>{{ policy.name }}</strong>: {{ policy.description }}
+                        </li>
+                    {% endfor %}
+                    </ul>
+                </p>
+            </div>
+            {{ form_start(form, {'attr': {'class': 'form-inline'}}) }}
+            <div class="form-group">
+                {{ form_row(form.policy, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="form-group">
+                {{ form_row(form.submit, {'attr': {'class': 'btn btn-primary'}}) }}
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

@@ -85,6 +85,14 @@ class Kingdom extends BaseEntity
     private $queues;
 
     /**
+     * @var Policy[]
+     *
+     * @ORM\OneToMany(targetEntity="KingdomPolicy", mappedBy="kingdom")
+     * @ORM\OrderBy({"createdAt": "DESC"})
+     */
+    private $policies;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -325,5 +333,51 @@ class Kingdom extends BaseEntity
     public function __toString()
     {
         return $this->getName();
+    }
+
+    /**
+     * Add policy
+     *
+     * @param KingdomPolicy $policy
+     *
+     * @return Kingdom
+     */
+    public function addPolicy(KingdomPolicy $policy)
+    {
+        $this->policies[] = $policy;
+
+        return $this;
+    }
+
+    /**
+     * Remove policy
+     *
+     * @param KingdomPolicy $policy
+     */
+    public function removePolicy(KingdomPolicy $policy)
+    {
+        $this->policies->removeElement($policy);
+    }
+
+    /**
+     * Get policies
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getPolicies()
+    {
+        return $this->policies;
+    }
+
+    /**
+     * @return KingdomPolicy|null
+     */
+    public function getActivePolicy()
+    {
+        if (count($this->getPolicies())) {
+            return $this->getPolicies()->first();
+        }
+
+        return null;
     }
 }
