@@ -28,7 +28,7 @@ class UpdateNetworthCommand extends ContainerAwareCommand
 
         /** @var World $world */
         foreach ($worlds as $world) {
-            $logger->info('Update netwroth for world ' . $world->getName());
+            $logger->info('Update networth for world ' . $world->getName());
 
             foreach ($world->getKingdoms() as $kingdom) {
                 $kingdomManager->calculateNetWorth($kingdom);
