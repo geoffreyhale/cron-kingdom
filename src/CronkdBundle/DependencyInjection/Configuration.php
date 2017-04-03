@@ -13,6 +13,11 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->arrayNode('teams')
+                    ->children()
+                        ->scalarNode('max_size')->end()
+                    ->end()
+                ->end()
                 ->arrayNode('resources')
                     ->prototype('array')
                         ->children()

@@ -81,6 +81,8 @@ stof_doctrine_extensions:
             timestampable: true
 
 cronkd:
+    teams:
+        max_size: 3
     resources:
         Civilian:
             initial: 16
