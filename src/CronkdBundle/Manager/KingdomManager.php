@@ -216,7 +216,7 @@ class KingdomManager
         foreach ($kingdom->getResources() as $kingdomResource) {
             $totalQueued = $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $kingdomResource->getResource());
             $this->logger->info($kingdom->getName() . ' net worth ' . $kingdomResource->getResource()->getName() . ' = ' . $totalQueued);
-            $netWorth += $totalQueued;
+            $netWorth += $totalQueued * $kingdomResource->getResource()->getValue();
         }
 
         $kingdom->setNetWorth($netWorth);
