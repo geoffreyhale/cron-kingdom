@@ -40,8 +40,8 @@
                             <table class="table">
                                 <tbody>
                                 <tr style="font-size: 16px;">
-                                    {% if kingdomWinLossRecord is defined %}
-                                        <td title="Win-Loss Record"><i class="fa fa-trophy"></i> {{ kingdomWinLossRecord }}</td>
+                                    {% if kingdomWinLossString is defined %}
+                                        <td title="Win-Loss Record"><i class="fa fa-trophy"></i> {{ kingdomWinLossString }}</td>
                                     {% endif %}
                                     <td title="Liquidity"><i class="fa fa-tint"></i> {{ kingdom.liquidity|number_format }}</td>
                                     <td title="Net Worth"><i class="fa fa-line-chart"></i> {{ kingdom.networth|number_format }}</td>
@@ -135,33 +135,20 @@
                             <div class="panel-heading">
                                 <h3 class="panel-title"><i class="fa fa-trophy"></i> Scores</h3>
                             </div>
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th title="Rank"><i class="fa fa-hashtag"></i></th>
-                                    <th title="Kingdom"><i class="fa fa-fort-awesome"></i></th>
-                                    <th title="Liquidity"><i class="fa fa-tint"></i></th>
-                                    <th title="Networth"><i class="fa fa-line-chart"></i></th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for kingdomByNetworth in kingdomsByNetworth %}
-                                    <tr>
-                                        {% if kingdomByNetworth.id == kingdom.id %}
-                                            <td><strong>{{ loop.index }}</strong></td>
-                                            <td><strong>{{ kingdomByNetworth.name }}</strong></td>
-                                            <td><strong>{{ kingdomByNetworth.liquidity|number_format }}</strong></td>
-                                            <td><strong>{{ kingdomByNetworth.netWorth|number_format }}</strong></td>
-                                        {% else %}
-                                            <td>{{ loop.index }}</td>
-                                            <td>{{ kingdomByNetworth.name }}</td>
-                                            <td>{{ kingdomByNetworth.liquidity|number_format }}</td>
-                                            <td>{{ kingdomByNetworth.netWorth|number_format }}</td>
-                                        {% endif %}
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
+                            <ul class="nav nav-tabs">
+                                <li class="active">
+                                    <a href="#tab-scores-networth" data-toggle="tab">Biggest</a>
+                                </li>
+                                <li><a href="#tab-scores-winloss" data-toggle="tab">Strongest</a></li>
+                            </ul>
+                            <div class="tab-content clearfix">
+                                <div class="tab-pane active" id="tab-scores-networth">
+                                    {% include 'CronkdBundle:World:partials/kingdomsByNetworth.html.twig' %}
+                                </div>
+                                <div class="tab-pane" id="tab-scores-winloss">
+                                    {% include 'CronkdBundle:World:partials/kingdomsByWinLoss.html.twig' %}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
