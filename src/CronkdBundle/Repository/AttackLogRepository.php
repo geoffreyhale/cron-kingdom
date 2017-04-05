@@ -63,6 +63,9 @@ class AttackLogRepository extends EntityRepository
             }
         }
 
-        return "$successes-$failures";
+        return [
+            'loss' => $failures,
+            'win' => $successes
+        ];
     }
 }

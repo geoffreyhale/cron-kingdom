@@ -35,14 +35,13 @@ class DefaultController extends Controller
         $queues = [];
         $notificationCount = 0;
         $kingdomHasAvailableAttack = false;
-        $kingdomWinLossRecord = null;
         $kingdomHasActivePolicy = false;
         if ($kingdom) {
             $kingdomResources = $em->getRepository(KingdomResource::class)->findByKingdom($kingdom);
             $queues = $this->get('cronkd.manager.kingdom')->getResourceQueues($kingdom);
             $notificationCount = $em->getRepository(Log::class)->findNotificationCount($kingdom);
             $kingdomHasAvailableAttack = $em->getRepository(AttackLog::class)->hasAvailableAttack($kingdom);
-            $kingdomWinLossRecord = $em->getRepository(AttackLog::class)->getWinLossRecord($kingdom);
+            $kingdomWinLoss = $em->getRepository(AttackLog::class)->getWinLossRecord($kingdom);
             $kingdomHasActivePolicy = $this->get('cronkd.manager.policy')->kingdomHasActivePolicy($kingdom);
         }
 
@@ -54,11 +53,12 @@ class DefaultController extends Controller
             'worldNetworth'             => $worldManager->calculateWorldNetWorth($world),
             'kingdoms'                  => $world->getKingdoms(),
             'kingdomsByNetworth'        => $kingdomManager->calculateKingdomsByNetWorth($world),
+            'kingdomsByWinLoss'         => $kingdomManager->calculateKingdomsByWinLoss($world),
             'kingdomResources'          => $kingdomResources,
             'userHasKingdom'            => $userHasKingdom,
             'notificationCount'         => $notificationCount,
             'kingdomHasAvailableAttack' => $kingdomHasAvailableAttack,
-            'kingdomWinLossRecord'      => $kingdomWinLossRecord,
+            'kingdomWinLossString'      => $kingdomWinLoss['win'].'-'.$kingdomWinLoss['loss'],
             'kingdomHasActivePolicy'    => $kingdomHasActivePolicy,
         ];
     }

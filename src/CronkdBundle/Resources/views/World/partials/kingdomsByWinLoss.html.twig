@@ -1,0 +1,27 @@
+<table class="table">
+    <thead>
+    <tr>
+        <th title="Rank"><i class="fa fa-hashtag"></i></th>
+        <th title="Kingdom"><i class="fa fa-fort-awesome"></i></th>
+        <th title="Win">Wins</th>
+        <th title="Loss">Losses</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for kingdomByWinLoss in kingdomsByWinLoss %}
+        <tr>
+            {% if kingdomByWinLoss.kingdom.id == kingdom.id %}
+                <td><strong>{{ loop.index }}</strong></td>
+                <td><strong>{{ kingdomByWinLoss.kingdom.name }}</strong></td>
+                <td><strong>{{ kingdomByWinLoss.winloss.win|number_format }}</strong></td>
+                <td><strong>{{ kingdomByWinLoss.winloss.loss|number_format }}</strong></td>
+            {% else %}
+                <td>{{ loop.index }}</td>
+                <td>{{ kingdomByWinLoss.kingdom.name }}</td>
+                <td>{{ kingdomByWinLoss.winloss.win|number_format }}</td>
+                <td>{{ kingdomByWinLoss.winloss.loss|number_format }}</td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

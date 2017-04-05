@@ -1,6 +1,7 @@
 <?php
 namespace CronkdBundle\Manager;
 
+use CronkdBundle\Entity\AttackLog;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Queue;
@@ -299,5 +300,30 @@ class KingdomManager
         });
 
         return $kingdomsByNetWorth;
+    }
+
+    public function calculateKingdomsByWinLoss(World $world)
+    {
+        $kingdoms = $world->getKingdoms()->toArray();
+
+        $kingdomsByWinLoss = [];
+        foreach($kingdoms as $kingdom) {
+            $kingdomsByWinLoss[$kingdom->getId()] = [
+                'kingdom' => $kingdom,
+                'winloss' => $this->em->getRepository(AttackLog::class)->getWinLossRecord($kingdom)
+            ];
+        }
+
+        usort($kingdomsByWinLoss, function ($item1, $item2) {
+            $item1diff = $item1['winloss']['win'] - $item1['winloss']['loss'];
+            $item2diff = $item2['winloss']['win'] - $item2['winloss']['loss'];
+
+            if ($item1diff == $item2diff) {
+                return $item2['winloss']['loss'] <=> $item1['winloss']['loss'];
+            }
+            return $item2diff <=> $item1diff;
+        });
+
+        return $kingdomsByWinLoss;
     }
 }
