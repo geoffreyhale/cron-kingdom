@@ -23,6 +23,7 @@ class ProbeController extends CronkdController
      */
     public function sendAction(Request $request, Kingdom $kingdom)
     {
+        $this->validateUserNotVacation();
         $this->validateWorldIsActive($kingdom);
         $this->validateUserOwnsKingdom($kingdom);
 

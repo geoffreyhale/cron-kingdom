@@ -24,6 +24,7 @@ class PolicyController extends CronkdController
      */
     public function selectAction(Request $request, Kingdom $kingdom)
     {
+        $this->validateUserNotVacation();
         $this->validateWorldIsActive($kingdom);
         $this->validateUserOwnsKingdom($kingdom);
 

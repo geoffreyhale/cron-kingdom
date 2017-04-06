@@ -21,6 +21,10 @@ class ProbeController extends ApiController
      */
     public function sendAction(Request $request)
     {
+        if ($this->getUser()->getVacation()) {
+            return $this->createErrorJsonResponse('You are on vacation!');
+        }
+
         $kingdomId = (int) $request->get('kingdomId');
         $targetKingdomId = (int) $request->get('targetKingdomId');
         $quantity = (int) $request->get('quantity');
@@ -46,6 +50,9 @@ class ProbeController extends ApiController
         $targetKingdom = $em->getRepository(Kingdom::class)->find($targetKingdomId);
         if (!$kingdom) {
             return $this->createErrorJsonResponse('Invalid Target Kingdom');
+        }
+        if ($targetKingdom->getUser()->getVacation()) {
+            return $this->createErrorJsonResponse('User is on vacation!');
         }
 
         $kingdomManager = $this->get('cronkd.manager.kingdom');

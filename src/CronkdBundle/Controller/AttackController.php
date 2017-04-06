@@ -24,6 +24,7 @@ class AttackController extends CronkdController
      */
     public function attackAction(Request $request, Kingdom $kingdom)
     {
+        $this->validateUserNotVacation();
         $this->validateWorldIsActive($kingdom);
         $this->validateUserOwnsKingdom($kingdom);
 

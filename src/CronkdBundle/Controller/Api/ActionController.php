@@ -24,6 +24,10 @@ class ActionController extends ApiController
      */
     public function produceAction(Request $request)
     {
+        if ($this->getUser()->getVacation()) {
+            return $this->createErrorJsonResponse('You are on vacation!');
+        }
+
         $kingdomId = (int) $request->get('kingdomId');
         $quantity = (int) $request->get('quantity');
 
@@ -88,6 +92,10 @@ class ActionController extends ApiController
      */
     public function buildAction(Request $request)
     {
+        if ($this->getUser()->getVacation()) {
+            return $this->createErrorJsonResponse('You are on vacation!');
+        }
+
         $kingdomId = (int) $request->get('kingdomId');
         $quantity = (int) $request->get('quantity');
 
@@ -159,6 +167,10 @@ class ActionController extends ApiController
      */
     public function trainMilitaryAction(Request $request)
     {
+        if ($this->getUser()->getVacation()) {
+            return $this->createErrorJsonResponse('You are on vacation!');
+        }
+
         $kingdomId = (int) $request->get('kingdomId');
         $quantity = (int) $request->get('quantity');
 
@@ -224,6 +236,10 @@ class ActionController extends ApiController
      */
     public function trainHackerAction(Request $request)
     {
+        if ($this->getUser()->getVacation()) {
+            return $this->createErrorJsonResponse('You are on vacation!');
+        }
+
         $kingdomId = (int) $request->get('kingdomId');
         $quantity = (int) $request->get('quantity');
 

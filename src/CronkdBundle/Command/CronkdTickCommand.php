@@ -43,6 +43,10 @@ class CronkdTickCommand extends ContainerAwareCommand
 
             /** @var Queue $queue */
             foreach ($queues as $queue) {
+                if ($queue->getKingdom()->getUser()->getVacation()) {
+                    continue;
+                }
+
                 $logger->info('Queue is for Kingdom ' . $queue->getKingdom()->getName() . ' for ' . $queue->getResource()->getName());
 
                 $kingdomResource = $kingdomManager->findOrCreateResource($queue->getKingdom(), $queue->getResource());

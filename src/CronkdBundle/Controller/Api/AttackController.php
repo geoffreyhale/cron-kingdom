@@ -20,6 +20,10 @@ class AttackController extends ApiController
      */
     public function attackAction(Request $request)
     {
+        if ($this->getUser()->getVacation()) {
+            return $this->createErrorJsonResponse('You are on vacation!');
+        }
+
         /** @var AttackingService $attackingService */
         $attackingService = $this->get('cronkd.service.attacking');
         $kingdomId = (int) $request->get('kingdomId');
@@ -43,6 +47,9 @@ class AttackController extends ApiController
         $targetKingdom = $em->getRepository(Kingdom::class)->find($targetKingdomId);
         if (!$targetKingdom) {
             return $this->createErrorJsonResponse('Invalid Target Kingdom');
+        }
+        if ($targetKingdom->getUser()->getVacation()) {
+            return $this->createErrorJsonResponse('User is on vacation!');
         }
 
         $resourceMap = $this->buildResourcesMap($request);

@@ -24,6 +24,13 @@ class User extends BaseUser
      */
     private $kingdoms;
 
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="vacation", type="boolean", options={"default" = 0})
+     */
+    private $vacation;
+
     public function __construct()
     {
         parent::__construct();
@@ -61,6 +68,30 @@ class User extends BaseUser
     public function getKingdoms()
     {
         return $this->kingdoms;
+    }
+
+    /**
+     * Set vacation
+     *
+     * @param boolean $vacation
+     *
+     * @return User
+     */
+    public function setVacation($vacation)
+    {
+        $this->vacation = $vacation;
+
+        return $this;
+    }
+
+    /**
+     * Get vacation
+     *
+     * @return boolean
+     */
+    public function getVacation()
+    {
+        return $this->vacation;
     }
 
     public function __toString()

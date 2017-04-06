@@ -25,6 +25,7 @@ class ActionController extends CronkdController
      */
     public function produceMaterialAction(Request $request, Kingdom $kingdom)
     {
+        $this->validateUserNotVacation();
         $this->validateWorldIsActive($kingdom);
         $this->validateUserOwnsKingdom($kingdom);
 
@@ -78,6 +79,7 @@ class ActionController extends CronkdController
      */
     public function buildHousingAction(Request $request, Kingdom $kingdom)
     {
+        $this->validateUserNotVacation($this->getUser());
         $this->validateWorldIsActive($kingdom);
         $this->validateUserOwnsKingdom($kingdom);
 
@@ -135,6 +137,7 @@ class ActionController extends CronkdController
      */
     public function trainMilitaryAction(Request $request, Kingdom $kingdom)
     {
+        $this->validateUserNotVacation($this->getUser());
         $this->validateWorldIsActive($kingdom);
         $this->validateUserOwnsKingdom($kingdom);
 
@@ -192,6 +195,7 @@ class ActionController extends CronkdController
      */
     public function trainHackerAction(Request $request, Kingdom $kingdom)
     {
+        $this->validateUserNotVacation($this->getUser());
         $this->validateWorldIsActive($kingdom);
         $this->validateUserOwnsKingdom($kingdom);
 

@@ -15,10 +15,16 @@ class CronkdController extends Controller
         }
     }
 
+    public function validateUserNotVacation()
+    {
+        if ($this->getUser()->getVacation()){
+            throw $this->createAccessDeniedException('You are on vacation!');
+        }
+    }
+
     public function validateUserOwnsKingdom(Kingdom $kingdom)
     {
-        $currentUser = $this->getUser();
-        if ($currentUser != $kingdom->getUser()) {
+        if ($this->getUser() != $kingdom->getUser()) {
             throw $this->createAccessDeniedException('Kingdom is not yours!');
         }
     }
