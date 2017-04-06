@@ -20,7 +20,13 @@ class KingdomResourceRepository extends \Doctrine\ORM\EntityRepository
         $qb->andWhere('kr.kingdom = :kingdom');
         $qb->setParameter('kingdom', $kingdom);
 
-        return $qb->getQuery()->getResult();
+        $results = $qb->getQuery()->getResult();
+        $keyedResults = [];
+        foreach ($results as $result) {
+            $keyedResults[$result->getResource()->getName()] = $result;
+        }
+
+        return $keyedResults;
     }
 
     /**
