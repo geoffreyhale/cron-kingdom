@@ -16,6 +16,10 @@ class Policy extends BaseEntity
     const DEFENDER  = 'Defender';
     const ECONOMIST = 'Economist';
     const WARMONGER = 'Warmonger';
+
+    const DEFENDER_BONUS  = 1.5;
+    const WARMONGER_BONUS = 5;
+
     /**
      * @var int
      *

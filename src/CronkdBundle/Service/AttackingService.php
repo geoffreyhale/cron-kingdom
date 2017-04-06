@@ -156,7 +156,7 @@ class AttackingService
 
         $defenderBonus = 1.0;
         if ($this->policyManager->kingdomHasActivePolicy($kingdom, Policy::DEFENDER)) {
-            $defenderBonus = 1.1;
+            $defenderBonus = Policy::DEFENDER_BONUS;
         }
 
         $resourceMap = [];
@@ -178,7 +178,7 @@ class AttackingService
     {
         $housingPercentage = 1;
         if ($this->policyManager->kingdomHasActivePolicy($kingdom, Policy::WARMONGER)) {
-            $housingPercentage *= 2;
+            $housingPercentage *= Policy::WARMONGER_BONUS;
         }
 
         $this->awardResource($report, $kingdom, $targetKingdom, Resource::CIVILIAN, 20);
