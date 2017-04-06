@@ -2,6 +2,7 @@
 namespace CronkdBundle\Service;
 
 use CronkdBundle\Entity\Kingdom;
+use CronkdBundle\Entity\KingdomPolicy;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Log;
 use CronkdBundle\Event\ProbeEvent;
@@ -43,8 +44,9 @@ class ProbingService
             $availableResources = $this->em->getRepository(KingdomResource::class)
                 ->findResourcesThatMayBeProbed($target);
 
+            $policy = $this->em->getRepository(KingdomPolicy::class)->findCurrentPolicy($kingdom);
             $report->setResult(true);
-            $report->setData($availableResources);
+            $report->setData(['Resources' => $availableResources, 'Policy' => $policy]);
         }
 
         $this->logManager->createLog(
