@@ -52,8 +52,8 @@ class ProbeController extends CronkdController
             $militaryToSend = 0;
             $defenderBonusMilitaryToSend = 0;
             if (isset($results['data']['report']['result']) && true == $results['data']['report']['result']) {
-                $militaryToSend = $results['data']['report']['data'][Resource::MILITARY]['quantity'] + 1;
-                $defenderBonusMilitaryToSend = ceil($results['data']['report']['data'][Resource::MILITARY]['quantity']*Policy::DEFENDER_BONUS) + 1;
+                $militaryToSend = $results['data']['report']['data']['Resources'][Resource::MILITARY]['quantity'] + 1;
+                $defenderBonusMilitaryToSend = ceil($results['data']['report']['data']['Resources'][Resource::MILITARY]['quantity']*Policy::DEFENDER_BONUS) + 1;
 
                 $formAttack = $this->createForm(AutoAttackPlanType::class, [
                     'target' => $probeAttempt->getTarget()->getId(),

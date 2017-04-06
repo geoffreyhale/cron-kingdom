@@ -3,11 +3,14 @@
 <table class="table table-bordered" style="margin-top: 15px;">
     <tbody>
     <tr>
-        <td><i class="fa fa-fort-awesome fa-fw"></i> {{ results.data.report.data|first.kingdom.name }}</td>
+        <td><i class="fa fa-fort-awesome fa-fw"></i> {{ results.data.report.data.Resources|first.kingdom.name }}</td>
+    </tr>
+    <tr>
+        <td><i class="fa fa-flag fa-fw"></i> {{ results.data.report.data.Policy }}</td>
     </tr>
     {% for resourceName in resourceNames %}
         <tr>
-            {% for kingdomResource in results.data.report.data %}
+            {% for kingdomResource in results.data.report.data.Resources %}
                 {% if kingdomResource.resource.name == resourceName %}
                     <td>
                         {% if kingdomResource.resource.name == 'Civilian' %}
