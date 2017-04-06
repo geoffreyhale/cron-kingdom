@@ -29,15 +29,35 @@
     </div>
     <div class="row-fluid">
         <div class="col-sm-12">
-            {% if not results.data.report.result %}
-                {{ form_start(form) }}
-                {{ form_row(form.target) }}
-                {{ form_row(form.quantity) }}
-                {{ form_row(form.submit, {'attr': {'class': 'btn btn-primary'}}) }}
-                {{ form_end(form) }}
-            {% else %}
-                <a href="{{ path('probe_send', {'id': kingdom.id}) }}" class="btn btn-primary">Attack Another Kingdom</a>
+            <div class="pull-left btn-group" role="group" aria-label="...">
+            {% if results.error is not defined %}
+                {% if results.data.report.result %}
+                    <div class="alert alert-info">
+                        <strong>{{ militaryToSend }}</strong> is the minimum number of Military to send to guarantee a successful attack.
+                        <strong>{{ defenderBonusMilitaryToSend }}</strong> is the minimum number of Military to send to guarantee a successful attack <strong>if your opponent has the Defender Policy enabled.</strong>
+                    </div>
+
+                    {{ form_start(formAttack, {'class': 'form-inline', 'action': path('attack', {'id': kingdom.id})}) }}
+                    {{ form_row(formAttack.target) }}
+                    {{ form_row(formAttack.militaryAllocations) }}
+                    {{ form_row(formAttack.submit, {'attr': {'class': 'btn btn-danger'}, 'label': 'Attack with '~militaryToSend~' Military'}) }}
+                    {{ form_end(formAttack) }}
+                    <br />
+                    {{ form_start(formAttackStrongDefense, {'class': 'form-inline', 'action': path('attack', {'id': kingdom.id})}) }}
+                    {{ form_row(formAttackStrongDefense.target) }}
+                    {{ form_row(formAttackStrongDefense.militaryAllocations) }}
+                    {{ form_row(formAttackStrongDefense.submit, {'attr': {'class': 'btn btn-danger'}, 'label': 'Attack with '~defenderBonusMilitaryToSend~' Military'}) }}
+                    {{ form_end(formAttackStrongDefense) }}
+
+                {% else %}
+                    {{ form_start(formRehack) }}
+                    {{ form_row(formRehack.target) }}
+                    {{ form_row(formRehack.quantity) }}
+                    {{ form_row(formRehack.submit, {'attr': {'class': 'btn btn-primary'}}) }}
+                    {{ form_end(formRehack) }}
+                {% endif %}
             {% endif %}
+            </div>
         </div>
     </div>
 {% endblock %}
