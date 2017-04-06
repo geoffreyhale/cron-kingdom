@@ -204,9 +204,9 @@ class ActionController extends CronkdController
         $kingdomManager = $this->get('cronkd.manager.kingdom');
         $resourceManager = $this->get('cronkd.manager.resource');
 
-        $availableMilitary = $em->getRepository(KingdomResource::class)->findOneBy([
+        $availableCivilians = $em->getRepository(KingdomResource::class)->findOneBy([
             'kingdom'  => $kingdom,
-            'resource' => $resourceManager->get(Resource::MILITARY),
+            'resource' => $resourceManager->get(Resource::CIVILIAN),
         ]);
 
         $form->handleRequest($request);
@@ -229,10 +229,10 @@ class ActionController extends CronkdController
             return $this->redirectToRoute('homepage');
         }
 
-        $maxQuantity = $kingdomManager->isAtMaxPopulation($kingdom) ? 0 : $availableMilitary->getQuantity();
+        $maxQuantity = $kingdomManager->isAtMaxPopulation($kingdom) ? 0 : $availableCivilians->getQuantity();
 
         return [
-            'actionDescription'   => 'Training of Hackers converts 1 Military each and is spread over 8 Ticks.',
+            'actionDescription'   => 'Training of Hackers converts 1 Civilian each and is spread over 8 Ticks.',
             'form'                => $form->createView(),
             'maxQuantity'         => $maxQuantity,
             'resource'            => 'hacker',

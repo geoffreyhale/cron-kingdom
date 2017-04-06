@@ -243,9 +243,9 @@ class ActionController extends ApiController
         $kingdomManager = $this->get('cronkd.manager.kingdom');
         $resourceManager = $this->get('cronkd.manager.resource');
 
-        $availableMilitary = $kingdomManager->lookupResource($kingdom, Resource::MILITARY);
-        if (!$availableMilitary || $quantity > $availableMilitary->getQuantity()) {
-            return $this->createErrorJsonResponse('Not enough military to complete action!');
+        $availableCivilians = $kingdomManager->lookupResource($kingdom, Resource::CIVILIAN);
+        if (!$availableCivilians || $quantity > $availableCivilians->getQuantity()) {
+            return $this->createErrorJsonResponse('Not enough civilians to complete action!');
         }
 
         if ($kingdomManager->isAtMaxPopulation($kingdom)) {
@@ -262,8 +262,8 @@ class ActionController extends ApiController
         $hackerResource = $resourceManager->get(Resource::HACKER);
         $hackerQueues = $queuePopulator->build($kingdom, $hackerResource, $queueLength, $quantity);
 
-        $availableMilitary->removeQuantity($quantity);
-        $em->persist($availableMilitary);
+        $availableCivilians->removeQuantity($quantity);
+        $em->persist($availableCivilians);
         $em->flush();
 
         $this->get('cronkd.manager.log')->createLog(
