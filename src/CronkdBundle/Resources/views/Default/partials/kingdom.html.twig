@@ -5,29 +5,24 @@
                 <tbody>
                 <tr>
                     <td>
-                        <i class="fa fa-fort-awesome"></i> <strong>{{ kingdom.name }}</strong>
-                        {% if notificationCount %}
-                            <div class="pull-right">
+                        <span>
+                            <i class="fa fa-fort-awesome"></i> <strong>{{ kingdom.name }}</strong>
+                            {% if notificationCount %}
+                                <div class="pull-right">
                                 <a href="{{ path('log_index', {'id': kingdom.id}) }}"><span class="label label-danger">{{ notificationCount }}</span></a>
                             </div>
-                        {% endif %}
+                            {% endif %}
+                        </span>
+                        <span class="pull-right">
+                            <span title="Net Worth" style="margin-right: 60px;"><i class="fa fa-line-chart"></i> {{ kingdom.networth|number_format }}</span>
+                            {% if kingdomWinLossString is defined %}
+                                <span title="Win-Loss Record" style="margin-right: 60px;"><i class="fa fa-trophy"></i> {{ kingdomWinLossString }}</span>
+                            {% endif %}
+                        </span>
                     </td>
-                    <td title="Liquidity"><i class="fa fa-tint"></i> {{ kingdom.liquidity|number_format }}</td>
-                    <td title="Net Worth" style="margin-left: 30px;"><i class="fa fa-line-chart"></i> {{ kingdom.networth|number_format }}</td>
-                    {% if kingdomWinLossString is defined %}
-                        <td title="Win-Loss Record" style="margin-left: 30px;"><i class="fa fa-trophy"></i> {{ kingdomWinLossString }}</td>
-                    {% endif %}
                 </tr>
                 </tbody>
             </table>
-        </div>
-    </div>
-</div>
-
-<div class="row clearfix">
-    <div class="col-md-12">
-        <div class="panel panel-default">
-            {% include 'CronkdBundle:Default:partials/kingdom/resources.html.twig' %}
         </div>
     </div>
 </div>
@@ -47,14 +42,21 @@
 
     <div class="col-md-9">
         <div class="panel panel-default">
+            {% include 'CronkdBundle:Default:partials/kingdom/resources.html.twig' %}
+        </div>
+
+        <div class="panel panel-default">
             {% include 'CronkdBundle:Default:partials/kingdom/queues.html.twig' %}
         </div>
 
-        <div class="col-md-6">
-            {% include 'CronkdBundle:Default:partials/kingdom/compositionChart.html.twig' %}
-        </div>
-        <div class="col-md-6 clearfix">
-            {% include 'CronkdBundle:Default:partials/kingdom/populationChart.html.twig' %}
+        <div class="row clearfix">
+            <div class="col-md-6">
+                {% include 'CronkdBundle:Default:partials/kingdom/compositionChart.html.twig' %}
+            </div>
+
+            <div class="col-md-6 clearfix">
+                {% include 'CronkdBundle:Default:partials/kingdom/populationChart.html.twig' %}
+            </div>
         </div>
     </div>
 
