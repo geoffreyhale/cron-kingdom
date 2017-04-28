@@ -46,7 +46,7 @@
                                 {% set quantity = quantity + queue.quantity %}
                             {% endif %}
                         {% endfor %}
-                        <td>{{ quantity != 0 ? quantity : '' }}</td>
+                        <td>{{ quantity != 0 ? quantity|number_format : '' }}</td>
                     {% endfor %}
                 {% endif %}
             {% endfor %}
