@@ -44,7 +44,7 @@ class ProbingService
             $availableResources = $this->em->getRepository(KingdomResource::class)
                 ->findResourcesThatMayBeProbed($target);
 
-            $policy = $this->em->getRepository(KingdomPolicy::class)->findCurrentPolicy($kingdom);
+            $policy = $this->em->getRepository(KingdomPolicy::class)->findCurrentPolicy($target);
             $report->setResult(true);
             $report->setData(['Resources' => $availableResources, 'Policy' => $policy]);
         }
