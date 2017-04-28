@@ -45,24 +45,18 @@ class QueuePopulator
             $queues[$currentTick] = $queue;
         }
 
-        $queues = array_reverse($queues, false);
-
-        while (true) {
-            /** @var Queue $queue */
-            foreach ($queues as $queue) {
-                if (0 == $quantity) {
-                    break;
-                }
-
-                $queue->addQuantity(1);
-                $quantity--;
+        /** @var Queue $queue */
+        $queues = array_values($queues);
+        foreach ($queues as $index => $queue) {
+            $addition = floor($quantity / $intervals);
+            $remainderForThisQueue = $quantity % $intervals;
+            if ($remainderForThisQueue >= ($intervals - $index)) {
+                $addition++;
             }
-            if (0 == $quantity) {
-                break;
-            }
+            $queue->addQuantity($addition);
+            $this->em->persist($queue);
         }
 
-        $queues = array_reverse($queues, false);
         foreach ($queues as $queue) {
             $this->em->persist($queue);
         }

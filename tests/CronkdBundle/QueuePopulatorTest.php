@@ -99,7 +99,8 @@ class QueuePopulatorTest extends KernelTestCase
             [5, 25004, [5000,5001,5001,5001,5001]],
             [10, 75, [7,7,7,7,7,8,8,8,8,8]],
             [25, 1, [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]],
-            //[1000, 100000, array_fill(0, 1000, 100)],
+            [1000, 100000, array_fill(0, 1000, 100)],
+            [10, 10E12, array_fill(0, 10, 10E11)],
         ];
     }
 
@@ -125,12 +126,12 @@ class QueuePopulatorTest extends KernelTestCase
         return [
             [1, 10, 10],
             [100, 200, 30],
-            //[1000, 500, 3000],
+            [1000, 500, 3000],
         ];
     }
 
     /**
-     * @dataProvider bucketPlacementDataProvider
+     * @dataProvider queueStructureDataProvider
      */
     public function testQueueStructure($startingTick, $queueSize, $quantity)
     {
@@ -144,7 +145,7 @@ class QueuePopulatorTest extends KernelTestCase
             $this->assertEquals($world, $queues[$i]->getKingdom()->getWorld());
             $this->assertEquals($kingdom, $queues[$i]->getKingdom());
             $this->assertEquals($resource, $queues[$i]->getResource());
-            $this->assertEquals($startingTick+$i, $queues[$i]->getTick());
+            $this->assertEquals($startingTick+$i+1, $queues[$i]->getTick());
         }
     }
 

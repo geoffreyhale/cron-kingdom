@@ -1,0 +1,14 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+    <div class="row-fluid">
+        <div class="col-sm-12">
+            <h1>Sorry, you've encountered an error!</h1>
+            <p>
+                <div class="alert alert-danger">
+                    {{ exception.message }}
+                </div>
+            </p>
+        </div>
+    </div>
+{% endblock %}
