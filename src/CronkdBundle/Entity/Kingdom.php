@@ -73,7 +73,7 @@ class Kingdom extends BaseEntity
     /**
      * @var KingdomResource[]
      *
-     * @ORM\OneToMany(targetEntity="KingdomResource", mappedBy="kingdom", fetch="EAGER", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="KingdomResource", mappedBy="kingdom", cascade={"persist"})
      */
     private $resources;
 
