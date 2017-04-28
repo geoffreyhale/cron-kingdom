@@ -28,6 +28,7 @@ class DefaultController extends Controller
             return $this->redirect($this->generateUrl('world_index'));
         }
 
+        /** @var Kingdom $kingdom */
         $kingdom = $em->getRepository(Kingdom::class)->findOneByUserWorld($user, $world);
         $userHasKingdom = $em->getRepository(Kingdom::class)->userHasKingdom($user, $world);
 
@@ -37,6 +38,7 @@ class DefaultController extends Controller
         $kingdomHasAvailableAttack = false;
         $kingdomHasActivePolicy = false;
         $kingdomWinLoss = ['win'=>0,'loss'=>0,];
+        $policy_end_string = null;
         if ($kingdom) {
             $kingdomResources = $em->getRepository(KingdomResource::class)->findByKingdom($kingdom);
             $queues = $this->get('cronkd.manager.kingdom')->getResourceQueues($kingdom);
@@ -44,6 +46,9 @@ class DefaultController extends Controller
             $kingdomHasAvailableAttack = $em->getRepository(AttackLog::class)->hasAvailableAttack($kingdom);
             $kingdomWinLoss = $em->getRepository(AttackLog::class)->getWinLossRecord($kingdom);
             $kingdomHasActivePolicy = $this->get('cronkd.manager.policy')->kingdomHasActivePolicy($kingdom);
+            if ($kingdomHasActivePolicy) {
+                $policy_end_string = $kingdom->getActivePolicy()->getEndTime()->diff(new \DateTime())->format('%h:%I');
+            }
         }
 
         return [
@@ -56,6 +61,7 @@ class DefaultController extends Controller
             'kingdomsByNetworth'        => $kingdomManager->calculateKingdomsByNetWorth($world),
             'kingdomsByWinLoss'         => $kingdomManager->calculateKingdomsByWinLoss($world),
             'kingdomResources'          => $kingdomResources,
+            'policy_end_string'         => $policy_end_string,
             'userHasKingdom'            => $userHasKingdom,
             'notificationCount'         => $notificationCount,
             'kingdomHasAvailableAttack' => $kingdomHasAvailableAttack,

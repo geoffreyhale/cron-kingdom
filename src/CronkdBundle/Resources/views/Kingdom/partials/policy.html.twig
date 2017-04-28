@@ -2,4 +2,5 @@
     <a href="{{ path('policy_select', {id: kingdom.id}) }}" class="btn btn-success">Select Policy</a>
 {% else %}
     {{ kingdom.activePolicy.policy.name }}
+    <div class="text-muted"><em>time remaining: {{ policy_end_string }}</em></div>
 {% endif %}
