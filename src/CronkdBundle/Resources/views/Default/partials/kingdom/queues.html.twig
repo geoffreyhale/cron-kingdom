@@ -12,12 +12,18 @@
 <table class="table table-bordered" style="display: table;">
     <thead>
     <tr style="background-color: #f5f5f5;">
+        <th>Current</th>
+        <th colspan="{{ maxTick - minTick + 1 }}">Incoming</th>
+        <th>Future</th>
+    </tr>
+    <tr style="background-color: #f5f5f5;">
         <th>
-            <i class="fa fa-clock-o fa-fw"></i>++
+            <i class="fa fa-clock-o fa-fw"></i> Hour
         </th>
         {% for tick in range(minTick, maxTick) %}
-            <th>{{ loop.index }}</th>
+            <th>+{{ loop.index }}</th>
         {% endfor %}
+        <th style="background-color: #f5f5f5;"></th>
     </tr>
     </thead>
     <tbody>
@@ -50,7 +56,13 @@
                     {% endfor %}
                 {% endif %}
             {% endfor %}
+            <td style="background-color: #f5f5f5;"></td>
         </tr>
     {% endfor %}
+    <tr style="background-color: #f5f5f5;">
+        <td title="Liquidity"><i class="fa fa-tint"></i> {{ kingdom.liquidity|number_format }}</td>
+        <td colspan="{{ maxTick - minTick + 1 }}"></td>
+        <td title="Net Worth" style="margin-left: 30px;"><i class="fa fa-line-chart"></i> {{ kingdom.networth|number_format }}</td>
+    </tr>
     </tbody>
 </table>
