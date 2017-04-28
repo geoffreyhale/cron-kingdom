@@ -1,0 +1,63 @@
+<div class="row clearfix" style="font-size: 24px;">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <table class="table" title="Kingdom">
+                <tbody>
+                <tr>
+                    <td>
+                        <span>
+                            <i class="fa fa-fort-awesome"></i> <strong>{{ kingdom.name }}</strong>
+                            {% if notificationCount %}
+                                <div class="pull-right">
+                                <a href="{{ path('log_index', {'id': kingdom.id}) }}"><span class="label label-danger">{{ notificationCount }}</span></a>
+                            </div>
+                            {% endif %}
+                        </span>
+                        <span class="pull-right">
+                            <span title="Net Worth" style="margin-right: 60px;"><i class="fa fa-line-chart"></i> {{ kingdom.networth|number_format }}</span>
+                            {% if kingdomWinLossString is defined %}
+                                <span title="Win-Loss Record" style="margin-right: 60px;"><i class="fa fa-trophy"></i> {{ kingdomWinLossString }}</span>
+                            {% endif %}
+                        </span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row clearfix">
+    <div class="col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-body" style="text-align: center;">
+                <div>
+                    {% include 'CronkdBundle:Default:partials/kingdom/policy.html.twig' %}
+                </div>
+                <hr />
+                {% include 'CronkdBundle:Default:partials/kingdom/actions.html.twig' %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        <div class="panel panel-default">
+            {% include 'CronkdBundle:Default:partials/kingdom/resources.html.twig' %}
+        </div>
+
+        <div class="panel panel-default">
+            {% include 'CronkdBundle:Default:partials/kingdom/queues.html.twig' %}
+        </div>
+
+        <div class="row clearfix">
+            <div class="col-md-6">
+                {% include 'CronkdBundle:Default:partials/kingdom/compositionChart.html.twig' %}
+            </div>
+
+            <div class="col-md-6 clearfix">
+                {% include 'CronkdBundle:Default:partials/kingdom/populationChart.html.twig' %}
+            </div>
+        </div>
+    </div>
+
+</div>
