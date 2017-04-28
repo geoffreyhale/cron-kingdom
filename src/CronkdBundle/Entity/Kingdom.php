@@ -41,7 +41,7 @@ class Kingdom extends BaseEntity
     /**
      * @var int
      *
-     * @ORM\Column(name="net_worth", type="integer", options={"default": 0})
+     * @ORM\Column(name="net_worth", type="bigint", options={"default": 0})
      *
      * @Jms\Expose()
      */
@@ -50,7 +50,7 @@ class Kingdom extends BaseEntity
     /**
      * @var int
      *
-     * @ORM\Column(name="liquidity", type="integer", options={"default": 0})
+     * @ORM\Column(name="liquidity", type="bigint", options={"default": 0})
      *
      * @Jms\Expose()
      */
