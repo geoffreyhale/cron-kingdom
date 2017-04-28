@@ -1,0 +1,44 @@
+<div class="row clearfix" style="font-size: 24px;">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <table class="table">
+                <tbody>
+                <tr>
+                    <td title="World"><i class="fa fa-globe"></i> <strong>{{ world.name }}</strong></td>
+                    {% if worldNetworth is defined %}
+                        <td title="Net Worth">
+                            <a href="{{ path('world_show', {'id': world.id}) }}">
+                                <i class="fa fa-line-chart"></i>
+                            </a>
+                            {{ worldNetworth|number_format }}
+                        </td>
+                    {% endif %}
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="row clearfix">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-fort-awesome"></i> Kingdoms</h3>
+            </div>
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a href="#tab-scores-networth" data-toggle="tab">Networth</a>
+                </li>
+                <li><a href="#tab-scores-winloss" data-toggle="tab">Score</a></li>
+            </ul>
+            <div class="tab-content clearfix">
+                <div class="tab-pane active" id="tab-scores-networth">
+                    {% include 'CronkdBundle:World:partials/kingdomsByNetworth.html.twig' %}
+                </div>
+                <div class="tab-pane" id="tab-scores-winloss">
+                    {% include 'CronkdBundle:World:partials/kingdomsByWinLoss.html.twig' %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
