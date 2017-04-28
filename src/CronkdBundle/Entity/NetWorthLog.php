@@ -24,7 +24,7 @@ class NetWorthLog extends BaseEntity
     /**
      * @var string
      *
-     * @ORM\Column(name="net_worth", type="integer")
+     * @ORM\Column(name="net_worth", type="bigint")
      */
     private $netWorth;
 
