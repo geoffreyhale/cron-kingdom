@@ -30,7 +30,8 @@
             {% if resourceQueues.kingdomResource.resource.type.name == resourceType %}
             <tr>
                 <td style="white-space: nowrap; background-color: #f5f5f5;">
-                    {% set resourceName = resourceQueues.kingdomResource.resource.name %}
+                    {% set resource = resourceQueues.kingdomResource.resource %}
+                    {% set resourceName = resource.name %}
                     {% if resourceName == 'Civilian' %}
                         <i class="fa fa-users fa-fw"></i>
                     {% elseif resourceName == 'Wood House' %}
@@ -50,7 +51,7 @@
                     {% endif %}
                     <strong>{{ resourceQueues.kingdomResource.quantity|number_format }}</strong>
                     {{ resourceName }}
-                    {% if resourceQueues.kingdomResource.resource.canBeProduced %}
+                    {% if resource.canBeProduced and kingdomState.canPerformActionOnResource(resource) %}
                         <a href="{{ path('action_perform', {'resourceName': resourceName}) }}" class="btn btn-success btn-xs"><i class="fa fa-plus"></i></a>
                     {% endif %}
                 </td>

@@ -45,6 +45,7 @@ services:
             - "@doctrine.orm.default_entity_manager"
             - "@cronkd.manager.resource"
             - "@event_dispatcher"
+            - "%cronkd.settings%"
         calls:
             - [setLogger, ["@logger"]]
 

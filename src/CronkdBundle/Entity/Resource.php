@@ -69,6 +69,13 @@ class Resource extends BaseEntity
     /**
      * @var int
      *
+     * @ORM\Column(name="probe_power", type="integer")
+     */
+    private $probePower;
+
+    /**
+     * @var int
+     *
      * @ORM\Column(name="capacity", type="integer")
      */
     private $capacity;
@@ -276,30 +283,6 @@ class Resource extends BaseEntity
     }
 
     /**
-     * Set type
-     *
-     * @param \CronkdBundle\Entity\ResourceType $type
-     *
-     * @return Resource
-     */
-    public function setType(\CronkdBundle\Entity\ResourceType $type = null)
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * Get type
-     *
-     * @return \CronkdBundle\Entity\ResourceType
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
      * Set canBeProduced
      *
      * @param boolean $canBeProduced
@@ -345,5 +328,53 @@ class Resource extends BaseEntity
     public function getCapacity()
     {
         return $this->capacity;
+    }
+
+    /**
+     * Set probePower
+     *
+     * @param integer $probePower
+     *
+     * @return Resource
+     */
+    public function setProbePower($probePower)
+    {
+        $this->probePower = $probePower;
+
+        return $this;
+    }
+
+    /**
+     * Get probePower
+     *
+     * @return integer
+     */
+    public function getProbePower()
+    {
+        return $this->probePower;
+    }
+
+    /**
+     * Set type
+     *
+     * @param ResourceType $type
+     *
+     * @return Resource
+     */
+    public function setType(ResourceType $type = null)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return ResourceType
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 }

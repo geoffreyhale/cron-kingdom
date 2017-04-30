@@ -1,10 +1,14 @@
+{% if kingdomState.hasAvailableProbingResources or kingdomState.availableAttack %}
 <div class="btn-group-vertical" role="group">
+    {% if kingdomState.hasAvailableProbingResources %}
     <a href="{{ path('probe_send', {id: kingdom.id}) }}" class="btn btn-warning">Attempt Hack</a>
+    {% endif %}
     {% if kingdomState.availableAttack %}
         <a href="{{ path('attack', {id: kingdom.id}) }}" class="btn btn-danger">Plan Attack</a>
     {% endif %}
 </div>
 <hr />
+{% endif %}
 <div class="btn-group-vertical" role="group">
     <a href="{{ path('log_index', {id: kingdom.id}) }}" class="btn btn-default">Event Log{% if kingdomState.notificationCount > 0 %} <span class="badge">{{ kingdomState.notificationCount }}</span>{% endif %}</a>
 </div>

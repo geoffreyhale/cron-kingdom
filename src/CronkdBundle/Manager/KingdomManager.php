@@ -25,17 +25,21 @@ class KingdomManager
     private $resourceManager;
     /** @var EventDispatcherInterface  */
     private $eventDispatcher;
+    /** @var array */
+    private $settings;
     /** @var NullLogger  */
     private $logger;
 
     public function __construct(
         EntityManagerInterface $em,
         ResourceManager $resourceManager,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        array $settings
     ) {
         $this->em              = $em;
         $this->resourceManager = $resourceManager;
         $this->eventDispatcher = $eventDispatcher;
+        $this->settings        = $settings;
         $this->logger          = new NullLogger();
     }
 
@@ -76,7 +80,7 @@ class KingdomManager
      */
     public function generateKingdomState(Kingdom $kingdom)
     {
-        $kingdomState = new KingdomState($kingdom);
+        $kingdomState = new KingdomState($kingdom, $this->settings);
         $winLossRecord = $this->em->getRepository(AttackLog::class)->getWinLossRecord($kingdom);
         $kingdomState
             ->setWinLossRecord($winLossRecord['win'], $winLossRecord['loss'])
@@ -84,7 +88,6 @@ class KingdomManager
             ->setNotificationCount($this->em->getRepository(Log::class)->findNotificationCount($kingdom))
             ->setAvailableAttack($this->em->getRepository(AttackLog::class)->hasAvailableAttack($kingdom))
         ;
-        //$kingdomResources = $this->em->getRepository(KingdomResource::class)->findByKingdom($kingdom);
 
         return $kingdomState;
     }

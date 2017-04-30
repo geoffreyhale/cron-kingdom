@@ -3,6 +3,10 @@ namespace CronkdBundle\Model;
 
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomPolicy;
+use CronkdBundle\Entity\KingdomResource;
+use CronkdBundle\Entity\Resource;
+use CronkdBundle\Exceptions\KingdomDoesNotHaveResourceException;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 class KingdomState
 {
@@ -19,9 +23,10 @@ class KingdomState
     /** @var bool  */
     private $availableAttack = false;
 
-    public function __construct(Kingdom $kingdom)
+    public function __construct(Kingdom $kingdom, array $settings)
     {
-        $this->kingdom = $kingdom;
+        $this->kingdom  = $kingdom;
+        $this->settings = $settings;
     }
 
     /**
@@ -30,6 +35,96 @@ class KingdomState
     public function getResources()
     {
         return $this->kingdom->getResources();
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasAvailableProbingResources()
+    {
+        foreach ($this->kingdom->getResources() as $kingdomResource) {
+            if ($kingdomResource->getQuantity() > 0 && $kingdomResource->getResource()->getProbePower() > 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasAvailableAttackingResources()
+    {
+        foreach ($this->kingdom->getResources() as $kingdomResource) {
+            if ($kingdomResource->getQuantity() > 0 && $kingdomResource->getResource()->getAttack() > 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param Resource $resource
+     * @return bool
+     */
+    public function canPerformActionOnResource(Resource $resource)
+    {
+        $actionSettings = $this->settings['resources'][$resource->getName()]['action'];
+        if (!$actionSettings) {
+            return false;
+        }
+
+        try {
+            foreach ($actionSettings['inputs'] as $inputResourceName => $inputSetting) {
+                $kingdomResource = $this->getKingdomResource($inputResourceName);
+                if ($kingdomResource->getQuantity() < $inputSetting['quantity']) {
+                    return false;
+                }
+            }
+        } catch (KingdomDoesNotHaveResourceException $e) {
+            return false;
+        }
+
+
+
+        return true;
+    }
+
+    /**
+     * @param string $resourceName
+     * @return KingdomResource
+     * @throws KingdomDoesNotHaveResourceException
+     */
+    private function getKingdomResource(string $resourceName)
+    {
+        foreach ($this->kingdom->getResources() as $kingdomResource) {
+            if ($kingdomResource->getResource()->getName() == $resourceName) {
+                return $kingdomResource;
+            }
+        }
+
+        throw new KingdomDoesNotHaveResourceException($resourceName);
+    }
+
+    /**
+     * @param bool $availableAttack
+     * @return self
+     */
+    public function setAvailableAttack(bool $availableAttack)
+    {
+        $this->availableAttack = $availableAttack;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getAvailableAttack()
+    {
+        return $this->availableAttack && $this->hasAvailableAttackingResources();
     }
 
     /**
@@ -92,11 +187,17 @@ class KingdomState
         return $this;
     }
 
+    /**
+     * @return int
+     */
     public function getNumWins()
     {
         return $this->numWins;
     }
 
+    /**
+     * @return int
+     */
     public function getNumLosses()
     {
         return $this->numLosses;
@@ -110,6 +211,10 @@ class KingdomState
         return $this->numWins . '-' . $this->numLosses;
     }
 
+    /**
+     * @param int $count
+     * @return self
+     */
     public function setNotificationCount(int $count)
     {
         $this->notificationCount = $count;
@@ -117,27 +222,11 @@ class KingdomState
         return $this;
     }
 
+    /**
+     * @return int
+     */
     public function getNotificationCount()
     {
         return $this->notificationCount;
-    }
-
-    /**
-     * @param bool $availableAttack
-     * @return self
-     */
-    public function setAvailableAttack(bool $availableAttack)
-    {
-        $this->availableAttack = $availableAttack;
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getAvailableAttack()
-    {
-        return $this->availableAttack;
     }
 }
