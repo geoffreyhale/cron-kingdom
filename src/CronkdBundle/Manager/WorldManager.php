@@ -1,8 +1,10 @@
 <?php
 namespace CronkdBundle\Manager;
 
+use CronkdBundle\Entity\Policy;
 use CronkdBundle\Entity\World;
 use CronkdBundle\Event\ActivateWorldEvent;
+use CronkdBundle\Model\WorldState;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -12,14 +14,20 @@ class WorldManager
 {
     /** @var EntityManagerInterface  */
     private $em;
+    /** @var  KingdomManager */
+    private $kingdomManager;
     /** @var EventDispatcherInterface  */
     private $eventDispatcher;
     /** @var LoggerInterface  */
     private $logger;
 
-    public function __construct(EntityManagerInterface $em, EventDispatcherInterface $eventDispatcher)
+    public function __construct(
+        EntityManagerInterface $em,
+        KingdomManager $kingdomManager,
+        EventDispatcherInterface $eventDispatcher)
     {
         $this->em              = $em;
+        $this->kingdomManager  = $kingdomManager;
         $this->eventDispatcher = $eventDispatcher;
         $this->logger          = new NullLogger();
     }
@@ -33,6 +41,24 @@ class WorldManager
         $this->logger = $logger;
 
         return $this;
+    }
+
+    /**
+     * @param World $world
+     * @return WorldState
+     */
+    public function generateWorldState(World $world)
+    {
+        $policies = $this->em->getRepository(Policy::class)->findAll();
+
+        $worldState = new WorldState($world, $policies);
+        $worldState
+            ->setAggregateNetWorth($this->calculateWorldNetWorth($world))
+            ->setKingdomsByNetWorth($this->kingdomManager->calculateKingdomsByNetWorth($world))
+            ->setKingdomsByWinLossRecord($this->kingdomManager->calculateKingdomsByWinLoss($world))
+        ;
+
+        return $worldState;
     }
 
     /**

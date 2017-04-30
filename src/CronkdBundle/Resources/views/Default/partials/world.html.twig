@@ -5,14 +5,12 @@
                 <tbody>
                 <tr>
                     <td title="World"><i class="fa fa-globe"></i> <strong>{{ world.name }}</strong></td>
-                    {% if worldNetworth is defined %}
-                        <td title="Net Worth">
-                            <a href="{{ path('world_show', {'id': world.id}) }}">
-                                <i class="fa fa-line-chart"></i>
-                            </a>
-                            {{ worldNetworth|number_format }}
-                        </td>
-                    {% endif %}
+                    <td title="Net Worth">
+                        <a href="{{ path('world_show', {'id': world.id}) }}">
+                            <i class="fa fa-line-chart"></i>
+                        </a>
+                        {{ worldState.aggregateNetWorth|number_format }}
+                    </td>
                 </tr>
                 </tbody>
             </table>

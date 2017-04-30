@@ -8,8 +8,8 @@ class KingdomState
 {
     /** @var  Kingdom */
     private $kingdom;
-    /** @var   */
-    private $currentQueues;
+    /** @var array  */
+    private $currentQueues = [];
     /** @var int  */
     private $numWins = 0;
     /** @var int */
@@ -32,12 +32,20 @@ class KingdomState
         return $this->kingdom->getResources();
     }
 
-    public function setCurrentQueues($currentQueues)
+    /**
+     * @param array $currentQueues
+     * @return self
+     */
+    public function setCurrentQueues(array $currentQueues)
     {
         $this->currentQueues = $currentQueues;
+
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getCurrentQueues()
     {
         return $this->currentQueues;

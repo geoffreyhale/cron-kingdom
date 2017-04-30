@@ -33,15 +33,15 @@ class DefaultController extends CronkdController
             $kingdomState = $kingdomManager->generateKingdomState($kingdom);
         }
 
+        $worldState = $worldManager->generateWorldState($world);
+
         return [
             'user'                      => $user,
             'kingdom'                   => $kingdom,
             'kingdomState'              => $kingdomState,
             'world'                     => $world,
-            'worldNetworth'             => $worldManager->calculateWorldNetWorth($world),
+            'worldState'                => $worldState,
             'kingdoms'                  => $world->getKingdoms(),
-            'kingdomsByNetworth'        => $kingdomManager->calculateKingdomsByNetWorth($world),
-            'kingdomsByWinLoss'         => $kingdomManager->calculateKingdomsByWinLoss($world),
             'userHasKingdom'            => null !== $kingdom,
         ];
     }

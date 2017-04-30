@@ -36,10 +36,12 @@
     <div class="col-md-3">
         <div class="panel panel-default">
             <div class="panel-body" style="text-align: center;">
+                {% if worldState.hasPolicies %}
                 <div>
                     {% include 'CronkdBundle:Default:partials/kingdom/policy.html.twig' %}
                 </div>
                 <hr />
+                {% endif %}
                 {% include 'CronkdBundle:Default:partials/kingdom/actions.html.twig' %}
             </div>
         </div>
