@@ -32,6 +32,11 @@ services:
     # Managers
     cronkd.manager.world:
         class: CronkdBundle\Manager\WorldManager
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
+            - "@event_dispatcher"
+        calls:
+            - [setLogger, ["@logger"]]
 
     cronkd.manager.kingdom:
         class: CronkdBundle\Manager\KingdomManager

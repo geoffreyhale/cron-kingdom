@@ -68,7 +68,7 @@ swiftmailer:
     spool: { type: memory }
 
 fos_user:
-    db_driver: orm # other valid values are 'mongodb' and 'couchdb'
+    db_driver: orm
     firewall_name: main
     user_class: CronkdBundle\Entity\User
     from_email:
@@ -81,63 +81,92 @@ stof_doctrine_extensions:
             timestampable: true
 
 cronkd:
-    population: Civilian
-    initialize_kingdom:
-        resources:
-            - resource:
-                name: Civilian
-                quantity: 100
-            - resource:
-                name: Housing
-                quantity: 100
+    resource_types:
+        - Population
+        - Material
+        - Housing
     resources:
-        - resource:
-            inputs:
-                - input:
-                    name: Civilian
+        Civilian:
+            type: Population
+            initial: 100
+            value: 1
+            action: ~
+        Wood:
+            type: Material
+            initial: 50
+            value: 1
+            action:
+                label: "Gather"
+                inputs:
+                    Civilian:
+                        quantity: 1
+                        requeue: true
+                        queue_size: 8
+                output:
                     quantity: 1
-                    requeue: true
                     queue_size: 8
-            outputs:
-                - output:
-                    name: Material
+        Wood House:
+            type: Housing
+            initial: 100
+            value: 2
+            action:
+                label: "Build"
+                inputs:
+                    Civilian:
+                        quantity: 1
+                        requeue: true
+                        queue_size: 8
+                    Wood:
+                        quantity: 1
+                        requeue: false
+                output:
                     quantity: 1
                     queue_size: 8
-        - resource:
-            inputs:
-                - input:
-                    name: Civilian
+        Wood Bunker:
+            type: Housing
+            initial: 0
+            value: 4
+            defense: 1
+            action:
+                label: "Build"
+                inputs:
+                    Civilian:
+                        quantity: 2
+                        requeue: true
+                        queue_size: 8
+                    Wood:
+                        quantity: 2
+                        requeue: false
+                output:
                     quantity: 1
-                    requeue: true
-                    queue_size: 16
-                - input:
-                    name: Material
+                    queue_size: 8
+        Military:
+            type: Population
+            initial: 25
+            attack: 1
+            defense: 0
+            value: 2
+            action:
+                label: "Train"
+                inputs:
+                    Civilian:
+                        quantity: 1
+                        requeue: false
+                output:
                     quantity: 1
-                    requeue: false
-            outputs:
-                - output:
-                    name: Housing
-                    quantity: true
-                    queue_size: 16
-        - resource:
-            inputs:
-                - input:
-                    name: Civilian
+                    queue_size: 8
+        Hacker:
+            type: Population
+            initial: 1
+            attack: 0
+            defense: 0
+            value: 3
+            action:
+                label: "Train"
+                inputs:
+                    Military:
+                        quantity: 1
+                        requeue: false
+                output:
                     quantity: 1
-                    requeue: false
-            outputs:
-                - output:
-                    name: Military
-                    quantity: 1
-                    queue_size: 24
-        - resource:
-            inputs:
-                - input:
-                    name: Military
-                    quantity: 1
-                    requeue: false
-            outputs:
-                - output:
-                    name: Hacker
-                    quantity: 1
-                    queue_size: 24
+                    queue_size: 8

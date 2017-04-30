@@ -58,11 +58,34 @@ class Resource extends BaseEntity
     private $canBeProbed;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="attack", type="integer")
+     *
+     * @Jms\Expose()
+     */
+    private $attack;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="defense", type="integer")
+     *
+     * @Jms\Expose()
+     */
+    private $defense;
+
+    /**
      * @var KingdomResource[]
      *
      * @ORM\OneToMany(targetEntity="KingdomResource", mappedBy="resource")
      */
     private $kingdoms;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="ResourceType", inversedBy="resources")
+     */
+    private $type;
 
     /**
      * Constructor
@@ -186,5 +209,77 @@ class Resource extends BaseEntity
     public function getKingdoms()
     {
         return $this->kingdoms;
+    }
+
+    /**
+     * Set attack
+     *
+     * @param integer $attack
+     *
+     * @return Resource
+     */
+    public function setAttack($attack)
+    {
+        $this->attack = $attack;
+
+        return $this;
+    }
+
+    /**
+     * Get attack
+     *
+     * @return integer
+     */
+    public function getAttack()
+    {
+        return $this->attack;
+    }
+
+    /**
+     * Set defense
+     *
+     * @param integer $defense
+     *
+     * @return Resource
+     */
+    public function setDefense($defense)
+    {
+        $this->defense = $defense;
+
+        return $this;
+    }
+
+    /**
+     * Get defense
+     *
+     * @return integer
+     */
+    public function getDefense()
+    {
+        return $this->defense;
+    }
+
+    /**
+     * Set type
+     *
+     * @param \CronkdBundle\Entity\ResourceType $type
+     *
+     * @return Resource
+     */
+    public function setType(\CronkdBundle\Entity\ResourceType $type = null)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return \CronkdBundle\Entity\ResourceType
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 }
