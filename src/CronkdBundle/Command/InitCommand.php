@@ -55,9 +55,11 @@ class InitCommand extends ContainerAwareCommand
             }
 
             $resource->setType($resourceTypesByName[$resourceConf['type']]);
+            $resource->setCanBeProduced(isset($resourceConf['action']['verb']));
             $resource->setValue($resourceConf['value']);
             $resource->setAttack($resourceConf['attack']);
             $resource->setDefense($resourceConf['defense']);
+            $resource->setCapacity($resourceConf['capacity']);
             $resource->setCanBeProbed($resourceConf['can_be_probed']);
             $em->persist($resource);
         }

@@ -2,6 +2,7 @@
 namespace CronkdBundle\Manager;
 
 use CronkdBundle\Entity\Resource;
+use CronkdBundle\Entity\ResourceType;
 use CronkdBundle\Exceptions\InvalidResourceException;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -50,5 +51,27 @@ class ResourceManager
         }
 
         return $this->cachedResources[$resourceName];
+    }
+
+    /**
+     * @return array
+     */
+    public function getPopulationResources()
+    {
+        $resources = $this->em->getRepository(Resource::class)
+            ->findResourcesByType(ResourceType::POPULATION);
+
+        return $resources;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBuildingResources()
+    {
+        $resources = $this->em->getRepository(Resource::class)
+            ->findResourcesByType(ResourceType::BUILDING);
+
+        return $resources;
     }
 }

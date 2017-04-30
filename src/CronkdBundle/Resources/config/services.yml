@@ -69,8 +69,8 @@ services:
             - "@doctrine.orm.default_entity_manager"
 
     # Listeners
-    cronkd.listener.net_worth:
-        class: CronkdBundle\Listener\NetWorthListener
+    cronkd.listener.kingdom_cached_stats:
+        class: CronkdBundle\Listener\KingdomCachedStatsListener
         arguments:
             - "@doctrine.orm.default_entity_manager"
             - "@cronkd.manager.kingdom"

@@ -11,7 +11,7 @@ use CronkdBundle\Manager\KingdomManager;
 use CronkdBundle\Manager\NetWorthLogManager;
 use Doctrine\ORM\EntityManagerInterface;
 
-class NetWorthListener
+class KingdomCachedStatsListener
 {
     /** @var EntityManagerInterface  */
     private $em;
@@ -36,6 +36,7 @@ class NetWorthListener
         /** @var Kingdom $kingdom */
         foreach ($event->world->getKingdoms() as $kingdom) {
             $this->kingdomManager->calculateNetWorth($kingdom);
+            $this->kingdomManager->calculateAttackAndDefense($kingdom);
             $this->netWorthLogManager->logNetWorth($kingdom);
         }
     }
@@ -44,12 +45,14 @@ class NetWorthListener
     {
         if ($event->kingdom->getWorld()->getActive()) {
             $this->kingdomManager->calculateNetWorth($event->kingdom);
+            $this->kingdomManager->calculateAttackAndDefense($event->$kingdom);
         }
     }
 
     public function onAction(ActionEvent $event)
     {
         $this->kingdomManager->calculateNetWorth($event->kingdom);
+        $this->kingdomManager->calculateAttackAndDefense($event->kingdom);
     }
 
     public function onProbe(ProbeEvent $event)
@@ -61,5 +64,7 @@ class NetWorthListener
     {
         $this->kingdomManager->calculateNetWorth($event->kingdom);
         $this->kingdomManager->calculateNetWorth($event->target);
+        $this->kingdomManager->calculateAttackAndDefense($event->kingdom);
+
     }
 }

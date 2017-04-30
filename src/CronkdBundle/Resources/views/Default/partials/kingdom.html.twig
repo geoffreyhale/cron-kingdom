@@ -14,9 +14,16 @@
                             {% endif %}
                         </span>
                         <span class="pull-right">
-                            <span title="Net Worth" style="margin-right: 60px;"><i class="fa fa-line-chart"></i> {{ kingdom.networth|number_format }}</span>
+                            <span title="Net Worth" style="margin-right: 60px;">
+                                <i class="fa fa-line-chart"></i> {{ kingdom.networth|number_format }}
+                            </span>
+                            <span title="Attack and Defense Power" style="margin-right: 60px;">
+                                <i class="fa fa-shield"></i> {{ kingdom.attack|number_format }}/{{ kingdom.defense|number_format }}
+                            </span>
                             {% if kingdomWinLossString is defined %}
-                                <span title="Win-Loss Record" style="margin-right: 60px;"><i class="fa fa-trophy"></i> {{ kingdomWinLossString }}</span>
+                                <span title="Win-Loss Record" style="margin-right: 60px;">
+                                    <i class="fa fa-trophy"></i> {{ kingdomWinLossString }}
+                                </span>
                             {% endif %}
                         </span>
                     </td>
@@ -41,13 +48,13 @@
     </div>
 
     <div class="col-md-9">
+        {#
         <div class="panel panel-default">
             {% include 'CronkdBundle:Default:partials/kingdom/resources.html.twig' %}
         </div>
+        #}
 
-        <div class="panel panel-default">
             {% include 'CronkdBundle:Default:partials/kingdom/queues.html.twig' %}
-        </div>
 
         <div class="row clearfix">
             <div class="col-md-6">

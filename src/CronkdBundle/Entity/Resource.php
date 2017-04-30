@@ -58,6 +58,22 @@ class Resource extends BaseEntity
     private $canBeProbed;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="can_be_produced", type="boolean")
+     *
+     * @Jms\Expose()
+     */
+    private $canBeProduced;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="capacity", type="integer")
+     */
+    private $capacity;
+
+    /**
      * @var int
      *
      * @ORM\Column(name="attack", type="integer")
@@ -281,5 +297,53 @@ class Resource extends BaseEntity
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * Set canBeProduced
+     *
+     * @param boolean $canBeProduced
+     *
+     * @return Resource
+     */
+    public function setCanBeProduced($canBeProduced)
+    {
+        $this->canBeProduced = $canBeProduced;
+
+        return $this;
+    }
+
+    /**
+     * Get canBeProduced
+     *
+     * @return boolean
+     */
+    public function getCanBeProduced()
+    {
+        return $this->canBeProduced;
+    }
+
+    /**
+     * Set capacity
+     *
+     * @param integer $capacity
+     *
+     * @return Resource
+     */
+    public function setCapacity($capacity)
+    {
+        $this->capacity = $capacity;
+
+        return $this;
+    }
+
+    /**
+     * Get capacity
+     *
+     * @return integer
+     */
+    public function getCapacity()
+    {
+        return $this->capacity;
     }
 }

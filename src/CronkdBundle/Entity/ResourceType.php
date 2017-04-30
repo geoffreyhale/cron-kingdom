@@ -15,6 +15,11 @@ use JMS\Serializer\Annotation as Jms;
  */
 class ResourceType extends BaseEntity
 {
+    // @TODO: don't hard code these
+    const POPULATION = 'Population';
+    const MATERIAL   = 'Material';
+    const BUILDING   = 'Building';
+
     /**
      * @var int
      *

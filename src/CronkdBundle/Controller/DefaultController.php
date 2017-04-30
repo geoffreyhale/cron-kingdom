@@ -10,7 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-class DefaultController extends Controller
+class DefaultController extends CronkdController
 {
     /**
      * @Route("/", name="homepage")
@@ -19,18 +19,15 @@ class DefaultController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        $user = $this->getUser();
         $worldManager = $this->get('cronkd.manager.world');
         $kingdomManager = $this->get('cronkd.manager.kingdom');
 
-        $world = $em->getRepository(World::class)->findOneBy(['active' => true]);
+        $user = $this->getUser();
+        $world = $this->extractActiveWorld();
         if (!$world) {
             return $this->redirect($this->generateUrl('world_index'));
         }
-
-        /** @var Kingdom $kingdom */
-        $kingdom = $em->getRepository(Kingdom::class)->findOneByUserWorld($user, $world);
-        $userHasKingdom = $em->getRepository(Kingdom::class)->userHasKingdom($user, $world);
+        $kingdom = $this->extractKingdomFromCurrentUser();
 
         $kingdomResources = [];
         $queues = [];
@@ -62,7 +59,7 @@ class DefaultController extends Controller
             'kingdomsByWinLoss'         => $kingdomManager->calculateKingdomsByWinLoss($world),
             'kingdomResources'          => $kingdomResources,
             'policy_end_string'         => $policy_end_string,
-            'userHasKingdom'            => $userHasKingdom,
+            'userHasKingdom'            => null !== $kingdom,
             'notificationCount'         => $notificationCount,
             'kingdomHasAvailableAttack' => $kingdomHasAvailableAttack,
             'kingdomWinLossString'      => $kingdomWinLoss['win'].'-'.$kingdomWinLoss['loss'],

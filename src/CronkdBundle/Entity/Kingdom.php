@@ -57,6 +57,24 @@ class Kingdom extends BaseEntity
     private $liquidity;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="attack", type="bigint", options={"default": 0})
+     *
+     * @Jms\Expose()
+     */
+    private $attack;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="defense", type="bigint", options={"default": 0})
+     *
+     * @Jms\Expose()
+     */
+    private $defense;
+
+    /**
      * @var World
      *
      * @ORM\ManyToOne(targetEntity="World", inversedBy="kingdoms")
@@ -379,5 +397,53 @@ class Kingdom extends BaseEntity
         }
 
         return null;
+    }
+
+    /**
+     * Set attack
+     *
+     * @param integer $attack
+     *
+     * @return Kingdom
+     */
+    public function setAttack($attack)
+    {
+        $this->attack = $attack;
+
+        return $this;
+    }
+
+    /**
+     * Get attack
+     *
+     * @return integer
+     */
+    public function getAttack()
+    {
+        return $this->attack;
+    }
+
+    /**
+     * Set defense
+     *
+     * @param integer $defense
+     *
+     * @return Kingdom
+     */
+    public function setDefense($defense)
+    {
+        $this->defense = $defense;
+
+        return $this;
+    }
+
+    /**
+     * Get defense
+     *
+     * @return integer
+     */
+    public function getDefense()
+    {
+        return $this->defense;
     }
 }
