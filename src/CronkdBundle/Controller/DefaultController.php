@@ -18,7 +18,6 @@ class DefaultController extends CronkdController
      */
     public function indexAction()
     {
-        $em = $this->getDoctrine()->getManager();
         $worldManager = $this->get('cronkd.manager.world');
         $kingdomManager = $this->get('cronkd.manager.kingdom');
 
@@ -29,41 +28,21 @@ class DefaultController extends CronkdController
         }
         $kingdom = $this->extractKingdomFromCurrentUser();
 
-        $kingdomResources = [];
-        $queues = [];
-        $notificationCount = 0;
-        $kingdomHasAvailableAttack = false;
-        $kingdomHasActivePolicy = false;
-        $kingdomWinLoss = ['win'=>0,'loss'=>0,];
-        $policy_end_string = null;
+        $kingdomState = null;
         if ($kingdom) {
-            $kingdomResources = $em->getRepository(KingdomResource::class)->findByKingdom($kingdom);
-            $queues = $this->get('cronkd.manager.kingdom')->getResourceQueues($kingdom);
-            $notificationCount = $em->getRepository(Log::class)->findNotificationCount($kingdom);
-            $kingdomHasAvailableAttack = $em->getRepository(AttackLog::class)->hasAvailableAttack($kingdom);
-            $kingdomWinLoss = $em->getRepository(AttackLog::class)->getWinLossRecord($kingdom);
-            $kingdomHasActivePolicy = $this->get('cronkd.manager.policy')->kingdomHasActivePolicy($kingdom);
-            if ($kingdomHasActivePolicy) {
-                $policy_end_string = $kingdom->getActivePolicy()->getEndTime()->diff(new \DateTime())->format('%h:%I');
-            }
+            $kingdomState = $kingdomManager->generateKingdomState($kingdom);
         }
 
         return [
             'user'                      => $user,
             'kingdom'                   => $kingdom,
-            'queues'                    => $queues,
+            'kingdomState'              => $kingdomState,
             'world'                     => $world,
             'worldNetworth'             => $worldManager->calculateWorldNetWorth($world),
             'kingdoms'                  => $world->getKingdoms(),
             'kingdomsByNetworth'        => $kingdomManager->calculateKingdomsByNetWorth($world),
             'kingdomsByWinLoss'         => $kingdomManager->calculateKingdomsByWinLoss($world),
-            'kingdomResources'          => $kingdomResources,
-            'policy_end_string'         => $policy_end_string,
             'userHasKingdom'            => null !== $kingdom,
-            'notificationCount'         => $notificationCount,
-            'kingdomHasAvailableAttack' => $kingdomHasAvailableAttack,
-            'kingdomWinLossString'      => $kingdomWinLoss['win'].'-'.$kingdomWinLoss['loss'],
-            'kingdomHasActivePolicy'    => $kingdomHasActivePolicy,
         ];
     }
 

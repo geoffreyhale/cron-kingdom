@@ -230,6 +230,82 @@ class Kingdom extends BaseEntity
     }
 
     /**
+     * Set attack
+     *
+     * @param integer $attack
+     *
+     * @return Kingdom
+     */
+    public function setAttack($attack)
+    {
+        $this->attack = $attack;
+
+        return $this;
+    }
+
+    /**
+     * @ORM\PrePersist()
+     *
+     * @return Kingdom
+     */
+    public function setDefaultAttack()
+    {
+        if (null === $this->getAttack()) {
+            $this->setAttack(0);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get attack
+     *
+     * @return integer
+     */
+    public function getAttack()
+    {
+        return $this->attack;
+    }
+
+    /**
+     * Set defense
+     *
+     * @param integer $defense
+     *
+     * @return Kingdom
+     */
+    public function setDefense($defense)
+    {
+        $this->defense = $defense;
+
+        return $this;
+    }
+
+    /**
+     * @ORM\PrePersist()
+     *
+     * @return Kingdom
+     */
+    public function setDefaultDefense()
+    {
+        if (null === $this->getDefense()) {
+            $this->setDefense(0);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get defense
+     *
+     * @return integer
+     */
+    public function getDefense()
+    {
+        return $this->defense;
+    }
+
+    /**
      * Set world
      *
      * @param World $world
@@ -346,14 +422,6 @@ class Kingdom extends BaseEntity
     }
 
     /**
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->getName();
-    }
-
-    /**
      * Add policy
      *
      * @param KingdomPolicy $policy
@@ -392,58 +460,17 @@ class Kingdom extends BaseEntity
      */
     public function getActivePolicy()
     {
-        if (count($this->getPolicies())) {
-            return $this->getPolicies()->first();
+        if (!count($this->getPolicies())) {
+            return null;
+        }
+
+        /** @var KingdomPolicy */
+        $activePolicy = $this->getPolicies()->first();
+        $now = new \DateTime();
+        if ($now > $activePolicy->getStartTime() && $now < $activePolicy->getEndTime()) {
+            return $activePolicy;
         }
 
         return null;
-    }
-
-    /**
-     * Set attack
-     *
-     * @param integer $attack
-     *
-     * @return Kingdom
-     */
-    public function setAttack($attack)
-    {
-        $this->attack = $attack;
-
-        return $this;
-    }
-
-    /**
-     * Get attack
-     *
-     * @return integer
-     */
-    public function getAttack()
-    {
-        return $this->attack;
-    }
-
-    /**
-     * Set defense
-     *
-     * @param integer $defense
-     *
-     * @return Kingdom
-     */
-    public function setDefense($defense)
-    {
-        $this->defense = $defense;
-
-        return $this;
-    }
-
-    /**
-     * Get defense
-     *
-     * @return integer
-     */
-    public function getDefense()
-    {
-        return $this->defense;
     }
 }

@@ -4,12 +4,14 @@ namespace CronkdBundle\Manager;
 use CronkdBundle\Entity\AttackLog;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
+use CronkdBundle\Entity\Log;
 use CronkdBundle\Entity\Queue;
 use CronkdBundle\Entity\Resource;
 use CronkdBundle\Entity\User;
 use CronkdBundle\Entity\World;
 use CronkdBundle\Event\CreateKingdomEvent;
 use CronkdBundle\Exceptions\InvalidResourceException;
+use CronkdBundle\Model\KingdomState;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -66,6 +68,25 @@ class KingdomManager
         $this->eventDispatcher->dispatch('event.create_kingdom', $event);
 
         return $kingdom;
+    }
+
+    /**
+     * @param Kingdom $kingdom
+     * @return KingdomState
+     */
+    public function generateKingdomState(Kingdom $kingdom)
+    {
+        $kingdomState = new KingdomState($kingdom);
+        $winLossRecord = $this->em->getRepository(AttackLog::class)->getWinLossRecord($kingdom);
+        $kingdomState
+            ->setWinLossRecord($winLossRecord['win'], $winLossRecord['loss'])
+            ->setCurrentQueues($this->getResourceQueues($kingdom))
+            ->setNotificationCount($this->em->getRepository(Log::class)->findNotificationCount($kingdom))
+            ->setAvailableAttack($this->em->getRepository(AttackLog::class)->hasAvailableAttack($kingdom))
+        ;
+        //$kingdomResources = $this->em->getRepository(KingdomResource::class)->findByKingdom($kingdom);
+
+        return $kingdomState;
     }
 
     /**

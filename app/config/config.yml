@@ -89,7 +89,7 @@ cronkd:
         Civilian:
             type: Population
             description: Base Population resource.  Used to gather materials, build housing, and train to become military
-            initial: 100
+            initial: 25
             value: 1
             action: ~
         Tree:
@@ -111,7 +111,7 @@ cronkd:
         Wood:
             type: Material
             description: Base material used to create housing and defensive buildings
-            initial: 50
+            initial: 10
             value: 1
             action:
                 verb: "Gather"
@@ -129,12 +129,12 @@ cronkd:
         Wood House:
             type: Building
             description: Base Housing resource which holds 2 Population resources
-            initial: 100
+            initial: 10
             value: 2
             capacity: 2
             action:
                 verb: "Build"
-                description: Building of Wooden House requires 1 Civilian each and consumes 1 Wood material each and is spread over 8 Ticks
+                description: Building of Wooden House requires 2 Civilian each and consumes 1 Wood material each and is spread over 8 Ticks
                 inputs:
                     Civilian:
                         quantity: 1
@@ -147,34 +147,50 @@ cronkd:
                     queue_size: 8
         Wooden Wall:
             type: Building
-            description: Defensive resource that provides 1 Defense
+            description: Defensive resource that provides 2 Defense
             initial: 0
             value: 4
-            defense: 1
+            defense: 2
             capacity: 0
             action:
                 verb: "Build"
-                description: Building of Wooden Wall requires 2 Civilian each and consumes 2 Wood material each and is spread over 8 Ticks
+                description: Building of Wooden Wall requires 2 Civilian each and consumes 3 Wood each and is spread over 8 Ticks
                 inputs:
                     Civilian:
                         quantity: 2
                         requeue: true
                         queue_size: 8
                     Wood:
-                        quantity: 2
+                        quantity: 3
                 output:
                     quantity: 1
                     queue_size: 8
-        Military:
+        Soldier:
             type: Population
             description: Military resource that provides 1 Attack
-            initial: 25
+            initial: 0
             attack: 1
             defense: 0
             value: 2
             action:
                 verb: "Train"
-                description: Training of Military converts 1 Civilian each and is spread over 8 Ticks
+                description: Training of Soldier converts 1 Civilian each and is spread over 8 Ticks
+                inputs:
+                    Civilian:
+                        quantity: 1
+                output:
+                    quantity: 1
+                    queue_size: 8
+        Guard:
+            type: Population
+            description: Military resource that provides 1 Defense
+            initial: 0
+            attack: 0
+            defense: 1
+            value: 2
+            action:
+                verb: "Train"
+                description: Training of Guard converts 1 Civilian each and is spread over 8 Ticks
                 inputs:
                     Civilian:
                         quantity: 1
@@ -184,7 +200,7 @@ cronkd:
         Hacker:
             type: Population
             description: Military resource that is used to spy on other Kingdoms
-            initial: 1
+            initial: 0
             attack: 0
             defense: 0
             value: 3

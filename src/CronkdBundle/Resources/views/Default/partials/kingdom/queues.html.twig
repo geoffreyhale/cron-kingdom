@@ -3,7 +3,7 @@
 {% set minTick = world.tick + 1 %}
 {% set maxTick = world.tick + 8 %}
 
-{% for resourceQueues in queues %}
+{% for resourceQueues in kingdomState.currentQueues %}
     {% for queue in resourceQueues.queues %}
         {% set maxTick = max(maxTick, queue.tick) %}
     {% endfor %}
@@ -26,7 +26,7 @@
         </tr>
         </thead>
         <tbody>
-        {% for resourceQueues in queues %}
+        {% for resourceQueues in kingdomState.currentQueues %}
             {% if resourceQueues.kingdomResource.resource.type.name == resourceType %}
             <tr>
                 <td style="white-space: nowrap; background-color: #f5f5f5;">
@@ -37,14 +37,16 @@
                         <i class="fa fa-home fa-fw"></i>
                     {% elseif resourceName == 'Wood' %}
                         <i class="fa fa-cubes fa-fw"></i>
-                    {% elseif resourceName == 'Military' %}
+                    {% elseif resourceName == 'Soldier' %}
                         <i class="fa fa-fighter-jet fa-fw"></i>
+                    {% elseif resourceName == 'Guard' %}
+                        <i class="fa fa-shield fa-fw"></i>
                     {% elseif resourceName == 'Hacker' %}
                         <i class="fa fa-user-secret fa-fw"></i>
                     {% elseif resourceName == 'Tree' %}
                         <i class="fa fa-tree fa-fw"></i>
                     {% elseif resourceName == 'Wooden Wall' %}
-                        <i class="fa fa-bars fa-fw"></i>
+                        <i class="fa fa-shield fa-fw"></i>
                     {% endif %}
                     <strong>{{ resourceQueues.kingdomResource.quantity|number_format }}</strong>
                     {{ resourceName }}

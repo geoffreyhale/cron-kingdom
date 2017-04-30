@@ -7,7 +7,7 @@
                     <td>
                         <span>
                             <i class="fa fa-fort-awesome"></i> <strong>{{ kingdom.name }}</strong>
-                            {% if notificationCount %}
+                            {% if kingdomState.notificationCount %}
                                 <div class="pull-right">
                                 <a href="{{ path('log_index', {'id': kingdom.id}) }}"><span class="label label-danger">{{ notificationCount }}</span></a>
                             </div>
@@ -20,11 +20,9 @@
                             <span title="Attack and Defense Power" style="margin-right: 60px;">
                                 <i class="fa fa-shield"></i> {{ kingdom.attack|number_format }}/{{ kingdom.defense|number_format }}
                             </span>
-                            {% if kingdomWinLossString is defined %}
-                                <span title="Win-Loss Record" style="margin-right: 60px;">
-                                    <i class="fa fa-trophy"></i> {{ kingdomWinLossString }}
-                                </span>
-                            {% endif %}
+                            <span title="Win-Loss Record" style="margin-right: 60px;">
+                                <i class="fa fa-trophy"></i> {{ kingdomState.winLossRecord }}
+                            </span>
                         </span>
                     </td>
                 </tr>
