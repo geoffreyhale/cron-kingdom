@@ -26,6 +26,7 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('defense')->defaultValue(0)->end()
                             ->scalarNode('value')->end()
                             ->scalarNode('capacity')->defaultValue(0)->end()
+                            ->scalarNode('probe_power')->defaultValue(0)->end()
                             ->booleanNode('can_be_probed')->defaultValue(true)->end()
                             ->arrayNode('action')
                                 ->children()

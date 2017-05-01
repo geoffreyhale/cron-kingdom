@@ -32,23 +32,7 @@
                 <td style="white-space: nowrap; background-color: #f5f5f5;">
                     {% set resource = resourceQueues.kingdomResource.resource %}
                     {% set resourceName = resource.name %}
-                    {% if resourceName == 'Civilian' %}
-                        <i class="fa fa-users fa-fw"></i>
-                    {% elseif resourceName == 'Wood House' %}
-                        <i class="fa fa-home fa-fw"></i>
-                    {% elseif resourceName == 'Wood' %}
-                        <i class="fa fa-cubes fa-fw"></i>
-                    {% elseif resourceName == 'Soldier' %}
-                        <i class="fa fa-fighter-jet fa-fw"></i>
-                    {% elseif resourceName == 'Guard' %}
-                        <i class="fa fa-shield fa-fw"></i>
-                    {% elseif resourceName == 'Hacker' %}
-                        <i class="fa fa-user-secret fa-fw"></i>
-                    {% elseif resourceName == 'Tree' %}
-                        <i class="fa fa-tree fa-fw"></i>
-                    {% elseif resourceName == 'Wooden Wall' %}
-                        <i class="fa fa-shield fa-fw"></i>
-                    {% endif %}
+                    {{ resourceIcon(resourceName)|raw }}
                     <strong>{{ resourceQueues.kingdomResource.quantity|number_format }}</strong>
                     {{ resourceName }}
                     {% if resource.canBeProduced and kingdomState.canPerformActionOnResource(resource) %}

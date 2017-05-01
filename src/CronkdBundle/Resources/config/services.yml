@@ -81,7 +81,6 @@ services:
             - {name: kernel.event_listener, event: event.world_tick, method: onTick}
             - {name: kernel.event_listener, event: event.create_kingdom, method: onCreateKingdom}
             - {name: kernel.event_listener, event: event.action, method: onAction}
-            - {name: kernel.event_listener, event: event.probe, method: onProbe}
             - {name: kernel.event_listener, event: event.attack, method: onAttack}
 
     cronkd.listener.notification:
@@ -107,3 +106,10 @@ services:
             - "@event_dispatcher"
         tags:
             - {name: kernel.event_listener, event: event.activate_world, method: onActivateWorld}
+
+    # Twig
+    cronkd.twig_extension:
+        class: CronkdBundle\Twig\CronkdExtension
+        public: true
+        tags:
+            - { name: twig.extension }

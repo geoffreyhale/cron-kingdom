@@ -6,10 +6,49 @@ use CronkdBundle\Entity\Kingdom;
 class ProbeAttempt
 {
     /** @var  Kingdom */
+    private $kingdom;
+    /** @var  Kingdom */
     private $target;
+    /** @var  array */
+    private $quantities = [];
 
-    /** @var  int */
-    private $quantity;
+    public function __set($name, $quantity)
+    {
+        $this->quantities[$name] = (int) $quantity;
+    }
+
+    public function __get($name)
+    {
+        if (!isset($this->quantities)) {
+            $this->quantities[$name] = 0;
+        }
+
+        return $this->quantities;
+    }
+
+    /**
+     * @return array
+     */
+    public function getQuantities()
+    {
+        return $this->quantities;
+    }
+
+    /**
+     * @return Kingdom
+     */
+    public function getKingdom()
+    {
+        return $this->kingdom;
+    }
+
+    /**
+     * @param Kingdom $kingdom
+     */
+    public function setKingdom(Kingdom $kingdom)
+    {
+        $this->kingdom = $kingdom;
+    }
 
     /**
      * @return Kingdom
@@ -25,21 +64,5 @@ class ProbeAttempt
     public function setTarget(Kingdom $target)
     {
         $this->target = $target;
-    }
-
-    /**
-     * @return int
-     */
-    public function getQuantity()
-    {
-        return $this->quantity;
-    }
-
-    /**
-     * @param int $quantity
-     */
-    public function setQuantity(int $quantity)
-    {
-        $this->quantity = $quantity;
     }
 }

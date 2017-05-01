@@ -61,6 +61,7 @@ class InitCommand extends ContainerAwareCommand
             $resource->setDefense($resourceConf['defense']);
             $resource->setCapacity($resourceConf['capacity']);
             $resource->setCanBeProbed($resourceConf['can_be_probed']);
+            $resource->setProbePower($resourceConf['probe_power']);
             $em->persist($resource);
         }
         $em->flush();

@@ -1,33 +1,19 @@
-{% set resourceNames = ['Civilian', 'Material', 'Housing', 'Military', 'Hacker'] %}
-
 <table class="table table-bordered" style="margin-top: 15px;">
     <tbody>
     <tr>
         <td><i class="fa fa-fort-awesome fa-fw"></i> {{ results.data.report.data.Resources|first.kingdom.name }}</td>
     </tr>
     <tr>
-        <td><i class="fa fa-flag fa-fw"></i> {{ results.data.report.data.Policy }}</td>
+        <td>
+            <i class="fa fa-flag fa-fw"></i> Policy: <strong>{{ results.data.report.data.Policy is not defined ? 'None' : results.data.report.data.Policy }}</strong>
+        </td>
     </tr>
-    {% for resourceName in resourceNames %}
+    {% for kingdomResource in results.data.report.data.Resources %}
         <tr>
-            {% for kingdomResource in results.data.report.data.Resources %}
-                {% if kingdomResource.resource.name == resourceName %}
-                    <td>
-                        {% if kingdomResource.resource.name == 'Civilian' %}
-                            <i class="fa fa-users fa-fw"></i>
-                        {% elseif kingdomResource.resource.name == 'Housing' %}
-                            <i class="fa fa-home fa-fw"></i>
-                        {% elseif kingdomResource.resource.name == 'Material' %}
-                            <i class="fa fa-cubes fa-fw"></i>
-                        {% elseif kingdomResource.resource.name == 'Military' %}
-                            <i class="fa fa-fighter-jet fa-fw"></i>
-                        {% elseif kingdomResource.resource.name == 'Hacker' %}
-                            <i class="fa fa-user-secret fa-fw"></i>
-                        {% endif %}
-                        <strong>{{ kingdomResource.quantity|number_format }}</strong>
-                    </td>
-                {% endif %}
-            {% endfor %}
+            <td>
+                {{ resourceIcon(kingdomResource.resource.name)|raw }}
+                {{ kingdomResource.resource.name }}: <strong>{{ kingdomResource.quantity|number_format }}</strong>
+            </td>
         </tr>
     {% endfor %}
     </tbody>

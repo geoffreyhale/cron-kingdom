@@ -473,4 +473,9 @@ class Kingdom extends BaseEntity
 
         return null;
     }
+
+    public function __toString()
+    {
+        return $this->getName();
+    }
 }

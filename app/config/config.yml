@@ -203,12 +203,13 @@ cronkd:
             initial: 0
             attack: 0
             defense: 0
+            probe_power: 1
             value: 3
             action:
                 verb: "Train"
                 description: Training of Hackers converts 1 Civilian each and is spread over 8 Ticks
                 inputs:
-                    Military:
+                    Soldier:
                         quantity: 1
                 output:
                     quantity: 1

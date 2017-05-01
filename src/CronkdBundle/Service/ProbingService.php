@@ -41,12 +41,15 @@ class ProbingService
         $report = new ProbeReport();
 
         if ($this->calculateProbeAttemptOutcome($quantity)) {
-            $availableResources = $this->em->getRepository(KingdomResource::class)
+            $probedResources = $this->em->getRepository(KingdomResource::class)
                 ->findResourcesThatMayBeProbed($target);
 
-            $policy = $this->em->getRepository(KingdomPolicy::class)->findCurrentPolicy($target);
+            $policy = $kingdom->getActivePolicy();
             $report->setResult(true);
-            $report->setData(['Resources' => $availableResources, 'Policy' => $policy]);
+            $report->setData([
+                'Resources' => $probedResources,
+                'Policy'    => $policy
+            ]);
         }
 
         $this->logManager->createLog(

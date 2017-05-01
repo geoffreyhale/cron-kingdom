@@ -55,11 +55,6 @@ class KingdomCachedStatsListener
         $this->kingdomManager->calculateAttackAndDefense($event->kingdom);
     }
 
-    public function onProbe(ProbeEvent $event)
-    {
-        $this->kingdomManager->calculateNetWorth($event->kingdom);
-    }
-
     public function onAttack(AttackEvent $event)
     {
         $this->kingdomManager->calculateNetWorth($event->kingdom);

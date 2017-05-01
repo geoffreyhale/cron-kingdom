@@ -6,7 +6,6 @@ use CronkdBundle\Entity\KingdomPolicy;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Resource;
 use CronkdBundle\Exceptions\KingdomDoesNotHaveResourceException;
-use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 class KingdomState
 {
@@ -30,11 +29,49 @@ class KingdomState
     }
 
     /**
+     * @return Kingdom
+     */
+    public function getKingdom()
+    {
+        return $this->kingdom;
+    }
+
+    /**
      * @return \Doctrine\Common\Collections\Collection
      */
     public function getResources()
     {
         return $this->kingdom->getResources();
+    }
+
+    /**
+     * @param string $resourceName
+     * @return int
+     */
+    public function getAvailableResourceQuantity(string $resourceName)
+    {
+        foreach ($this->kingdom->getResources() as $kingdomResource) {
+            if ($resourceName == $kingdomResource->getResource()->getName()) {
+                return $kingdomResource->getQuantity();
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * @param string $resourceName
+     * @return bool
+     */
+    public function hasAvailableResource(string $resourceName)
+    {
+        foreach ($this->kingdom->getResources() as $kingdomResource) {
+            if ($resourceName == $kingdomResource->getResource()->getName()) {
+                return $kingdomResource->getQuantity() > 0;
+            }
+        }
+
+        return false;
     }
 
     /**
