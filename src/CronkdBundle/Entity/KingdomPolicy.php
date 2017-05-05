@@ -6,7 +6,7 @@ use JMS\Serializer\Annotation as Jms;
 
 /**
  * @ORM\Table(name="kingdom_policy")
- * @ORM\Entity(repositoryClass="CronkdBundle\Repository\KingdomPolicyRepository")
+ * @ORM\Entity()
  *
  * @Jms\ExclusionPolicy("all")
  */

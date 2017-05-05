@@ -119,7 +119,7 @@ class AttackingService
     /**
      * @param Kingdom $kingdom
      * @param array $quantities
-     * @return int|mixed
+     * @return int
      * @throws InvalidResourceException
      * @throws NotEnoughResourcesException
      */
@@ -163,6 +163,11 @@ class AttackingService
             }
         }
 
+        $kingdomState = $this->kingdomManager->generateKingdomState($kingdom);
+        if (Policy::DEFENDER == $kingdomState->getActivePolicyName()) {
+            $defendingPower *= Policy::DEFENDER_BONUS;
+        }
+
         return $defendingPower;
     }
 
@@ -187,19 +192,18 @@ class AttackingService
      */
     private function awardResources(AttackReport $report, Kingdom $kingdom, Kingdom $targetKingdom)
     {
-        /*
+        $kingdomState = $this->kingdomManager->generateKingdomState($kingdom);
         $housingPercentage = 1;
-        if ($this->policyManager->kingdomHasActivePolicy($kingdom, Policy::WARMONGER)) {
+        if ($kingdomState->getActivePolicyName() == Policy::WARMONGER) {
             $housingPercentage *= Policy::WARMONGER_BONUS;
         }
-        */
 
         foreach ($this->settings['resources'] as $resourceName => $resourceData) {
             $percentage = 0;
             if ($resourceData['spoil_of_war']) {
                 switch ($resourceData['type']) {
                     case ResourceType::BUILDING:
-                        $percentage = 1;
+                        $percentage = $housingPercentage;
                         break;
                     case ResourceType::MATERIAL:
                         $percentage = 50;

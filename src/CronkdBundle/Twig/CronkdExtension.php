@@ -15,13 +15,16 @@ class CronkdExtension extends \Twig_Extension
         switch ($resourceName) {
             case 'Civilian':
                 return '<i class="fa fa-users fa-fw"></i> ';
+            case 'Housing':
             case 'Wood House';
                 return '<i class="fa fa-home fa-fw"></i> ';
             case 'Guard';
             case 'Wooden Wall';
                 return '<i class="fa fa-shield fa-fw"></i> ';
+            case 'Material':
             case 'Wood';
                 return '<i class="fa fa-cubes fa-fw"></i> ';
+            case 'Military':
             case 'Soldier';
                 return '<i class="fa fa-fighter-jet fa-fw"></i> ';
             case 'Hacker';

@@ -30,16 +30,4 @@ class PolicyManager
 
         return $kingdomPolicy;
     }
-
-    /**
-     * Display whether a Kingdom has a specific or any active policy.
-     *
-     * @param Kingdom $kingdom
-     * @param string|null $policyName
-     * @return bool
-     */
-    public function kingdomHasActivePolicy(Kingdom $kingdom, string $policyName = null)
-    {
-        return $this->em->getRepository(KingdomPolicy::class)->kingdomHasActivePolicy($kingdom, $policyName);
-    }
 }

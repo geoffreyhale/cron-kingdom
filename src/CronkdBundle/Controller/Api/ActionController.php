@@ -6,6 +6,7 @@ use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Log;
 use CronkdBundle\Entity\Policy;
 use CronkdBundle\Entity\Resource;
+use CronkdBundle\Entity\ResourceType;
 use CronkdBundle\Event\ActionEvent;
 use CronkdBundle\Exceptions\InvalidResourceException;
 use CronkdBundle\Repository\LogRepository;
@@ -62,24 +63,23 @@ class ActionController extends ApiController
             }
         }
 
-        // @TODO: reimplement policies
-        //$policyManager = $this->get('cronkd.manager.policy');
-        //$queueLength = 8;
-        //if ($policyManager->kingdomHasActivePolicy($kingdom, Policy::ECONOMIST)) {
-        //    $queueLength -= 2;
-        //}
+        $kingdomState = $kingdomManager->generateKingdomState($kingdom);
 
         $inputQueues = [];
+        $resourceManager = $this->get('cronkd.manager.resource');
         $queuePopulator = $this->get('cronkd.queue_populator');
         foreach ($actionDefinition['inputs'] as $resourceName => $inputDefinition) {
-            $kingdomResource = $kingdomManager->lookupResource($kingdom, $resourceName);
-            $inputQuantity = $quantity * $inputDefinition['quantity'];
-            $kingdomResource->removeQuantity($inputQuantity);
             if ($inputDefinition['requeue']) {
+                $resource = $resourceManager->get($resourceName);
+                $kingdomResource = $kingdomManager->lookupResource($kingdom, $resourceName);
+                $inputQuantity = $quantity * $inputDefinition['quantity'];
+                $kingdomResource->removeQuantity($inputQuantity);
+                $queueSize = $inputDefinition['queue_size'] + $this->calculateQueueModifier($kingdomState->getActivePolicyName(), $resource);
+
                 $inputQueues[] = $queuePopulator->build(
                     $kingdom,
                     $kingdomResource->getResource(),
-                    $inputDefinition['queue_size'],
+                    $queueSize,
                     $inputQuantity
                 );
             }
@@ -87,11 +87,14 @@ class ActionController extends ApiController
 
         $outputDefinition = $actionDefinition['output'];
         $kingdomOutputResource = $kingdomManager->lookupResource($kingdom, $outputResourceObj->getName());
+        $outputResource = $resourceManager->get($outputResourceObj->getName());
         $outputQuantity = $quantity * $outputDefinition['quantity'];
+        $queueSize = $outputDefinition['queue_size'] + $this->calculateQueueModifier($kingdomState->getActivePolicyName(), $outputResource);
+
         $outputQueue = $queuePopulator->build(
             $kingdom,
             $kingdomOutputResource->getResource(),
-            $outputDefinition['queue_size'],
+            $queueSize,
             $outputQuantity
         );
 
@@ -107,5 +110,26 @@ class ActionController extends ApiController
                 'output' => $outputQueue,
             ],
         ]);
+    }
+
+    /**
+     * @param string $policyName
+     * @param Resource $resource
+     * @return int
+     */
+    private function calculateQueueModifier(string $policyName, Resource $resource)
+    {
+        $queueLengthModifier = 0;
+        if ($policyName == Policy::ECONOMIST) {
+            if ($resource->getType()->getName() == ResourceType::POPULATION && $resource->getAttack() > 0) {
+                $queueLengthModifier = 2;
+            } elseif (($resource->getType()->getName() == ResourceType::POPULATION && $resource->getAttack() == 0) ||
+                ($resource->getType()->getName() == ResourceType::MATERIAL)
+            ) {
+                $queueLengthModifier = -2;
+            }
+        }
+
+        return $queueLengthModifier;
     }
 }

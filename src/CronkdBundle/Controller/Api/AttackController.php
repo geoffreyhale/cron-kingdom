@@ -81,17 +81,4 @@ class AttackController extends ApiController
             ],
         ]);
     }
-
-    /**
-     * @param Request $request
-     * @return array
-     */
-    private function buildResourcesMap(Request $request)
-    {
-        $resources = [
-            Resource::MILITARY => $request->get('military'),
-        ];
-
-        return $resources;
-    }
 }

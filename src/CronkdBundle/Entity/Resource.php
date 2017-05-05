@@ -70,6 +70,8 @@ class Resource extends BaseEntity
      * @var int
      *
      * @ORM\Column(name="probe_power", type="integer")
+     *
+     * @Jms\Expose()
      */
     private $probePower;
 
@@ -77,6 +79,8 @@ class Resource extends BaseEntity
      * @var int
      *
      * @ORM\Column(name="capacity", type="integer")
+     *
+     * @Jms\Expose()
      */
     private $capacity;
 
