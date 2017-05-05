@@ -6,6 +6,7 @@ use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\NetWorthLog;
 use CronkdBundle\Entity\Queue;
 use CronkdBundle\Entity\Resource;
+use CronkdBundle\Entity\ResourceType;
 use CronkdBundle\Entity\World;
 use CronkdBundle\Exceptions\EmptyGraphingDatasetException;
 use CronkdBundle\Manager\KingdomManager;
@@ -20,15 +21,19 @@ class GraphingService
     private $kingdomManager;
     /** @var ResourceManager  */
     private $resourceManager;
+    /** @var array  */
+    private $settings;
 
     public function __construct(
         EntityManagerInterface $em,
         KingdomManager $kingdomManager,
-        ResourceManager $resourceManager
+        ResourceManager $resourceManager,
+        array $settings
     ) {
         $this->em              = $em;
         $this->kingdomManager  = $kingdomManager;
         $this->resourceManager = $resourceManager;
+        $this->settings        = $settings;
     }
 
     /**
@@ -100,27 +105,24 @@ class GraphingService
     public function fetchKingdomCompositionData(Kingdom $kingdom)
     {
         $data = [
-            'Civilians'  =>
-                $this->kingdomManager->lookupResource($kingdom, Resource::CIVILIAN)->getQuantity()
-                    +
-                $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $this->resourceManager->get(Resource::CIVILIAN))
-            ,
-            'Materials'  =>
-                $this->kingdomManager->lookupResource($kingdom, Resource::MATERIAL)->getQuantity()
-                    +
-                $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $this->resourceManager->get(Resource::MATERIAL))
-            ,
-            'Housing'    =>
-                $this->kingdomManager->lookupResource($kingdom, Resource::HOUSING)->getQuantity()
-                    +
-                $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $this->resourceManager->get(Resource::HOUSING))
-            ,
-            'Military'   =>
-                $this->kingdomManager->lookupResource($kingdom, Resource::MILITARY)->getQuantity()
-                    +
-                $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $this->resourceManager->get(Resource::MILITARY))
-            ,
+            'Attack'     => 0,
+            'Defense'    => 0,
+            'Materials'  => 0,
+            'Housing'    => 0,
         ];
+
+        foreach ($this->settings['resources'] as $resourceName => $resourceData) {
+            $resource = $this->em->getRepository(Resource::class)->findOneByName($resourceName);
+            if (null === $resource) {
+                throw new InvalidResourceException($resourceName);
+            }
+
+            $kingdomResource = $this->kingdomManager->lookupResource($kingdom, $resourceName);
+            $data = $this->addResourceData($data, $kingdomResource->getQuantity(), $resourceData);
+            $queuedResourceQty = $this->em->getRepository(Queue::class)
+                ->findTotalQueued($kingdom, $this->resourceManager->get($resourceName));
+            $data = $this->addResourceData($data, $queuedResourceQty, $resourceData);
+        }
 
         $dataStructure = [
             'labels' => array_keys($data),
@@ -137,6 +139,24 @@ class GraphingService
         ];
 
         return $dataStructure;
+    }
+
+    /**
+     * @param array $data
+     * @param int $quantity
+     * @param array $resourceData
+     * @return array
+     */
+    private function addResourceData(array $data, int $quantity, array $resourceData)
+    {
+        $data['Attack'] += ($quantity * $resourceData['attack']);
+        $data['Defense'] += ($quantity * $resourceData['defense']);
+        $data['Housing'] += ($quantity * $resourceData['capacity']);
+        if ($resourceData['type'] == ResourceType::MATERIAL) {
+            $data['Materials'] += $quantity;
+        }
+
+        return $data;
     }
 
     /**

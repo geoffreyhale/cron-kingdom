@@ -29,6 +29,7 @@ services:
             - "@doctrine.orm.default_entity_manager"
             - "@cronkd.manager.kingdom"
             - "@cronkd.manager.resource"
+            - "%cronkd.settings%"
 
     # Managers
     cronkd.manager.world:
