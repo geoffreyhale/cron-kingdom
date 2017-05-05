@@ -17,7 +17,10 @@
      * According to the configuration in Sockets/Chat.php , change the port if you need to.
      * @type WebSocket
      */
-    var conn = new WebSocket('ws://localhost:8080');
+    var parser = document.createElement('a');
+    parser.href = "{{ app.request.schemeAndHttpHost }}";
+    var webSocketUrl = 'ws://' + parser.hostname + ':8080';
+    var conn = new WebSocket(webSocketUrl);
 
     conn.onopen = function(e) {
         console.info("Connection established succesfully");
