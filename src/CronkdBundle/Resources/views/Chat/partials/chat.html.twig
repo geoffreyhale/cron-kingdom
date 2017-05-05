@@ -1,0 +1,16 @@
+<div class="chat">
+    <div class="well">
+        <ul id="chat-history"></ul>
+    </div>
+    <textarea id="form-message" class="form-control" placeholder="Your public message here"></textarea>
+    <input type="button" id="form-submit" class="btn btn-default" value="Send message"/>
+</div>
+
+<script>
+    // data for chat.js
+    const chat_username = '{{ kingdom }}';
+    const parser = document.createElement('a');
+    parser.href = "{{ app.request.schemeAndHttpHost }}";
+    const chat_webSocketUrl = 'ws://' + parser.hostname + ':8080';
+</script>
+<script src="{{ asset('bundles/cronkd/js/chat.js') }}"></script>
