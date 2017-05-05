@@ -3,6 +3,31 @@ namespace CronkdBundle\Twig;
 
 class CronkdExtension extends \Twig_Extension
 {
+    public function getFilters()
+    {
+        return [
+            new \Twig_Filter('filterNumber', [$this, 'filterNumber']),
+        ];
+    }
+
+    public function filterNumber($number)
+    {
+        $modifiers = [
+            'T' => 1E12,
+            'B' => 1E9,
+            'M' => 1E6,
+            'K' => 1E3,
+        ];
+
+        foreach ($modifiers as $index => $value) {
+            if ($number > $value) {
+                return number_format($number/$value, 1) . $index;
+            }
+        }
+
+        return number_format($number);
+    }
+
     public function getFunctions()
     {
         return [

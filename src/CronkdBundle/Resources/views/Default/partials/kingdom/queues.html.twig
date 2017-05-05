@@ -33,7 +33,7 @@
                     {% set resource = resourceQueues.kingdomResource.resource %}
                     {% set resourceName = resource.name %}
                     {{ resourceIcon(resourceName)|raw }}
-                    <strong>{{ resourceQueues.kingdomResource.quantity|number_format }}</strong>
+                    <strong>{{ resourceQueues.kingdomResource.quantity|filterNumber }}</strong>
                     {{ resourceName }}
                     {% if resource.canBeProduced and kingdomState.canPerformActionOnResource(resource) %}
                         <a href="{{ path('action_perform', {'resourceName': resourceName}) }}" class="btn btn-success btn-xs"><i class="fa fa-plus"></i></a>
@@ -46,7 +46,7 @@
                             {% set quantity = quantity + queue.quantity %}
                         {% endif %}
                     {% endfor %}
-                    <td>{{ quantity != 0 ? quantity|number_format : '' }}</td>
+                    <td>{{ quantity != 0 ? quantity|filterNumber : '' }}</td>
                 {% endfor %}
             </tr>
             {% endif %}

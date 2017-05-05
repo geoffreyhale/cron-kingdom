@@ -15,10 +15,10 @@
                         </span>
                         <span class="pull-right">
                             <span title="Net Worth" style="margin-right: 60px;">
-                                <i class="fa fa-line-chart"></i> {{ kingdom.networth|number_format }}
+                                <i class="fa fa-line-chart"></i> {{ kingdom.networth|filterNumber }}
                             </span>
                             <span title="Attack and Defense Power" style="margin-right: 60px;">
-                                <i class="fa fa-shield"></i> {{ kingdom.attack|number_format }}/{{ kingdom.defense|number_format }}
+                                <i class="fa fa-shield"></i> {{ kingdom.attack|filterNumber }}/{{ kingdom.defense|filterNumber }}
                             </span>
                             <span title="Win-Loss Record" style="margin-right: 60px;">
                                 <i class="fa fa-trophy"></i> {{ kingdomState.winLossRecord }}

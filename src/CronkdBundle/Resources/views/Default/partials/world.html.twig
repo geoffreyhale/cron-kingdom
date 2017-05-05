@@ -9,7 +9,7 @@
                         <a href="{{ path('world_show', {'id': world.id}) }}">
                             <i class="fa fa-line-chart"></i>
                         </a>
-                        {{ worldState.aggregateNetWorth|number_format }}
+                        {{ worldState.aggregateNetWorth|filterNumber }}
                     </td>
                 </tr>
                 </tbody>
