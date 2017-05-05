@@ -18,6 +18,7 @@
     },
     "require": {
         "php": ">=5.5.9",
+        "cboden/ratchet": "^0.3.6",
         "doctrine/doctrine-bundle": "^1.6",
         "doctrine/doctrine-cache-bundle": "^1.2",
         "doctrine/orm": "^2.5",
