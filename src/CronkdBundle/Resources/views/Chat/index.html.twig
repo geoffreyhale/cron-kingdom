@@ -7,7 +7,7 @@
 <script>
     // This object will be sent every time you submit a message in the sendMessage function.
     var clientInformation = {
-        username: new Date().getTime().toString()
+        username: '{{ kingdom }}'
         // You can add more information in a static object
     };
 
@@ -23,14 +23,14 @@
     var conn = new WebSocket(webSocketUrl);
 
     conn.onopen = function(e) {
-        console.info("Connection established succesfully");
+        console.info("Connection established successfully");
     };
 
     conn.onmessage = function(e) {
         var data = JSON.parse(e.data);
         Chat.appendMessage(data.username, data.message);
 
-        console.log(data);
+//        console.log(data);
     };
 
     conn.onerror = function(e){
@@ -56,18 +56,10 @@
     // Mini API to send a message with the socket and append a message in a UL element.
     var Chat = {
         appendMessage: function(username,message){
-            var from;
-
-            if(username == clientInformation.username){
-                from = "me";
-            }else{
-                from = clientInformation.username;
-            }
-
             // Append List Item
             var ul = document.getElementById("chat-list");
             var li = document.createElement("li");
-            li.appendChild(document.createTextNode(from + " : "+ message));
+            li.appendChild(document.createTextNode(clientInformation.username + " : "+ message));
             ul.appendChild(li);
         },
         sendMessage: function(text){
