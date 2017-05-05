@@ -1,0 +1,9 @@
+.chat ul {
+    padding-left: 0;
+}
+.chat li {
+    list-style: none;
+}
+.chat textarea {
+    width: 100%;
+}
