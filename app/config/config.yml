@@ -93,15 +93,15 @@ cronkd:
             value: 1
             spoil_of_war: true
             action: ~
-        Tree:
+        Material:
             type: Material
-            description: Base Material resource.  Used to build Wood.
+            description: Base Material resource.
             initial: 10
             value: 0
             spoil_of_war: true
             action:
-                verb: "Plant"
-                description: Planting 1 Tree requires 1 Civilian and is spread over 8 Ticks
+                verb: "Gather"
+                description: Gathering 1 Material requires 1 Civilian and is spread over 8 Ticks
                 inputs:
                     Civilian:
                         quantity: 1
@@ -110,91 +110,36 @@ cronkd:
                 output:
                     quantity: 1
                     queue_size: 8
-        Wood:
-            type: Material
-            description: Base material used to create housing and defensive buildings
-            initial: 10
-            value: 1
-            spoil_of_war: true
-            action:
-                verb: "Gather"
-                description: Building Wood requires 1 Civilian and 1 Tree which will yield 2 Wood and is spread over 8 Ticks
-                inputs:
-                    Civilian:
-                        quantity: 1
-                        requeue: true
-                        queue_size: 8
-                    Tree:
-                        quantity: 1
-                output:
-                    quantity: 2
-                    queue_size: 8
-        Wood House:
+        Housing:
             type: Building
-            description: Base Housing resource which holds 2 Population resources
+            description: Base Housing resource which holds 1 Civilian resources
             initial: 10
             value: 2
-            capacity: 2
+            capacity: 1
             spoil_of_war: true
             action:
                 verb: "Build"
-                description: Building of Wooden House requires 2 Civilian each and consumes 1 Wood material each and is spread over 8 Ticks
+                description: Housing requires 1 Civilian each and consumes 1 Material each and is spread over 8 Ticks
                 inputs:
                     Civilian:
                         quantity: 1
                         requeue: true
                         queue_size: 8
-                    Wood:
+                    Material:
                         quantity: 1
                 output:
                     quantity: 1
                     queue_size: 8
-        Wooden Wall:
-            type: Building
-            description: Defensive resource that provides 2 Defense
-            initial: 0
-            value: 4
-            defense: 2
-            capacity: 0
-            action:
-                verb: "Build"
-                description: Building of Wooden Wall requires 2 Civilian each and consumes 3 Wood each and is spread over 8 Ticks
-                inputs:
-                    Civilian:
-                        quantity: 2
-                        requeue: true
-                        queue_size: 8
-                    Wood:
-                        quantity: 3
-                output:
-                    quantity: 1
-                    queue_size: 8
-        Soldier:
+        Military:
             type: Population
             description: Military resource that provides 1 Attack
             initial: 0
             attack: 1
-            defense: 0
-            value: 2
-            action:
-                verb: "Train"
-                description: Training of Soldier converts 1 Civilian each and is spread over 8 Ticks
-                inputs:
-                    Civilian:
-                        quantity: 1
-                output:
-                    quantity: 1
-                    queue_size: 8
-        Guard:
-            type: Population
-            description: Military resource that provides 1 Defense
-            initial: 0
-            attack: 0
             defense: 1
             value: 2
             action:
                 verb: "Train"
-                description: Training of Guard converts 1 Civilian each and is spread over 8 Ticks
+                description: Training of Military converts 1 Civilian each and is spread over 8 Ticks
                 inputs:
                     Civilian:
                         quantity: 1
@@ -213,7 +158,7 @@ cronkd:
                 verb: "Train"
                 description: Training of Hackers converts 1 Civilian each and is spread over 8 Ticks
                 inputs:
-                    Soldier:
+                    Military:
                         quantity: 1
                 output:
                     quantity: 1
