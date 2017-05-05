@@ -6,10 +6,57 @@ use CronkdBundle\Entity\Kingdom;
 class AttackPlan
 {
     /** @var  Kingdom */
+    private $kingdom;
+    /** @var  Kingdom */
     private $target;
+    /** @var  array */
+    private $quantities = [];
 
-    /** @var  int */
-    private $militaryAllocations;
+    /**
+     * @param $name
+     * @param $quantity
+     */
+    public function __set($name, $quantity)
+    {
+        $this->quantities[$name] = (int) $quantity;
+    }
+
+    /**
+     * @param $name
+     * @return array
+     */
+    public function __get($name)
+    {
+        if (!isset($this->quantities)) {
+            $this->quantities[$name] = 0;
+        }
+
+        return $this->quantities;
+    }
+
+    /**
+     * @return array
+     */
+    public function getQuantities()
+    {
+        return $this->quantities;
+    }
+
+    /**
+     * @return Kingdom
+     */
+    public function getKingdom()
+    {
+        return $this->kingdom;
+    }
+
+    /**
+     * @param Kingdom $kingdom
+     */
+    public function setKingdom(Kingdom $kingdom)
+    {
+        $this->kingdom = $kingdom;
+    }
 
     /**
      * @return Kingdom
@@ -25,21 +72,5 @@ class AttackPlan
     public function setTarget(Kingdom $target)
     {
         $this->target = $target;
-    }
-
-    /**
-     * @return int
-     */
-    public function getMilitaryAllocations()
-    {
-        return $this->militaryAllocations;
-    }
-
-    /**
-     * @param int $militaryAllocations
-     */
-    public function setMilitaryAllocations(int $militaryAllocations)
-    {
-        $this->militaryAllocations = $militaryAllocations;
     }
 }

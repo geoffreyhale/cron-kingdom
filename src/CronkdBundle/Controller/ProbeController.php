@@ -96,7 +96,6 @@ class ProbeController extends CronkdController
         return [
             'form'         => $form->createView(),
             'kingdomState' => $kingdomState,
-
         ];
     }
 }

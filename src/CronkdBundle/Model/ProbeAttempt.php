@@ -12,11 +12,19 @@ class ProbeAttempt
     /** @var  array */
     private $quantities = [];
 
+    /**
+     * @param $name
+     * @param $quantity
+     */
     public function __set($name, $quantity)
     {
         $this->quantities[$name] = (int) $quantity;
     }
 
+    /**
+     * @param $name
+     * @return array
+     */
     public function __get($name)
     {
         if (!isset($this->quantities)) {

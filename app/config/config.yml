@@ -91,12 +91,14 @@ cronkd:
             description: Base Population resource.  Used to gather materials, build housing, and train to become military
             initial: 25
             value: 1
+            spoil_of_war: true
             action: ~
         Tree:
             type: Material
             description: Base Material resource.  Used to build Wood.
             initial: 10
             value: 0
+            spoil_of_war: true
             action:
                 verb: "Plant"
                 description: Planting 1 Tree requires 1 Civilian and is spread over 8 Ticks
@@ -113,6 +115,7 @@ cronkd:
             description: Base material used to create housing and defensive buildings
             initial: 10
             value: 1
+            spoil_of_war: true
             action:
                 verb: "Gather"
                 description: Building Wood requires 1 Civilian and 1 Tree which will yield 2 Wood and is spread over 8 Ticks
@@ -132,6 +135,7 @@ cronkd:
             initial: 10
             value: 2
             capacity: 2
+            spoil_of_war: true
             action:
                 verb: "Build"
                 description: Building of Wooden House requires 2 Civilian each and consumes 1 Wood material each and is spread over 8 Ticks

@@ -27,6 +27,7 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('value')->end()
                             ->scalarNode('capacity')->defaultValue(0)->end()
                             ->scalarNode('probe_power')->defaultValue(0)->end()
+                            ->booleanNode('spoil_of_war')->defaultValue(false)->end()
                             ->booleanNode('can_be_probed')->defaultValue(true)->end()
                             ->arrayNode('action')
                                 ->children()
