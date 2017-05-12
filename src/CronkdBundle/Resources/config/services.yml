@@ -1,4 +1,13 @@
 services:
+    cronkd.tick:
+        class: CronkdBundle\Service\TickService
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
+            - "@cronkd.manager.kingdom"
+            - "@cronkd.manager.log"
+            - "@event_dispatcher"
+            - "@logger"
+
     cronkd.queue_populator:
         class: CronkdBundle\Service\QueuePopulator
         arguments:
