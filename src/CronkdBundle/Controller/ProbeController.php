@@ -30,17 +30,22 @@ class ProbeController extends CronkdController
         $this->validateWorldIsActive($kingdom);
         $this->validateUserOwnsKingdom($kingdom);
 
+        $kingdomManager = $this->get('cronkd.manager.kingdom');
+        $kingdomState = $kingdomManager->generateKingdomState($kingdom);
+
         $probeAttempt = new ProbeAttempt();
+        $probeAttempt->setKingdom($kingdom);
         $form = $this->createForm(ProbeAttemptType::class, $probeAttempt, [
-            'sourceKingdom' => $kingdom,
+            'kingdomState'  => $kingdomState,
+            'settings'      => $this->getParameter('cronkd.settings')
         ]);
 
         $form->handleRequest($request);
         if ($form->isValid()) {
             $response = $this->forward('CronkdBundle:Api/Probe:send', [
-                'kingdomId'       => $kingdom->getId(),
+                'kingdomId'       => $probeAttempt->getKingdom()->getId(),
                 'targetKingdomId' => $probeAttempt->getTarget()->getId(),
-                'quantity'        => $probeAttempt->getQuantity(),
+                'quantities'      => $probeAttempt->getQuantities(),
             ]);
 
             $results = $response->getContent();
@@ -48,10 +53,11 @@ class ProbeController extends CronkdController
 
             $formAttack = null;
             $formAttackStrongDefense = null;
-            $formRehack = null;
+            $rehackForm = null;
             $militaryToSend = 0;
             $defenderBonusMilitaryToSend = 0;
             if (isset($results['data']['report']['result']) && true == $results['data']['report']['result']) {
+                /*
                 $militaryToSend = $results['data']['report']['data']['Resources'][Resource::MILITARY]['quantity'] + 1;
                 $defenderBonusMilitaryToSend = ceil($results['data']['report']['data']['Resources'][Resource::MILITARY]['quantity']*Policy::DEFENDER_BONUS) + 1;
 
@@ -65,27 +71,31 @@ class ProbeController extends CronkdController
                     'sourceKingdom' => $kingdom->getId(),
                     'militaryAllocations' => $defenderBonusMilitaryToSend,
                 ]);
+                */
             } else {
-                $formRehack = $this->createForm(ProbeRetryType::class, [
-                    'target'   => $probeAttempt->getTarget()->getId(),
-                    'quantity' => $probeAttempt->getQuantity(),
+                $rehackForm = $this->createForm(ProbeRetryType::class, [
+                    'target' => $probeAttempt->getTarget()->getId(),
+                ], [
+                    'quantities' => $probeAttempt->getQuantities(),
                 ]);
             }
 
             return $this->render('@Cronkd/Probe/results.html.twig', [
                 'results'                     => $results,
                 'kingdom'                     => $kingdom,
+                'kingdomState'                => $kingdomState,
                 'probeReport'                 => $probeAttempt,
-                'formAttack'                  => ($formAttack === null ? null : $formAttack->createView()),
-                'formAttackStrongDefense'     => ($formAttackStrongDefense === null ? null : $formAttackStrongDefense->createView()),
-                'formRehack'                  => ($formRehack === null ? null : $formRehack->createView()),
+                //'formAttack'                  => ($formAttack === null ? null : $formAttack->createView()),
+                //'formAttackStrongDefense'     => ($formAttackStrongDefense === null ? null : $formAttackStrongDefense->createView()),
+                'rehackForm'                  => ($rehackForm === null ? null : $rehackForm->createView()),
                 'defenderBonusMilitaryToSend' => $defenderBonusMilitaryToSend,
                 'militaryToSend'              => $militaryToSend,
             ]);
         }
 
         return [
-            'form' => $form->createView(),
+            'form'         => $form->createView(),
+            'kingdomState' => $kingdomState,
         ];
     }
 }

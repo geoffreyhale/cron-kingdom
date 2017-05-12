@@ -1,6 +1,6 @@
-{% if kingdomHasActivePolicy is defined and not kingdomHasActivePolicy %}
-    <a href="{{ path('policy_select', {id: kingdom.id}) }}" class="btn btn-success">Select Policy</a>
+{% if kingdomState.activePolicy is null %}
+    <a href="{{ path('policy_select', {id: kingdom.id}) }}" class="btn btn-info">Select Policy</a>
 {% else %}
-    <div><strong>{{ kingdom.activePolicy.policy.name }}</strong></div>
-    <div class="text-muted"><em>time remaining: {{ policy_end_string }}</em></div>
+    <div><strong>{{ kingdomState.activePolicyName }}</strong></div>
+    <div class="text-muted"><em>time remaining: {{ kingdomState.activePolicyEndDiff }}</em></div>
 {% endif %}

@@ -68,12 +68,12 @@ swiftmailer:
     spool: { type: memory }
 
 fos_user:
-    db_driver: orm # other valid values are 'mongodb' and 'couchdb'
+    db_driver: orm
     firewall_name: main
     user_class: CronkdBundle\Entity\User
     from_email:
-        address: get@cronkd.com
-        sender_name: get@cronkd.com
+        address: get@cron.kd
+        sender_name: get.cron.kd
 
 stof_doctrine_extensions:
     orm:
@@ -81,14 +81,85 @@ stof_doctrine_extensions:
             timestampable: true
 
 cronkd:
+    resource_types:
+        - Population
+        - Material
+        - Building
     resources:
         Civilian:
-            initial: 16
-        Material:
-            initial: 8
-        Housing:
+            type: Population
+            description: Base Population resource.  Used to gather materials, build housing, and train to become military
             initial: 25
+            value: 1
+            spoil_of_war: true
+            action: ~
+        Material:
+            type: Material
+            description: Base Material resource.
+            initial: 10
+            value: 0
+            spoil_of_war: true
+            action:
+                verb: "Gather"
+                description: Gathering 1 Material requires 1 Civilian and is spread over 8 Ticks
+                inputs:
+                    Civilian:
+                        quantity: 1
+                        requeue: true
+                        queue_size: 8
+                output:
+                    quantity: 1
+                    queue_size: 8
+        Housing:
+            type: Building
+            description: Base Housing resource which holds 1 Civilian resources
+            initial: 10
+            value: 2
+            capacity: 1
+            spoil_of_war: true
+            action:
+                verb: "Build"
+                description: Housing requires 1 Civilian each and consumes 1 Material each and is spread over 8 Ticks
+                inputs:
+                    Civilian:
+                        quantity: 1
+                        requeue: true
+                        queue_size: 8
+                    Material:
+                        quantity: 1
+                output:
+                    quantity: 1
+                    queue_size: 8
         Military:
-            initial: 8
+            type: Population
+            description: Military resource that provides 1 Attack
+            initial: 0
+            attack: 1
+            defense: 1
+            value: 2
+            action:
+                verb: "Train"
+                description: Training of Military converts 1 Civilian each and is spread over 8 Ticks
+                inputs:
+                    Civilian:
+                        quantity: 1
+                output:
+                    quantity: 1
+                    queue_size: 8
         Hacker:
-            initial: 1
+            type: Population
+            description: Military resource that is used to spy on other Kingdoms
+            initial: 0
+            attack: 0
+            defense: 0
+            probe_power: 1
+            value: 3
+            action:
+                verb: "Train"
+                description: Training of Hackers converts 1 Civilian each and is spread over 8 Ticks
+                inputs:
+                    Military:
+                        quantity: 1
+                output:
+                    quantity: 1
+                    queue_size: 8

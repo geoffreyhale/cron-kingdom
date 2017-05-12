@@ -6,7 +6,9 @@ use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Log;
 use CronkdBundle\Entity\Policy;
 use CronkdBundle\Entity\Resource;
+use CronkdBundle\Entity\ResourceType;
 use CronkdBundle\Event\ActionEvent;
+use CronkdBundle\Exceptions\InvalidResourceException;
 use CronkdBundle\Repository\LogRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -19,19 +21,26 @@ use Symfony\Component\HttpFoundation\Request;
 class ActionController extends ApiController
 {
     /**
-     * @Route("/produce", name="api_action_product")
-     * @Method("PUT")
+     * @Route("/", name="api_action")
+     * @Method("GET")
      */
-    public function produceAction(Request $request)
+    public function performActionAction(Request $request)
     {
-        $kingdomId = (int) $request->get('kingdomId');
-        $quantity = (int) $request->get('quantity');
+        $outputResource = $request->get('output');
+        $kingdomId      = (int) $request->get('kingdomId');
+        $quantity       = (int) $request->get('quantity');
 
         if (empty($kingdomId)) {
             return $this->createErrorJsonResponse('You must pass a parameter `kingdomId` (int)');
         }
         if (empty($quantity) || 0 >= $quantity) {
             return $this->createErrorJsonResponse('You must pass a parameter `quantity` (positive int)');
+        }
+        $resourceManager = $this->get('cronkd.manager.resource');
+        try {
+            $outputResourceObj = $resourceManager->get($outputResource);
+        } catch (InvalidResourceException $e) {
+            return $this->createErrorJsonResponse('Cannot perform action on `output`');
         }
 
         $em = $this->getDoctrine()->getManager();
@@ -41,245 +50,86 @@ class ActionController extends ApiController
         }
 
         $kingdomManager = $this->get('cronkd.manager.kingdom');
+        $settings = $this->getParameter('cronkd.settings');
+        $outputResourceSettings = $settings['resources'][$outputResourceObj->getName()];
+        $actionDefinition = $outputResourceSettings['action'];
+
+        // Validate Kingdom has enough input resources to perform action
+        foreach ($actionDefinition['inputs'] as $resourceName => $inputDefinition) {
+            $kingdomAvailableResource = $kingdomManager->lookupResource($kingdom, $resourceName);
+            $requiredQuantity = $quantity * $inputDefinition['quantity'];
+            if (!$kingdomAvailableResource || $requiredQuantity > $kingdomAvailableResource->getQuantity()) {
+                return $this->createErrorJsonResponse('Not enough ' . $resourceName . ' to complete action');
+            }
+        }
+
+        $kingdomState = $kingdomManager->generateKingdomState($kingdom);
+
+        $inputQueues = [];
         $resourceManager = $this->get('cronkd.manager.resource');
-
-        $materialResource = $resourceManager->get(Resource::MATERIAL);
-        $civilianResource = $resourceManager->get(Resource::CIVILIAN);
-        $availableCivilians = $kingdomManager->lookupResource($kingdom, Resource::CIVILIAN);
-        if (!$availableCivilians || $quantity > $availableCivilians->getQuantity()) {
-            return $this->createErrorJsonResponse('Not enough civilians to complete action!');
-        }
-
-        $policyManager = $this->get('cronkd.manager.policy');
-        $queueLength = 8;
-        if ($policyManager->kingdomHasActivePolicy($kingdom, Policy::ECONOMIST)) {
-            $queueLength -= 2;
-        }
-
         $queuePopulator = $this->get('cronkd.queue_populator');
-        $civilianQueues = $queuePopulator->build($kingdom, $civilianResource, $queueLength, $quantity);
-        $materialQueues = $queuePopulator->build($kingdom, $materialResource, $queueLength, $quantity);
+        foreach ($actionDefinition['inputs'] as $resourceName => $inputDefinition) {
+            if ($inputDefinition['requeue']) {
+                $resource = $resourceManager->get($resourceName);
+                $kingdomResource = $kingdomManager->lookupResource($kingdom, $resourceName);
+                $inputQuantity = $quantity * $inputDefinition['quantity'];
+                $kingdomResource->removeQuantity($inputQuantity);
+                $queueSize = $inputDefinition['queue_size'] + $this->calculateQueueModifier($kingdomState->getActivePolicyName(), $resource);
 
-        $availableCivilians->removeQuantity($quantity);
-        $em->persist($availableCivilians);
-        $em->flush();
+                $inputQueues[] = $queuePopulator->build(
+                    $kingdom,
+                    $kingdomResource->getResource(),
+                    $queueSize,
+                    $inputQuantity
+                );
+            }
+        }
+
+        $outputDefinition = $actionDefinition['output'];
+        $kingdomOutputResource = $kingdomManager->lookupResource($kingdom, $outputResourceObj->getName());
+        $outputResource = $resourceManager->get($outputResourceObj->getName());
+        $outputQuantity = $quantity * $outputDefinition['quantity'];
+        $queueSize = $outputDefinition['queue_size'] + $this->calculateQueueModifier($kingdomState->getActivePolicyName(), $outputResource);
+
+        $outputQueue = $queuePopulator->build(
+            $kingdom,
+            $kingdomOutputResource->getResource(),
+            $queueSize,
+            $outputQuantity
+        );
 
         $this->get('cronkd.manager.log')->createLog(
             $kingdom,
             Log::TYPE_ACTION,
-            'Producing ' . $quantity . ' ' . Resource::MATERIAL
+            $actionDefinition['verb'] . ' ' . $quantity . ' ' . $outputResourceObj->getName()
         );
-
-        $event = new ActionEvent($kingdom);
-        $eventDispatcher = $this->get('event_dispatcher');
-        $eventDispatcher->dispatch('event.action', $event);
 
         return new JsonResponse([
             'data' => [
-                'civilian_queues' => $civilianQueues,
-                'material_queues' => $materialQueues,
+                'inputs' => $inputQueues,
+                'output' => $outputQueue,
             ],
         ]);
     }
 
     /**
-     * @Route("/build", name="api_action_build")
-     * @Method("PUT")
+     * @param string $policyName
+     * @param Resource $resource
+     * @return int
      */
-    public function buildAction(Request $request)
+    private function calculateQueueModifier(string $policyName, Resource $resource)
     {
-        $kingdomId = (int) $request->get('kingdomId');
-        $quantity = (int) $request->get('quantity');
-
-        if (empty($kingdomId)) {
-            return $this->createErrorJsonResponse('You must pass a parameter `kingdomId` (int)');
-        }
-        if (empty($quantity) || 0 >= $quantity) {
-            return $this->createErrorJsonResponse('You must pass a parameter `quantity` (positive int)');
-        }
-
-        $em = $this->getDoctrine()->getManager();
-        $kingdom = $em->getRepository(Kingdom::class)->find($kingdomId);
-        if (!$kingdom) {
-            return $this->createErrorJsonResponse('Invalid Kingdom');
+        $queueLengthModifier = 0;
+        if ($policyName == Policy::ECONOMIST) {
+            if ($resource->getType()->getName() == ResourceType::POPULATION && $resource->getAttack() > 0) {
+                $queueLengthModifier = 2;
+            } elseif (($resource->getType()->getName() == ResourceType::POPULATION && $resource->getAttack() == 0) ||
+                ($resource->getType()->getName() == ResourceType::MATERIAL)
+            ) {
+                $queueLengthModifier = -2;
+            }
         }
 
-        $kingdomManager = $this->get('cronkd.manager.kingdom');
-        $resourceManager = $this->get('cronkd.manager.resource');
-
-        $housingResource = $resourceManager->get(Resource::HOUSING);
-        $civilianResource = $resourceManager->get(Resource::CIVILIAN);
-        $availableCivilians = $kingdomManager->lookupResource($kingdom, Resource::CIVILIAN);
-        $availableMaterials = $kingdomManager->lookupResource($kingdom, Resource::MATERIAL);
-
-        if (!$availableCivilians || $quantity > $availableCivilians->getQuantity()) {
-            return $this->createErrorJsonResponse('Not enough civilians to complete action');
-        }
-        if (!$availableMaterials || $quantity > $availableMaterials->getQuantity()) {
-            return $this->createErrorJsonResponse('Note enough materials to complete action');
-        }
-
-        $policyManager = $this->get('cronkd.manager.policy');
-        $queueLength = 8;
-        if ($policyManager->kingdomHasActivePolicy($kingdom, Policy::ECONOMIST)) {
-            $queueLength -= 2;
-        }
-
-        $queuePopulator = $this->get('cronkd.queue_populator');
-        $civilianQueues = $queuePopulator->build($kingdom, $civilianResource, $queueLength, $quantity);
-        $housingQueues = $queuePopulator->build($kingdom, $housingResource, $queueLength, $quantity);
-
-        $availableMaterials->removeQuantity($quantity);
-        $em->persist($availableMaterials);
-        $availableCivilians->removeQuantity($quantity);
-        $em->persist($availableCivilians);
-        $em->flush();
-
-        $this->get('cronkd.manager.log')->createLog(
-            $kingdom,
-            Log::TYPE_ACTION,
-            'Building ' . $quantity . ' ' . Resource::HOUSING
-        );
-
-        $event = new ActionEvent($kingdom);
-        $eventDispatcher = $this->get('event_dispatcher');
-        $eventDispatcher->dispatch('event.action', $event);
-
-        return new JsonResponse([
-            'data' => [
-                'civilian_queues' => $civilianQueues,
-                'housing_queues' => $housingQueues,
-            ],
-        ]);
-    }
-
-    /**
-     * @Route("/train_military", name="api_action_train_military")
-     * @Method("PUT")
-     */
-    public function trainMilitaryAction(Request $request)
-    {
-        $kingdomId = (int) $request->get('kingdomId');
-        $quantity = (int) $request->get('quantity');
-
-        if (empty($kingdomId)) {
-            return $this->createErrorJsonResponse('You must pass a parameter `kingdomId` (int)');
-        }
-        if (empty($quantity) || 0 >= $quantity) {
-            return $this->createErrorJsonResponse('You must pass a parameter `quantity` (positive int)');
-        }
-
-        $em = $this->getDoctrine()->getManager();
-        $kingdom = $em->getRepository(Kingdom::class)->find($kingdomId);
-        if (!$kingdom) {
-            return $this->createErrorJsonResponse('Invalid Kingdom');
-        }
-
-        $kingdomManager = $this->get('cronkd.manager.kingdom');
-        $resourceManager = $this->get('cronkd.manager.resource');
-
-        $militaryResource = $resourceManager->get(Resource::MILITARY);
-        $availableCivilians = $kingdomManager->lookupResource($kingdom, Resource::CIVILIAN);
-        if (!$availableCivilians || $quantity > $availableCivilians->getQuantity()) {
-            return $this->createErrorJsonResponse('Not enough civilians to complete action!');
-        }
-
-        if ($kingdomManager->isAtMaxPopulation($kingdom)) {
-            return $this->createErrorJsonResponse('Cannot train military while housing capacity is insufficient!');
-        }
-
-        $policyManager = $this->get('cronkd.manager.policy');
-        $queueLength = 8;
-        if ($policyManager->kingdomHasActivePolicy($kingdom, Policy::ECONOMIST)) {
-            $queueLength += 2;
-        }
-
-        $queuePopulator = $this->get('cronkd.queue_populator');
-        $militaryQueues = $queuePopulator->build($kingdom, $militaryResource, $queueLength, $quantity);
-
-        $availableCivilians->removeQuantity($quantity);
-        $em->persist($availableCivilians);
-        $em->flush();
-
-        $this->get('cronkd.manager.log')->createLog(
-            $kingdom,
-            Log::TYPE_ACTION,
-            'Training ' . $quantity . ' ' . Resource::MILITARY
-        );
-
-        $event = new ActionEvent($kingdom);
-        $eventDispatcher = $this->get('event_dispatcher');
-        $eventDispatcher->dispatch('event.action', $event);
-
-        return new JsonResponse([
-            'data' => [
-                'military_queues' => $militaryQueues,
-            ],
-        ]);
-    }
-
-    /**
-     * @Route("/train_hacker", name="api_action_train_hacker")
-     * @Method("PUT")
-     */
-    public function trainHackerAction(Request $request)
-    {
-        $kingdomId = (int) $request->get('kingdomId');
-        $quantity = (int) $request->get('quantity');
-
-        if (empty($kingdomId)) {
-            return $this->createErrorJsonResponse('You must pass a parameter `kingdomId` (int)');
-        }
-        if (empty($quantity) || 0 >= $quantity) {
-            return $this->createErrorJsonResponse('You must pass a parameter `quantity` (positive int)');
-        }
-
-        $em = $this->getDoctrine()->getManager();
-        $kingdom = $em->getRepository(Kingdom::class)->find($kingdomId);
-        if (!$kingdom) {
-            return $this->createErrorJsonResponse('Invalid Kingdom');
-        }
-
-        $kingdomManager = $this->get('cronkd.manager.kingdom');
-        $resourceManager = $this->get('cronkd.manager.resource');
-
-        $availableCivilians = $kingdomManager->lookupResource($kingdom, Resource::CIVILIAN);
-        if (!$availableCivilians || $quantity > $availableCivilians->getQuantity()) {
-            return $this->createErrorJsonResponse('Not enough civilians to complete action!');
-        }
-
-        if ($kingdomManager->isAtMaxPopulation($kingdom)) {
-            return $this->createErrorJsonResponse('Cannot train hackers while housing capacity is insufficient!');
-        }
-
-        $policyManager = $this->get('cronkd.manager.policy');
-        $queueLength = 8;
-        if ($policyManager->kingdomHasActivePolicy($kingdom, Policy::ECONOMIST)) {
-            $queueLength += 2;
-        }
-
-        $queuePopulator = $this->get('cronkd.queue_populator');
-        $hackerResource = $resourceManager->get(Resource::HACKER);
-        $hackerQueues = $queuePopulator->build($kingdom, $hackerResource, $queueLength, $quantity);
-
-        $availableCivilians->removeQuantity($quantity);
-        $em->persist($availableCivilians);
-        $em->flush();
-
-        $this->get('cronkd.manager.log')->createLog(
-            $kingdom,
-            Log::TYPE_ACTION,
-            'Training ' . $quantity . ' ' . Resource::HACKER
-        );
-
-        $event = new ActionEvent($kingdom);
-        $eventDispatcher = $this->get('event_dispatcher');
-        $eventDispatcher->dispatch('event.action', $event);
-
-        return new JsonResponse([
-            'data' => [
-                'hacker_queues' => $hackerQueues,
-            ],
-        ]);
+        return $queueLengthModifier;
     }
 }

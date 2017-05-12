@@ -21,9 +21,9 @@ class ProbeController extends ApiController
      */
     public function sendAction(Request $request)
     {
-        $kingdomId = (int) $request->get('kingdomId');
+        $kingdomId       = (int) $request->get('kingdomId');
         $targetKingdomId = (int) $request->get('targetKingdomId');
-        $quantity = (int) $request->get('quantity');
+        $quantities      = $request->get('quantities');
 
         if (empty($kingdomId)) {
             return $this->createErrorJsonResponse('You must pass a parameter `kingdomId` (int)');
@@ -31,8 +31,8 @@ class ProbeController extends ApiController
         if (empty($targetKingdomId)) {
             return $this->createErrorJsonResponse('You must pass a parameter `targetKingdomId` (int)');
         }
-        if (empty($quantity) || 0 >= $quantity) {
-            return $this->createErrorJsonResponse('You must pass a parameter `quantity` (positive int)');
+        if (empty($quantities)) {
+            return $this->createErrorJsonResponse('You must pass a parameter `quantities` (array)');
         }
         if ($kingdomId == $targetKingdomId) {
             return $this->createErrorJsonResponse('`kingdomId` and `targetKingdomId` cannot be the same');
@@ -49,23 +49,39 @@ class ProbeController extends ApiController
         }
 
         $kingdomManager = $this->get('cronkd.manager.kingdom');
-        $resourceManager = $this->get('cronkd.manager.resource');
 
-        $hackerResource = $resourceManager->get(Resource::HACKER);
-        $availableHackers = $kingdomManager->lookupResource($kingdom, Resource::HACKER);
-        if (!$availableHackers || $quantity > $availableHackers->getQuantity()) {
-            return $this->createErrorJsonResponse('Not enough hackers to complete action!');
+        $probePower = 0;
+        foreach ($quantities as $resourceName => $quantity) {
+            $resource = $em->getRepository(Resource::class)->findOneByName($resourceName);
+            if (null === $resource) {
+                return $this->createErrorJsonResponse('Invalid resource "' . $resourceName . '"');
+            }
+            if (empty($quantity) || 0 >= $quantity) {
+                return $this->createErrorJsonResponse('Invalid value for "' . $resourceName . '" (positive int)');
+            }
+
+            $kingdomResource = $kingdomManager->lookupResource($kingdom, $resourceName);
+            if ($kingdomResource->getQuantity() < $quantity) {
+                return $this->createErrorJsonResponse('Not enough "' . $resourceName . '"');
+            }
+
+            $probePower += ($quantity * $kingdomResource->getResource()->getProbePower());
         }
 
         /** @var ProbingService $probingService */
         $probingService = $this->get('cronkd.service.probing');
-        $report = $probingService->probe($kingdom, $targetKingdom, $quantity);
+        $report = $probingService->probe($kingdom, $targetKingdom, $probePower);
 
+        $resourceManager = $this->get('cronkd.manager.resource');
         $queuePopulator = $this->get('cronkd.queue_populator');
-        $hackerQueues = $queuePopulator->build($kingdom, $hackerResource, 8, $quantity);
-
-        $availableHackers->removeQuantity($quantity);
-        $em->persist($availableHackers);
+        foreach ($quantities as $resourceName => $quantity) {
+            $resource = $resourceManager->get($resourceName);
+            $kingdomResource = $kingdomManager->lookupResource($kingdom, $resourceName);
+            // @TODO: add probe logic in config in some capacity
+            $hackerQueues = $queuePopulator->build($kingdom, $resource, 8, $quantity);
+            $kingdomResource->removeQuantity($quantity);
+            $em->persist($kingdomResource);
+        }
         $em->flush();
 
         return $this->createSerializedJsonResponse([

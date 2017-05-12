@@ -24,12 +24,16 @@ class AttackController extends ApiController
         $attackingService = $this->get('cronkd.service.attacking');
         $kingdomId = (int) $request->get('kingdomId');
         $targetKingdomId = (int) $request->get('targetKingdomId');
+        $quantities = $request->get('quantities');
 
         if (empty($kingdomId)) {
             return $this->createErrorJsonResponse('You must pass a parameter `kingdomId` (int)');
         }
         if (empty($targetKingdomId)) {
             return $this->createErrorJsonResponse('You must pass a parameter `targetKingdomId` (int)');
+        }
+        if (empty($quantities)) {
+            return $this->createErrorJsonResponse('You must pass a parameter `quantities` (array)');
         }
         if ($kingdomId == $targetKingdomId) {
             return $this->createErrorJsonResponse('`kingdomId` and `targetKingdomId` cannot be the same');
@@ -45,15 +49,6 @@ class AttackController extends ApiController
             return $this->createErrorJsonResponse('Invalid Target Kingdom');
         }
 
-        $resourceMap = $this->buildResourcesMap($request);
-        $army = $attackingService->buildArmy($kingdom, $resourceMap);
-        if (!$army->containsResources()) {
-            return $this->createErrorJsonResponse('No resources were sent to attack');
-        }
-        if (!$attackingService->kingdomHasResourcesToAttack($army)) {
-            return $this->createErrorJsonResponse('Kingdom does not have enough resources to attack');
-        }
-
         $previousAttack = $em->getRepository(AttackLog::class)->findOneBy([
             'attacker' => $kingdom,
             'tick'     => $kingdom->getWorld()->getTick(),
@@ -62,25 +57,28 @@ class AttackController extends ApiController
             return $this->createErrorJsonResponse('Kingdom has already attacked this tick');
         }
 
-        $attackReport = $attackingService->attack($kingdom, $targetKingdom, $army);
+        $kingdomManager = $this->get('cronkd.manager.kingdom');
+        foreach ($quantities as $resourceName => $quantity) {
+            $resource = $em->getRepository(Resource::class)->findOneByName($resourceName);
+            if (null === $resource) {
+                return $this->createErrorJsonResponse('Invalid resource "' . $resourceName . '"');
+            }
+            if (empty($quantity) || 0 >= $quantity) {
+                return $this->createErrorJsonResponse('Invalid value for "' . $resourceName . '" (positive int)');
+            }
+
+            $kingdomResource = $kingdomManager->lookupResource($kingdom, $resourceName);
+            if ($kingdomResource->getQuantity() < $quantity) {
+                return $this->createErrorJsonResponse('Not enough "' . $resourceName . '"');
+            }
+        }
+
+        $attackReport = $attackingService->attack($kingdom, $targetKingdom, $quantities);
 
         return $this->createSerializedJsonResponse([
             'data' => [
                 'report' => $attackReport,
             ],
         ]);
-    }
-
-    /**
-     * @param Request $request
-     * @return array
-     */
-    private function buildResourcesMap(Request $request)
-    {
-        $resources = [
-            Resource::MILITARY => $request->get('military'),
-        ];
-
-        return $resources;
     }
 }

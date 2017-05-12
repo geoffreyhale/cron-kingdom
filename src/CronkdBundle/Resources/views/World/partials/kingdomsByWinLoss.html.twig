@@ -8,7 +8,7 @@
     </tr>
     </thead>
     <tbody>
-    {% for kingdomByWinLoss in kingdomsByWinLoss %}
+    {% for kingdomByWinLoss in worldState.kingdomsByWinLossRecord %}
         <tr>
             {% if kingdomByWinLoss.kingdom.id == kingdom.id %}
                 <td><strong>{{ loop.index }}</strong></td>

@@ -5,13 +5,12 @@ use CronkdBundle\Entity\Log;
 use CronkdBundle\Entity\Queue;
 use CronkdBundle\Entity\Resource;
 use CronkdBundle\Entity\World;
-use CronkdBundle\Event\ActivateWorldEvent;
 use CronkdBundle\Event\WorldTickEvent;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CronkdTickCommand extends ContainerAwareCommand
+class TickCommand extends ContainerAwareCommand
 {
     protected function configure()
     {
@@ -28,8 +27,9 @@ class CronkdTickCommand extends ContainerAwareCommand
         $kingdomManager = $this->getContainer()->get('cronkd.manager.kingdom');
         $logger = $this->getContainer()->get('logger');
         $logManager = $this->getContainer()->get('cronkd.manager.log');
+        $worldManager = $this->getContainer()->get('cronkd.manager.world');
 
-        $this->deactivateExpiringWorlds();
+        $worldManager->deactivateExpiringWorlds();
         $worlds = $em->getRepository(World::class)->findByActive(true);
 
         $logger->info('Starting tick command');
@@ -84,48 +84,8 @@ class CronkdTickCommand extends ContainerAwareCommand
             $logger->info('Completed tick ' . $world->getTick() . ' for world ' . $world->getName());
         }
 
-        $this->activateUpcomingWorlds();
+        $worldManager->activateUpcomingWorlds();
 
         $logger->info('Completed command');
-    }
-
-    protected function deactivateExpiringWorlds()
-    {
-        $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
-        $logger = $this->getContainer()->get('logger');
-
-        $worlds = $em->getRepository(World::class)->findAll();
-        /** @var World $world */
-        foreach ($worlds as $world) {
-            if ($world->shouldBeDeactivated()) {
-                $logger->info('Deactivating ' . $world->getName());
-                $world->setActive(false);
-            }
-            $em->persist($world);
-        }
-
-        $em->flush();
-    }
-
-    protected function activateUpcomingWorlds()
-    {
-        $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
-        $logger = $this->getContainer()->get('logger');
-        $eventDispatcher = $this->getContainer()->get('event_dispatcher');
-
-        $worlds = $em->getRepository(World::class)->findAll();
-        /** @var World $world */
-        foreach ($worlds as $world) {
-            if ($world->shouldBeActivated()) {
-                $logger->info('Activating ' . $world->getName());
-                $world->setActive(true);
-
-                $event = new ActivateWorldEvent($world);
-                $eventDispatcher->dispatch('event.activate_world', $event);
-            }
-            $em->persist($world);
-        }
-
-        $em->flush();
     }
 }
