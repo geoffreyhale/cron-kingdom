@@ -69,11 +69,11 @@ class ActionController extends ApiController
         $resourceManager = $this->get('cronkd.manager.resource');
         $queuePopulator = $this->get('cronkd.queue_populator');
         foreach ($actionDefinition['inputs'] as $resourceName => $inputDefinition) {
+            $kingdomResource = $kingdomManager->lookupResource($kingdom, $resourceName);
+            $inputQuantity = $quantity * $inputDefinition['quantity'];
+            $kingdomResource->removeQuantity($inputQuantity);
             if ($inputDefinition['requeue']) {
                 $resource = $resourceManager->get($resourceName);
-                $kingdomResource = $kingdomManager->lookupResource($kingdom, $resourceName);
-                $inputQuantity = $quantity * $inputDefinition['quantity'];
-                $kingdomResource->removeQuantity($inputQuantity);
                 $queueSize = $inputDefinition['queue_size'] + $this->calculateQueueModifier($kingdomState->getActivePolicyName(), $resource);
 
                 $inputQueues[] = $queuePopulator->build(
