@@ -121,7 +121,8 @@ class ActionController extends ApiController
     {
         $queueLengthModifier = 0;
         if ($policyName == Policy::ECONOMIST) {
-            if ($resource->getType()->getName() == ResourceType::POPULATION && $resource->getAttack() > 0) {
+            if ($resource->getType()->getName() == ResourceType::POPULATION &&
+                ($resource->getAttack() > 0 || $resource->getDefense() > 0 || $resource->getProbePower() > 0)) {
                 $queueLengthModifier = 2;
             } elseif (($resource->getType()->getName() == ResourceType::POPULATION && $resource->getAttack() == 0) ||
                 ($resource->getType()->getName() == ResourceType::MATERIAL)

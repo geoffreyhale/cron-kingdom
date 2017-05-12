@@ -37,25 +37,25 @@ class CronkdExtension extends \Twig_Extension
 
     public function getResourceIcon($resourceName)
     {
-        switch ($resourceName) {
-            case 'Civilian':
+        switch (strtolower($resourceName)) {
+            case 'civilian':
                 return '<i class="fa fa-users fa-fw"></i> ';
-            case 'Housing':
-            case 'Wood House';
+            case 'housing':
                 return '<i class="fa fa-home fa-fw"></i> ';
-            case 'Guard';
-            case 'Wooden Wall';
+            case 'defender';
+            case 'wall';
                 return '<i class="fa fa-shield fa-fw"></i> ';
-            case 'Material':
-            case 'Wood';
+            case 'material':
                 return '<i class="fa fa-cubes fa-fw"></i> ';
-            case 'Military':
-            case 'Soldier';
+            case 'military':
+            case 'soldier':
+            case 'attacker':
                 return '<i class="fa fa-fighter-jet fa-fw"></i> ';
-            case 'Hacker';
+            case 'hacker';
+            case 'spy';
                 return '<i class="fa fa-user-secret fa-fw"></i> ';
-            case 'Tree';
-                return '<i class="fa fa-tree fa-fw"></i> ';
+            case 'trainer':
+                return '<i class="fa fa-male fa-fw"></i> ';
         }
 
         return '';
