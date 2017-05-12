@@ -192,6 +192,11 @@ class QueuePopulatorTest extends KernelTestCase
             $resource->setName($name);
             $resource->setValue(1);
             $resource->setCanBeProbed(true);
+            $resource->setCanBeProduced(true);
+            $resource->setProbePower(0);
+            $resource->setAttack(0);
+            $resource->setDefense(0);
+            $resource->setCapacity(0);
             $this->em->persist($resource);
             $this->em->flush();
         }

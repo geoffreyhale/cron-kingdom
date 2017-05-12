@@ -1,4 +1,13 @@
 services:
+    cronkd.tick:
+        class: CronkdBundle\Service\TickService
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
+            - "@cronkd.manager.kingdom"
+            - "@cronkd.manager.log"
+            - "@event_dispatcher"
+            - "@logger"
+
     cronkd.queue_populator:
         class: CronkdBundle\Service\QueuePopulator
         arguments:
@@ -21,6 +30,7 @@ services:
             - "@cronkd.manager.resource"
             - "@cronkd.manager.log"
             - "@cronkd.manager.policy"
+            - "%cronkd.settings%"
 
     cronkd.service.graphing:
         class: CronkdBundle\Service\GraphingService
@@ -28,10 +38,17 @@ services:
             - "@doctrine.orm.default_entity_manager"
             - "@cronkd.manager.kingdom"
             - "@cronkd.manager.resource"
+            - "%cronkd.settings%"
 
     # Managers
     cronkd.manager.world:
         class: CronkdBundle\Manager\WorldManager
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
+            - "@cronkd.manager.kingdom"
+            - "@event_dispatcher"
+        calls:
+            - [setLogger, ["@logger"]]
 
     cronkd.manager.kingdom:
         class: CronkdBundle\Manager\KingdomManager
@@ -39,6 +56,7 @@ services:
             - "@doctrine.orm.default_entity_manager"
             - "@cronkd.manager.resource"
             - "@event_dispatcher"
+            - "%cronkd.settings%"
         calls:
             - [setLogger, ["@logger"]]
 
@@ -64,8 +82,8 @@ services:
             - "@doctrine.orm.default_entity_manager"
 
     # Listeners
-    cronkd.listener.net_worth:
-        class: CronkdBundle\Listener\NetWorthListener
+    cronkd.listener.kingdom_cached_stats:
+        class: CronkdBundle\Listener\KingdomCachedStatsListener
         arguments:
             - "@doctrine.orm.default_entity_manager"
             - "@cronkd.manager.kingdom"
@@ -74,7 +92,6 @@ services:
             - {name: kernel.event_listener, event: event.world_tick, method: onTick}
             - {name: kernel.event_listener, event: event.create_kingdom, method: onCreateKingdom}
             - {name: kernel.event_listener, event: event.action, method: onAction}
-            - {name: kernel.event_listener, event: event.probe, method: onProbe}
             - {name: kernel.event_listener, event: event.attack, method: onAttack}
 
     cronkd.listener.notification:
@@ -100,3 +117,10 @@ services:
             - "@event_dispatcher"
         tags:
             - {name: kernel.event_listener, event: event.activate_world, method: onActivateWorld}
+
+    # Twig
+    cronkd.twig_extension:
+        class: CronkdBundle\Twig\CronkdExtension
+        public: true
+        tags:
+            - { name: twig.extension }

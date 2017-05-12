@@ -58,11 +58,61 @@ class Resource extends BaseEntity
     private $canBeProbed;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="can_be_produced", type="boolean")
+     *
+     * @Jms\Expose()
+     */
+    private $canBeProduced;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="probe_power", type="integer")
+     *
+     * @Jms\Expose()
+     */
+    private $probePower;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="capacity", type="integer")
+     *
+     * @Jms\Expose()
+     */
+    private $capacity;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="attack", type="integer")
+     *
+     * @Jms\Expose()
+     */
+    private $attack;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="defense", type="integer")
+     *
+     * @Jms\Expose()
+     */
+    private $defense;
+
+    /**
      * @var KingdomResource[]
      *
      * @ORM\OneToMany(targetEntity="KingdomResource", mappedBy="resource")
      */
     private $kingdoms;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="ResourceType", inversedBy="resources")
+     */
+    private $type;
 
     /**
      * Constructor
@@ -186,5 +236,149 @@ class Resource extends BaseEntity
     public function getKingdoms()
     {
         return $this->kingdoms;
+    }
+
+    /**
+     * Set attack
+     *
+     * @param integer $attack
+     *
+     * @return Resource
+     */
+    public function setAttack($attack)
+    {
+        $this->attack = $attack;
+
+        return $this;
+    }
+
+    /**
+     * Get attack
+     *
+     * @return integer
+     */
+    public function getAttack()
+    {
+        return $this->attack;
+    }
+
+    /**
+     * Set defense
+     *
+     * @param integer $defense
+     *
+     * @return Resource
+     */
+    public function setDefense($defense)
+    {
+        $this->defense = $defense;
+
+        return $this;
+    }
+
+    /**
+     * Get defense
+     *
+     * @return integer
+     */
+    public function getDefense()
+    {
+        return $this->defense;
+    }
+
+    /**
+     * Set canBeProduced
+     *
+     * @param boolean $canBeProduced
+     *
+     * @return Resource
+     */
+    public function setCanBeProduced($canBeProduced)
+    {
+        $this->canBeProduced = $canBeProduced;
+
+        return $this;
+    }
+
+    /**
+     * Get canBeProduced
+     *
+     * @return boolean
+     */
+    public function getCanBeProduced()
+    {
+        return $this->canBeProduced;
+    }
+
+    /**
+     * Set capacity
+     *
+     * @param integer $capacity
+     *
+     * @return Resource
+     */
+    public function setCapacity($capacity)
+    {
+        $this->capacity = $capacity;
+
+        return $this;
+    }
+
+    /**
+     * Get capacity
+     *
+     * @return integer
+     */
+    public function getCapacity()
+    {
+        return $this->capacity;
+    }
+
+    /**
+     * Set probePower
+     *
+     * @param integer $probePower
+     *
+     * @return Resource
+     */
+    public function setProbePower($probePower)
+    {
+        $this->probePower = $probePower;
+
+        return $this;
+    }
+
+    /**
+     * Get probePower
+     *
+     * @return integer
+     */
+    public function getProbePower()
+    {
+        return $this->probePower;
+    }
+
+    /**
+     * Set type
+     *
+     * @param ResourceType $type
+     *
+     * @return Resource
+     */
+    public function setType(ResourceType $type = null)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return ResourceType
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 }

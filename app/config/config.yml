@@ -68,12 +68,12 @@ swiftmailer:
     spool: { type: memory }
 
 fos_user:
-    db_driver: orm # other valid values are 'mongodb' and 'couchdb'
+    db_driver: orm
     firewall_name: main
     user_class: CronkdBundle\Entity\User
     from_email:
-        address: get@cronkd.com
-        sender_name: get@cronkd.com
+        address: get@cron.kd
+        sender_name: get.cron.kd
 
 stof_doctrine_extensions:
     orm:
@@ -81,14 +81,161 @@ stof_doctrine_extensions:
             timestampable: true
 
 cronkd:
+    resource_types:
+        - Population
+        - Material
+        - Building
     resources:
         Civilian:
+            type: Population
+            description: Base Population resource.  Used to gather materials, build housing, and train to become military
             initial: 16
+            value: 1
+            spoil_of_war: true
+            action: ~
         Material:
+            type: Material
+            description: Base material used to create housing and defensive buildings
             initial: 8
+            value: 1
+            spoil_of_war: true
+            action:
+                verb: "Gather"
+                description: Gathering 1 Material requires the efforts of 1 Civilian and is spread over 8 Ticks
+                inputs:
+                    Civilian:
+                        quantity: 1
+                        requeue: true
+                        queue_size: 8
+                output:
+                    quantity: 2
+                    queue_size: 8
         Housing:
+            type: Building
+            description: Base Housing resource which holds 2 Population resources
             initial: 25
-        Military:
-            initial: 8
-        Hacker:
+            value: 2
+            capacity: 2
+            spoil_of_war: true
+            action:
+                verb: "Build"
+                description: Building 1 Housing resource requires 1 Civilian each and consumes 3 Material each and is spread over 8 Ticks
+                inputs:
+                    Civilian:
+                        quantity: 1
+                        requeue: true
+                        queue_size: 8
+                    Material:
+                        quantity: 3
+                output:
+                    quantity: 1
+                    queue_size: 8
+        Wall:
+            type: Building
+            description: Defensive resource that provides 1 Defense
+            initial: 0
+            value: 1
+            defense: 1
+            capacity: 0
+            action:
+                verb: "Build"
+                description: Building of 1 Wall requires 2 Civilian each and consumes 1 Material each and is spread over 8 Ticks
+                inputs:
+                    Civilian:
+                        quantity: 2
+                        requeue: true
+                        queue_size: 8
+                    Material:
+                        quantity: 1
+                output:
+                    quantity: 1
+                    queue_size: 8
+        Soldier:
+            type: Population
+            description: Military resource that provides 1 Attack and 1 Defense
             initial: 1
+            attack: 1
+            defense: 1
+            value: 2
+            action:
+                verb: "Train"
+                description: Training of Soldier converts 1 Civilian each and is spread over 8 Ticks
+                inputs:
+                    Civilian:
+                        quantity: 1
+                output:
+                    quantity: 1
+                    queue_size: 8
+        Trainer:
+            type: Population
+            description: Military resource that allows more specialized Military units be trained
+            initial: 0
+            attack: 0
+            defense: 0
+            value: 3
+            action:
+                verb: "Train"
+                description: Training of Trainer converts 1 Soldier each and is spread over 8 Ticks
+                inputs:
+                    Soldier:
+                        quantity: 1
+                output:
+                    quantity: 1
+                    queue_size: 8
+        Attacker:
+            type: Population
+            description: Military resource that provides 1 Attack
+            initial: 0
+            attack: 3
+            defense: 0
+            value: 3
+            action:
+                verb: "Train"
+                description: Training of Attacker requires 1 Trainer each and converts 1 Soldier each and is spread over 8 Ticks
+                inputs:
+                    Soldier:
+                        quantity: 1
+                    Trainer:
+                        quantity: 1
+                        requeue: true
+                        queue_size: 8
+                output:
+                    quantity: 1
+                    queue_size: 8
+        Defender:
+            type: Population
+            description: Military resource that provides 1 Defense
+            initial: 0
+            attack: 0
+            defense: 3
+            value: 3
+            action:
+                verb: "Train"
+                description: Training of Defender requires 1 Trainer each and converts 1 Soldier each and is spread over 8 Ticks
+                inputs:
+                    Soldier:
+                        quantity: 1
+                    Trainer:
+                        quantity: 1
+                        requeue: true
+                        queue_size: 8
+                output:
+                    quantity: 1
+                    queue_size: 8
+        Spy:
+            type: Population
+            description: Military resource that is used to spy on other Kingdoms
+            initial: 0
+            attack: 0
+            defense: 0
+            probe_power: 1
+            value: 2
+            action:
+                verb: "Train"
+                description: Training of 1 Spy converts 1 Civilian each and is spread over 8 Ticks
+                inputs:
+                    Civilian:
+                        quantity: 1
+                output:
+                    quantity: 1
+                    queue_size: 8

@@ -2,6 +2,7 @@
 namespace CronkdBundle\Manager;
 
 use CronkdBundle\Entity\Resource;
+use CronkdBundle\Entity\ResourceType;
 use CronkdBundle\Exceptions\InvalidResourceException;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -10,14 +11,14 @@ class ResourceManager
     /** @var EntityManagerInterface */
     private $em;
     /** @var array  */
-    private $cronKdSettings;
+    private $settings;
     /** @var  array */
     private $cachedResources;
 
-    public function __construct(EntityManagerInterface $em, array $cronKdSettings)
+    public function __construct(EntityManagerInterface $em, array $settings)
     {
         $this->em              = $em;
-        $this->cronKdSettings  = $cronKdSettings;
+        $this->settings        = $settings;
         $this->cachedResources = [];
     }
 
@@ -27,7 +28,7 @@ class ResourceManager
     public function getKingdomStartingResources()
     {
         $initialResources = [];
-        foreach ($this->cronKdSettings['resources'] as $resourceName => $resourceData) {
+        foreach ($this->settings['resources'] as $resourceName => $resourceData) {
             $initialResources[$resourceName] = $resourceData['initial'];
         }
 
@@ -50,5 +51,27 @@ class ResourceManager
         }
 
         return $this->cachedResources[$resourceName];
+    }
+
+    /**
+     * @return array
+     */
+    public function getPopulationResources()
+    {
+        $resources = $this->em->getRepository(Resource::class)
+            ->findResourcesByType(ResourceType::POPULATION);
+
+        return $resources;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBuildingResources()
+    {
+        $resources = $this->em->getRepository(Resource::class)
+            ->findResourcesByType(ResourceType::BUILDING);
+
+        return $resources;
     }
 }

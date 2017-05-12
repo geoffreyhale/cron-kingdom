@@ -32,6 +32,7 @@
             <div class="pull-left btn-group" role="group" aria-label="...">
             {% if results.error is not defined %}
                 {% if results.data.report.result %}
+                    {#
                     <div class="alert alert-info">
                         <strong>{{ militaryToSend|number_format }}</strong> is the minimum number of Military to send for a successful attack.
                         <strong>{{ defenderBonusMilitaryToSend|number_format }}</strong> is the minimum number of Military to send to guarantee a successful attack <strong>if your opponent has the Defender Policy enabled.</strong>
@@ -48,13 +49,19 @@
                     {{ form_row(formAttackStrongDefense.militaryAllocations) }}
                     {{ form_row(formAttackStrongDefense.submit, {'attr': {'class': 'btn btn-danger'}, 'label': 'Attack with '~defenderBonusMilitaryToSend|number_format~' Military'}) }}
                     {{ form_end(formAttackStrongDefense) }}
-
+                    #}
                 {% else %}
-                    {{ form_start(formRehack) }}
-                    {{ form_row(formRehack.target) }}
-                    {{ form_row(formRehack.quantity) }}
-                    {{ form_row(formRehack.submit, {'attr': {'class': 'btn btn-primary'}}) }}
-                    {{ form_end(formRehack) }}
+                    {% if rehackForm is not null %}
+                        {{ form_start(rehackForm) }}
+                        {{ form_row(rehackForm.target) }}
+                        {% for resource in kingdomState.resources %}
+                            {% if attribute(rehackForm, resource.resource.name) is defined %}
+                                {{ form_row(attribute(rehackForm, resource.resource.name)) }}
+                            {% endif %}
+                        {% endfor %}
+                        {{ form_row(rehackForm.submit, {'attr': {'class': 'btn btn-primary'}}) }}
+                        {{ form_end(rehackForm) }}
+                    {% endif %}
                 {% endif %}
             {% endif %}
             </div>

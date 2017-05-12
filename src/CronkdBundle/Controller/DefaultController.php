@@ -10,7 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-class DefaultController extends Controller
+class DefaultController extends CronkdController
 {
     /**
      * @Route("/", name="homepage")
@@ -18,55 +18,31 @@ class DefaultController extends Controller
      */
     public function indexAction()
     {
-        $em = $this->getDoctrine()->getManager();
-        $user = $this->getUser();
         $worldManager = $this->get('cronkd.manager.world');
         $kingdomManager = $this->get('cronkd.manager.kingdom');
 
-        $world = $em->getRepository(World::class)->findOneBy(['active' => true]);
+        $user = $this->getUser();
+        $world = $this->extractActiveWorld();
         if (!$world) {
             return $this->redirect($this->generateUrl('world_index'));
         }
+        $kingdom = $this->extractKingdomFromCurrentUser();
 
-        /** @var Kingdom $kingdom */
-        $kingdom = $em->getRepository(Kingdom::class)->findOneByUserWorld($user, $world);
-        $userHasKingdom = $em->getRepository(Kingdom::class)->userHasKingdom($user, $world);
-
-        $kingdomResources = [];
-        $queues = [];
-        $notificationCount = 0;
-        $kingdomHasAvailableAttack = false;
-        $kingdomHasActivePolicy = false;
-        $kingdomWinLoss = ['win'=>0,'loss'=>0,];
-        $policy_end_string = null;
+        $kingdomState = null;
         if ($kingdom) {
-            $kingdomResources = $em->getRepository(KingdomResource::class)->findByKingdom($kingdom);
-            $queues = $this->get('cronkd.manager.kingdom')->getResourceQueues($kingdom);
-            $notificationCount = $em->getRepository(Log::class)->findNotificationCount($kingdom);
-            $kingdomHasAvailableAttack = $em->getRepository(AttackLog::class)->hasAvailableAttack($kingdom);
-            $kingdomWinLoss = $em->getRepository(AttackLog::class)->getWinLossRecord($kingdom);
-            $kingdomHasActivePolicy = $this->get('cronkd.manager.policy')->kingdomHasActivePolicy($kingdom);
-            if ($kingdomHasActivePolicy) {
-                $policy_end_string = $kingdom->getActivePolicy()->getEndTime()->diff(new \DateTime())->format('%h:%I');
-            }
+            $kingdomState = $kingdomManager->generateKingdomState($kingdom);
         }
+
+        $worldState = $worldManager->generateWorldState($world);
 
         return [
             'user'                      => $user,
             'kingdom'                   => $kingdom,
-            'queues'                    => $queues,
+            'kingdomState'              => $kingdomState,
             'world'                     => $world,
-            'worldNetworth'             => $worldManager->calculateWorldNetWorth($world),
+            'worldState'                => $worldState,
             'kingdoms'                  => $world->getKingdoms(),
-            'kingdomsByNetworth'        => $kingdomManager->calculateKingdomsByNetWorth($world),
-            'kingdomsByWinLoss'         => $kingdomManager->calculateKingdomsByWinLoss($world),
-            'kingdomResources'          => $kingdomResources,
-            'policy_end_string'         => $policy_end_string,
-            'userHasKingdom'            => $userHasKingdom,
-            'notificationCount'         => $notificationCount,
-            'kingdomHasAvailableAttack' => $kingdomHasAvailableAttack,
-            'kingdomWinLossString'      => $kingdomWinLoss['win'].'-'.$kingdomWinLoss['loss'],
-            'kingdomHasActivePolicy'    => $kingdomHasActivePolicy,
+            'userHasKingdom'            => null !== $kingdom,
         ];
     }
 

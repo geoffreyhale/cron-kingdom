@@ -4,12 +4,14 @@ namespace CronkdBundle\Manager;
 use CronkdBundle\Entity\AttackLog;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
+use CronkdBundle\Entity\Log;
 use CronkdBundle\Entity\Queue;
 use CronkdBundle\Entity\Resource;
 use CronkdBundle\Entity\User;
 use CronkdBundle\Entity\World;
 use CronkdBundle\Event\CreateKingdomEvent;
 use CronkdBundle\Exceptions\InvalidResourceException;
+use CronkdBundle\Model\KingdomState;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -23,17 +25,21 @@ class KingdomManager
     private $resourceManager;
     /** @var EventDispatcherInterface  */
     private $eventDispatcher;
+    /** @var array */
+    private $settings;
     /** @var NullLogger  */
     private $logger;
 
     public function __construct(
         EntityManagerInterface $em,
         ResourceManager $resourceManager,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        array $settings
     ) {
         $this->em              = $em;
         $this->resourceManager = $resourceManager;
         $this->eventDispatcher = $eventDispatcher;
+        $this->settings        = $settings;
         $this->logger          = new NullLogger();
     }
 
@@ -66,6 +72,24 @@ class KingdomManager
         $this->eventDispatcher->dispatch('event.create_kingdom', $event);
 
         return $kingdom;
+    }
+
+    /**
+     * @param Kingdom $kingdom
+     * @return KingdomState
+     */
+    public function generateKingdomState(Kingdom $kingdom)
+    {
+        $kingdomState = new KingdomState($kingdom, $this->settings);
+        $winLossRecord = $this->em->getRepository(AttackLog::class)->getWinLossRecord($kingdom);
+        $kingdomState
+            ->setWinLossRecord($winLossRecord['win'], $winLossRecord['loss'])
+            ->setCurrentQueues($this->getResourceQueues($kingdom))
+            ->setNotificationCount($this->em->getRepository(Log::class)->findNotificationCount($kingdom))
+            ->setAvailableAttack($this->em->getRepository(AttackLog::class)->hasAvailableAttack($kingdom))
+        ;
+
+        return $kingdomState;
     }
 
     /**
@@ -113,13 +137,15 @@ class KingdomManager
      */
     public function getPopulationCapacity(Kingdom $kingdom)
     {
-        $activeHousingResources = $this->em->getRepository(KingdomResource::class)
-            ->findSumOfSpecificResources($kingdom, [
-                    $this->resourceManager->get(Resource::HOUSING)->getId()
-                ]
-            );
+        $capacity = 0;
+        $housingResources = $this->resourceManager->getBuildingResources();
+        foreach ($housingResources as $resource) {
+            $kingdomResourceSum = $this->em->getRepository(KingdomResource::class)
+                ->findSumOfSpecificResources($kingdom, [$resource->getId()]);
+            $capacity += ($kingdomResourceSum * $resource->getCapacity());
+        }
 
-        return $activeHousingResources;
+        return $capacity;
     }
 
     /**
@@ -128,29 +154,19 @@ class KingdomManager
      */
     public function getPopulation(Kingdom $kingdom)
     {
-        $civilianResource = $this->resourceManager->get(Resource::CIVILIAN);
-        $militaryResource = $this->resourceManager->get(Resource::MILITARY);
-        $hackerResource   = $this->resourceManager->get(Resource::HACKER);
+        $populationResources = $this->resourceManager->getPopulationResources();
+        $resourceIds = [];
+        $inactivePopulation = 0;
+        foreach ($populationResources as $resource) {
+            $resourceIds[] = $resource->getId();
+            $inactivePopulation += $this->em->getRepository(Queue::class)
+                ->findTotalQueued($kingdom, $resource);
+        }
 
-        $activePopulationResources = $this->em->getRepository(KingdomResource::class)
-            ->findSumOfSpecificResources($kingdom, [
-                    $civilianResource->getId(),
-                    $militaryResource->getId(),
-                    $hackerResource->getId()
-                ]
-            );
+        $activePopulation = $this->em->getRepository(KingdomResource::class)
+            ->findSumOfSpecificResources($kingdom, $resourceIds);
 
-        $inactiveCivilianResources = $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $civilianResource);
-        $inactiveMilitaryResources = $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $militaryResource);
-        $inactiveHackerResources   = $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $hackerResource);
-
-        $totalPopulation = $activePopulationResources +
-            $inactiveCivilianResources +
-            $inactiveMilitaryResources +
-            $inactiveHackerResources
-        ;
-
-        return $totalPopulation;
+        return $activePopulation + $inactivePopulation;
     }
 
     /**
@@ -243,6 +259,29 @@ class KingdomManager
         $this->em->flush();
 
         return $liquidity;
+    }
+
+    /**
+     * @param Kingdom $kingdom
+     * @return Kingdom
+     */
+    public function calculateAttackAndDefense(Kingdom $kingdom)
+    {
+        $attack = 0;
+        $defense = 0;
+
+        /** @var KingdomResource $resource */
+        foreach ($kingdom->getResources() as $resource) {
+            $attack += $resource->getQuantity() * $resource->getResource()->getAttack();
+            $defense += $resource->getQuantity() * $resource->getResource()->getDefense();
+        }
+
+        $kingdom->setAttack($attack);
+        $kingdom->setDefense($defense);
+        $this->em->persist($kingdom);
+        $this->em->flush();
+
+        return $kingdom;
     }
 
     /**

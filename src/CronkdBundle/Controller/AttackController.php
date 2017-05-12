@@ -27,18 +27,19 @@ class AttackController extends CronkdController
         $this->validateWorldIsActive($kingdom);
         $this->validateUserOwnsKingdom($kingdom);
 
-        $em = $this->getDoctrine()->getManager();
-        $previousAttack = $em->getRepository(AttackLog::class)->findOneBy([
-            'attacker' => $kingdom,
-            'tick'     => $kingdom->getWorld()->getTick(),
-        ]);
-        if (null !== $previousAttack) {
+        $kingdomManager = $this->get('cronkd.manager.kingdom');
+        $kingdomState = $kingdomManager->generateKingdomState($kingdom);
+
+        $previousAttack = $this->get('cronkd.service.attacking')->numAttacksThisTick($kingdom);
+        if (0 < $previousAttack) {
             throw $this->createAccessDeniedException("You may only attack once per tick");
         }
 
+        $settings = $this->getParameter('cronkd.settings');
         $attackPlan = new AttackPlan();
         $form = $this->createForm(AttackPlanType::class, $attackPlan, [
-            'sourceKingdom' => $kingdom,
+            'kingdomState'  => $kingdomState,
+            'settings'      => $settings,
         ]);
 
         $form->handleRequest($request);
@@ -46,7 +47,7 @@ class AttackController extends CronkdController
             $response = $this->forward('CronkdBundle:Api/Attack:attack', [
                 'kingdomId'       => $kingdom->getId(),
                 'targetKingdomId' => $attackPlan->getTarget()->getId(),
-                'military'        => $attackPlan->getMilitaryAllocations(),
+                'quantities'      => $attackPlan->getQuantities(),
             ]);
 
             $results = $response->getContent();
@@ -59,7 +60,9 @@ class AttackController extends CronkdController
         }
 
         return [
-            'form' => $form->createView(),
+            'form'         => $form->createView(),
+            'kingdomState' => $kingdomState,
+            'settings'     => $settings,
         ];
     }
 }

@@ -7,17 +7,22 @@
                     <td>
                         <span>
                             <i class="fa fa-fort-awesome"></i> <strong>{{ kingdom.name }}</strong>
-                            {% if notificationCount %}
+                            {% if kingdomState.notificationCount %}
                                 <div class="pull-right">
-                                <a href="{{ path('log_index', {'id': kingdom.id}) }}"><span class="label label-danger">{{ notificationCount }}</span></a>
+                                <a href="{{ path('log_index', {'id': kingdom.id}) }}"><span class="label label-danger">{{ kingdomState.notificationCount }}</span></a>
                             </div>
                             {% endif %}
                         </span>
                         <span class="pull-right">
-                            <span title="Net Worth" style="margin-right: 60px;"><i class="fa fa-line-chart"></i> {{ kingdom.networth|number_format }}</span>
-                            {% if kingdomWinLossString is defined %}
-                                <span title="Win-Loss Record" style="margin-right: 60px;"><i class="fa fa-trophy"></i> {{ kingdomWinLossString }}</span>
-                            {% endif %}
+                            <span title="Net Worth" style="margin-right: 60px;">
+                                <i class="fa fa-line-chart"></i> {{ kingdom.networth|filterNumber }}
+                            </span>
+                            <span title="Attack and Defense Power" style="margin-right: 60px;">
+                                <i class="fa fa-shield"></i> {{ kingdom.attack|filterNumber }}/{{ kingdom.defense|filterNumber }}
+                            </span>
+                            <span title="Win-Loss Record" style="margin-right: 60px;">
+                                <i class="fa fa-trophy"></i> {{ kingdomState.winLossRecord }}
+                            </span>
                         </span>
                     </td>
                 </tr>
@@ -31,23 +36,25 @@
     <div class="col-md-3">
         <div class="panel panel-default">
             <div class="panel-body" style="text-align: center;">
+                {% if worldState.hasPolicies %}
                 <div>
                     {% include 'CronkdBundle:Default:partials/kingdom/policy.html.twig' %}
                 </div>
                 <hr />
+                {% endif %}
                 {% include 'CronkdBundle:Default:partials/kingdom/actions.html.twig' %}
             </div>
         </div>
     </div>
 
     <div class="col-md-9">
+        {#
         <div class="panel panel-default">
             {% include 'CronkdBundle:Default:partials/kingdom/resources.html.twig' %}
         </div>
+        #}
 
-        <div class="panel panel-default">
             {% include 'CronkdBundle:Default:partials/kingdom/queues.html.twig' %}
-        </div>
 
         <div class="row clearfix">
             <div class="col-md-6">

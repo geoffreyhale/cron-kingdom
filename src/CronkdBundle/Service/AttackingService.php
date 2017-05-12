@@ -7,13 +7,17 @@ use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Log;
 use CronkdBundle\Entity\Policy;
 use CronkdBundle\Entity\Resource;
+use CronkdBundle\Entity\ResourceType;
 use CronkdBundle\Event\AttackEvent;
+use CronkdBundle\Exceptions\InvalidResourceException;
+use CronkdBundle\Exceptions\NotEnoughResourcesException;
 use CronkdBundle\Manager\KingdomManager;
 use CronkdBundle\Manager\LogManager;
 use CronkdBundle\Manager\PolicyManager;
 use CronkdBundle\Manager\ResourceManager;
 use CronkdBundle\Model\Army;
 use CronkdBundle\Model\AttackReport;
+use CronkdBundle\Model\KingdomState;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -41,7 +45,8 @@ class AttackingService
         KingdomManager $kingdomManager,
         ResourceManager $resourceManager,
         LogManager $logManager,
-        PolicyManager $policyManager
+        PolicyManager $policyManager,
+        array $settings
     ) {
         $this->em              = $em;
         $this->eventDispatcher = $dispatcher;
@@ -50,19 +55,21 @@ class AttackingService
         $this->resourceManager = $resourceManager;
         $this->logManager      = $logManager;
         $this->policyManager   = $policyManager;
+        $this->settings        = $settings;
     }
 
     /**
      * @param Kingdom $kingdom
      * @param Kingdom $targetKingdom
-     * @param Army $attackers
+     * @param array $attackers
      * @return AttackReport
+     * @throws InvalidResourceException
      */
-    public function attack(Kingdom $kingdom, Kingdom $targetKingdom, Army $attackers)
+    public function attack(Kingdom $kingdom, Kingdom $targetKingdom, array $attackers)
     {
-        $defendingArmy = $this->getDefendingArmy($targetKingdom);
-
-        $result = $attackers->compare($defendingArmy);
+        $attackPower = $this->getArmyAttackPower($kingdom, $attackers);
+        $defendingPower = $this->getArmyDefensePower($targetKingdom);
+        $result = $attackPower > $defendingPower;
         $report = new AttackReport($kingdom, $targetKingdom, $result);
 
         $this->logManager->createLog(
@@ -77,26 +84,26 @@ class AttackingService
             true
         );
 
-        if (1 == $result) {
+        if ($result) {
             $this->awardResources($report, $kingdom, $targetKingdom);
         }
 
-        foreach ($attackers->getAllTypesOfUnits() as $resourceName) {
+        foreach ($attackers as $resourceName => $quantity) {
             $resource = $this->resourceManager->get($resourceName);
-            $queue = $this->queuePopulator->build($kingdom, $resource, 8, $attackers->getQuantityOfUnit($resourceName));
+            $queue = $this->queuePopulator->build($kingdom, $resource, 8, $quantity);
             $report->addQueue($resource, $queue);
 
             $kingdomResource = $this->em->getRepository(KingdomResource::class)->findOneBy([
                 'kingdom'  => $kingdom,
                 'resource' => $resource,
             ]);
-            $kingdomResource->removeQuantity($attackers->getQuantityOfUnit($resourceName));
+            $kingdomResource->removeQuantity($quantity);
             $this->em->persist($kingdomResource);
 
             $this->logManager->createLog(
                 $kingdom,
                 Log::TYPE_ATTACK,
-                'Attack queued ' . $attackers->getQuantityOfUnit($resourceName) . ' ' . $resourceName
+                'Attack queued ' . $quantity . ' ' . $resourceName
             );
 
             $this->logAttackResult($report, $kingdom, $targetKingdom);
@@ -111,62 +118,71 @@ class AttackingService
 
     /**
      * @param Kingdom $kingdom
-     * @param array $resources
-     * @return Army
+     * @param array $quantities
+     * @return int
+     * @throws InvalidResourceException
+     * @throws NotEnoughResourcesException
      */
-    public function buildArmy(Kingdom $kingdom, array $resources)
+    private function getArmyAttackPower(Kingdom $kingdom, array $quantities)
     {
-        $army = new Army($kingdom);
-        foreach ($resources as $resourceName => $quantity) {
-            $resource = $this->resourceManager->get($resourceName);
-            $army->addResource($resource, $quantity);
-        }
-
-        return $army;
-    }
-
-    /**
-     * @param Army $army
-     * @return bool
-     */
-    public function kingdomHasResourcesToAttack(Army $army)
-    {
-        foreach ($army->getAllTypesOfUnits() as $resourceName) {
-            $kingdomResource = $this->kingdomManager->lookupResource($army->getKingdom(), $resourceName);
-            if (!$army->hasEnoughToSend($kingdomResource)) {
-                return false;
+        $attackPower = 0;
+        foreach ($quantities as $resourceName => $quantity) {
+            $resource = $this->em->getRepository(Resource::class)->findOneByName($resourceName);
+            if (null === $resource) {
+                throw new InvalidResourceException($resourceName);
             }
+
+            $kingdomResource = $this->kingdomManager->lookupResource($kingdom, $resourceName);
+            if ($kingdomResource->getQuantity() < $quantity) {
+                throw new NotEnoughResourcesException($resourceName);
+            }
+
+            $attackPower += ($quantity * $kingdomResource->getResource()->getAttack());
         }
 
-        return true;
+        return $attackPower;
     }
 
     /**
      * @param Kingdom $kingdom
-     * @return Army
+     * @return int
+     * @throws InvalidResourceException
      */
-    private function getDefendingArmy(Kingdom $kingdom)
+    private function getArmyDefensePower(Kingdom $kingdom)
     {
-        $militaryResources = [
-            Resource::MILITARY,
-        ];
+        $defendingPower = 0;
+        foreach ($this->settings['resources'] as $resourceName => $resourceData) {
+            $resource = $this->em->getRepository(Resource::class)->findOneByName($resourceName);
+            if (null === $resource) {
+                throw new InvalidResourceException($resourceName);
+            }
 
-        $kingdomResources = $this->em->getRepository(KingdomResource::class)
-            ->findSpecificResources($kingdom, $militaryResources);
-
-        $defenderBonus = 1.0;
-        if ($this->policyManager->kingdomHasActivePolicy($kingdom, Policy::DEFENDER)) {
-            $defenderBonus = Policy::DEFENDER_BONUS;
+            if ($resourceData['defense'] > 0) {
+                $kingdomResource = $this->kingdomManager->lookupResource($kingdom, $resourceName);
+                $defendingPower += ($resourceData['defense'] * $kingdomResource->getQuantity());
+            }
         }
 
-        $resourceMap = [];
-        foreach ($kingdomResources as $kingdomResource) {
-            $resourceMap[$kingdomResource->getResource()->getName()] = floor($defenderBonus * $kingdomResource->getQuantity());
+        $kingdomState = $this->kingdomManager->generateKingdomState($kingdom);
+        if (Policy::DEFENDER == $kingdomState->getActivePolicyName()) {
+            $defendingPower *= Policy::DEFENDER_BONUS;
         }
 
-        $army = $this->buildArmy($kingdom, $resourceMap);
+        return $defendingPower;
+    }
 
-        return $army;
+    /**
+     * @param Kingdom $kingdom
+     * @return int
+     */
+    public function numAttacksThisTick(Kingdom $kingdom)
+    {
+        $previousAttacks = $this->em->getRepository(AttackLog::class)->findOneBy([
+            'attacker' => $kingdom,
+            'tick'     => $kingdom->getWorld()->getTick(),
+        ]);
+
+        return count($previousAttacks);
     }
 
     /**
@@ -176,14 +192,30 @@ class AttackingService
      */
     private function awardResources(AttackReport $report, Kingdom $kingdom, Kingdom $targetKingdom)
     {
+        $kingdomState = $this->kingdomManager->generateKingdomState($kingdom);
         $housingPercentage = 1;
-        if ($this->policyManager->kingdomHasActivePolicy($kingdom, Policy::WARMONGER)) {
+        if ($kingdomState->getActivePolicyName() == Policy::WARMONGER) {
             $housingPercentage *= Policy::WARMONGER_BONUS;
         }
 
-        $this->awardResource($report, $kingdom, $targetKingdom, Resource::CIVILIAN, 20);
-        $this->awardResource($report, $kingdom, $targetKingdom, Resource::MATERIAL, 50);
-        $this->awardResource($report, $kingdom, $targetKingdom, Resource::HOUSING, $housingPercentage);
+        foreach ($this->settings['resources'] as $resourceName => $resourceData) {
+            $percentage = 0;
+            if ($resourceData['spoil_of_war']) {
+                switch ($resourceData['type']) {
+                    case ResourceType::BUILDING:
+                        $percentage = $housingPercentage;
+                        break;
+                    case ResourceType::MATERIAL:
+                        $percentage = 50;
+                        break;
+                    case ResourceType::POPULATION:
+                        $percentage = 20;
+                        break;
+                }
+
+                $this->awardResource($report, $kingdom, $targetKingdom, $resourceName, $percentage);
+            }
+        }
     }
 
     /**
