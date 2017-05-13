@@ -225,7 +225,7 @@ cronkd:
         Spy:
             type: Population
             description: Military resource that is used to spy on other Kingdoms
-            initial: 0
+            initial: 5
             attack: 0
             defense: 0
             probe_power: 1
