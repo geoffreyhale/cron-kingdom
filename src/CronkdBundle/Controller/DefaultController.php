@@ -52,6 +52,10 @@ class DefaultController extends CronkdController
      */
     public function helpAction()
     {
-        return;
+        $settings = $this->getParameter('cronkd.settings');
+
+        return [
+            'settings' => $settings,
+        ];
     }
 }
