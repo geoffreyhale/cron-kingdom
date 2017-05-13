@@ -69,12 +69,12 @@ class WorldState
     }
 
     /**
-     * @param array $kingdoms
-     * @return self
+     * @param array $kingdomsByWinLoss
+     * @return $this
      */
-    public function setKingdomsByWinLossRecord(array $kingdoms)
+    public function setKingdomsByWinLossRecord(array $kingdomsByWinLoss)
     {
-        $this->kingdomsByWinLossRecord;
+        $this->kingdomsByWinLossRecord = $kingdomsByWinLoss;
 
         return $this;
     }
