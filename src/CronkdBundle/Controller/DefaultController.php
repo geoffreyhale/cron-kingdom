@@ -1,14 +1,8 @@
 <?php
 namespace CronkdBundle\Controller;
 
-use CronkdBundle\Entity\AttackLog;
-use CronkdBundle\Entity\Kingdom;
-use CronkdBundle\Entity\KingdomResource;
-use CronkdBundle\Entity\Log;
-use CronkdBundle\Entity\World;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class DefaultController extends CronkdController
 {
