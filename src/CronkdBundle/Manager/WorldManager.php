@@ -54,6 +54,7 @@ class WorldManager
         $worldState = new WorldState($world, $policies);
         $worldState
             ->setAggregateNetWorth($this->calculateWorldNetWorth($world))
+            ->setKingdomsByElo($this->kingdomManager->calculateKingdomsByElo($world))
             ->setKingdomsByNetWorth($this->kingdomManager->calculateKingdomsByNetWorth($world))
             ->setKingdomsByWinLossRecord($this->kingdomManager->calculateKingdomsByWinLoss($world))
         ;
