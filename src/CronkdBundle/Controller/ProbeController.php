@@ -2,9 +2,6 @@
 namespace CronkdBundle\Controller;
 
 use CronkdBundle\Entity\Kingdom;
-use CronkdBundle\Entity\Policy;
-use CronkdBundle\Entity\Resource;
-use CronkdBundle\Form\AutoAttackPlanType;
 use CronkdBundle\Form\ProbeAttemptType;
 use CronkdBundle\Form\ProbeRetryType;
 use CronkdBundle\Model\ProbeAttempt;

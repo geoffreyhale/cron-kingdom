@@ -12,6 +12,8 @@ class WorldState
     /** @var int  */
     private $aggregateNetWorth = 0;
     /** @var array  */
+    private $kingdomsByElo = [];
+    /** @var array  */
     private $kingdomsByNetWorth = [];
     /** @var array  */
     private $kingdomsByWinLossRecord = [];
@@ -49,6 +51,26 @@ class WorldState
         return $this->aggregateNetWorth;
     }
 
+
+    /**
+     * @param array $kingdomsByElo
+     * @return $this
+     */
+    public function setKingdomsByElo(array $kingdomsByElo)
+    {
+        $this->kingdomsByElo = $kingdomsByElo;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getKingdomsByElo()
+    {
+        return $this->kingdomsByElo;
+    }
+
     /**
      * @param array $kingdoms
      * @return self
@@ -78,7 +100,6 @@ class WorldState
 
         return $this;
     }
-
     /**
      * @return array
      */

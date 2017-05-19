@@ -55,38 +55,7 @@
             <div class="col-md-3">
                 <div class="row-fluid clearfix">
                     <div class="col-md-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="fa fa-trophy"></i> Scores</h3>
-                            </div>
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th title="Rank"><i class="fa fa-hashtag"></i></th>
-                                    <th title="Kingdom"><i class="fa fa-fort-awesome"></i></th>
-                                    <th title="Liquidity"><i class="fa fa-tint"></i></th>
-                                    <th title="Networth"><i class="fa fa-line-chart"></i></th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for kingdomByNetworth in kingdomsByNetworth %}
-                                    <tr>
-                                        {% if kingdom is not null and kingdomByNetworth.id == kingdom.id %}
-                                            <td><strong>{{ loop.index }}</strong></td>
-                                            <td><strong>{{ kingdomByNetworth.name }}</strong></td>
-                                            <td><strong>{{ kingdomByNetworth.liquidity|number_format }}</strong></td>
-                                            <td><strong>{{ kingdomByNetworth.netWorth|number_format }}</strong></td>
-                                        {% else %}
-                                            <td>{{ loop.index }}</td>
-                                            <td>{{ kingdomByNetworth.name }}</td>
-                                            <td>{{ kingdomByNetworth.liquidity|number_format }}</td>
-                                            <td>{{ kingdomByNetworth.netWorth|number_format }}</td>
-                                        {% endif %}
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
+                        {% include 'CronkdBundle:World:partials/kingdomScores.html.twig' %}
                     </div>
                 </div>
             </div>

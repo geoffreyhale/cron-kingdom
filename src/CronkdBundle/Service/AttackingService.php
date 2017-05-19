@@ -110,7 +110,7 @@ class AttackingService
         }
         $this->em->flush();
 
-        $event = new AttackEvent($kingdom, $targetKingdom);
+        $event = new AttackEvent($kingdom, $targetKingdom, $result);
         $this->eventDispatcher->dispatch('event.attack', $event);
 
         return $report;

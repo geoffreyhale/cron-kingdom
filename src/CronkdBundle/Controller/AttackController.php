@@ -1,7 +1,6 @@
 <?php
 namespace CronkdBundle\Controller;
 
-use CronkdBundle\Entity\AttackLog;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Form\AttackPlanType;
 use CronkdBundle\Model\AttackPlan;

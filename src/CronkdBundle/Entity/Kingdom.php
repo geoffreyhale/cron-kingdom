@@ -19,6 +19,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Kingdom extends BaseEntity
 {
+    const DEFAULT_ELO = 1200;
+
     /**
      * @var int
      *
@@ -27,6 +29,15 @@ class Kingdom extends BaseEntity
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="elo", type="integer", options={"default": 1200})
+     *
+     * @Jms\Expose()
+     */
+    private $elo;
 
     /**
      * @var string
@@ -127,6 +138,44 @@ class Kingdom extends BaseEntity
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Get ELO
+     *
+     * @return int
+     */
+    public function getElo(): int
+    {
+        return $this->elo;
+    }
+
+    /**
+     * Set ELO
+     *
+     * @param int $elo
+     *
+     * @return Kingdom
+     */
+    public function setElo(int $elo)
+    {
+        $this->elo = $elo;
+
+        return $this;
+    }
+
+    /**
+     * Set Default ELO
+     *
+     * @return Kingdom
+     */
+    public function setDefaultElo()
+    {
+        if (null === $this->getElo()) {
+            $this->setElo(self::DEFAULT_ELO);
+        }
+
+        return $this;
     }
 
     /**

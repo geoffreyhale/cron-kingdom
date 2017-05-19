@@ -331,6 +331,20 @@ class KingdomManager
      * @param World $world
      * @return Kingdom[]
      */
+    public function calculateKingdomsByElo(World $world)
+    {
+        $kingdomsByElo = $world->getKingdoms()->toArray();
+        usort($kingdomsByElo, function ($item1, $item2) {
+            return $item2->getElo() <=> $item1->getElo();
+        });
+
+        return $kingdomsByElo;
+    }
+
+    /**
+     * @param World $world
+     * @return Kingdom[]
+     */
     public function calculateKingdomsByNetWorth(World $world)
     {
         $kingdomsByNetWorth = $world->getKingdoms()->toArray();

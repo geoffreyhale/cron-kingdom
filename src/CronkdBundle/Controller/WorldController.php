@@ -3,14 +3,11 @@ namespace CronkdBundle\Controller;
 
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\World;
-use CronkdBundle\Form\ProbeAttemptType;
-use CronkdBundle\Model\ProbeAttempt;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route("/world")
@@ -49,8 +46,11 @@ class WorldController extends Controller
             $kingdom = $em->getRepository(Kingdom::class)->findOneByUserWorld($user, $world);
         }
 
+        $worldState = $worldManager->generateWorldState($world);
+
         return [
             'world'              => $world,
+            'worldState'         => $worldState,
             'kingdom'            => $kingdom,
             'worldNetworth'      => $worldManager->calculateWorldNetWorth($world),
             'kingdoms'           => $world->getKingdoms(),

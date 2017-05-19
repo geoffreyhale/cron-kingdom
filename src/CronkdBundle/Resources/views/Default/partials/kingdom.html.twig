@@ -14,14 +14,14 @@
                             {% endif %}
                         </span>
                         <span class="pull-right">
+                            <span title="ELO" style="margin-right: 60px;">
+                                <i class="fa fa-trophy"></i> {{ kingdom.elo }} ({{ kingdomState.winLossRecord }})
+                            </span>
                             <span title="Net Worth" style="margin-right: 60px;">
                                 <i class="fa fa-line-chart"></i> {{ kingdom.networth|filterNumber }}
                             </span>
                             <span title="Attack and Defense Power" style="margin-right: 60px;">
                                 <i class="fa fa-shield"></i> {{ kingdom.attack|filterNumber }}/{{ kingdom.defense|filterNumber }}
-                            </span>
-                            <span title="Win-Loss Record" style="margin-right: 60px;">
-                                <i class="fa fa-trophy"></i> {{ kingdomState.winLossRecord }}
                             </span>
                         </span>
                     </td>
