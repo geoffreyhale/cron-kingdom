@@ -45,6 +45,30 @@ class WorldManager
 
     /**
      * @param World $world
+     * @return World
+     */
+    public function create(World $world)
+    {
+        $this->em->persist($world);
+        $this->em->flush();
+
+        return $world;
+    }
+
+    /**
+     * @param World $world
+     * @return World
+     */
+    public function update(World $world)
+    {
+        $this->em->persist($world);
+        $this->em->flush();
+
+        return $world;
+    }
+
+    /**
+     * @param World $world
      * @return WorldState
      */
     public function generateWorldState(World $world)

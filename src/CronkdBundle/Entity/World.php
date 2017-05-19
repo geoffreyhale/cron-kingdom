@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="world")
  * @ORM\Entity(repositoryClass="CronkdBundle\Repository\WorldRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class World extends BaseEntity
 {
@@ -97,6 +98,16 @@ class World extends BaseEntity
     }
 
     /**
+     * @ORM\PrePersist()
+     */
+    public function setDefaultTick()
+    {
+        if (null === $this->tick) {
+            $this->setTick(0);
+        }
+    }
+
+    /**
      * Get tick
      *
      * @return int
@@ -153,6 +164,16 @@ class World extends BaseEntity
         $this->active = $active;
 
         return $this;
+    }
+
+    /**
+     * @ORM\PrePersist()
+     */
+    public function setDefaultActive()
+    {
+        if (null === $this->active) {
+            $this->setActive(false);
+        }
     }
 
     /**
