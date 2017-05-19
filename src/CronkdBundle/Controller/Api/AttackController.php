@@ -63,8 +63,12 @@ class AttackController extends ApiController
             if (null === $resource) {
                 return $this->createErrorJsonResponse('Invalid resource "' . $resourceName . '"');
             }
-            if (empty($quantity) || 0 >= $quantity) {
-                return $this->createErrorJsonResponse('Invalid value for "' . $resourceName . '" (positive int)');
+            if (0 > $quantity) {
+                return $this->createErrorJsonResponse('Invalid value for "' . $resourceName . '" (must be positive int)');
+            }
+            if (0 === $quantity) {
+                unset($quantities[$resourceName]);
+                continue;
             }
 
             $kingdomResource = $kingdomManager->lookupResource($kingdom, $resourceName);
