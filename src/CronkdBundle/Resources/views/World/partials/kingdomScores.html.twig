@@ -4,12 +4,20 @@
     </div>
     <ul class="nav nav-tabs">
         <li class="active">
+            <a href="#tab-elo" data-toggle="tab"><i class="fa fa-trophy"></i> ELO</a>
+        </li>
+        <li>
             <a href="#tab-scores-networth" data-toggle="tab"><i class="fa fa-line-chart"></i> Networth</a>
         </li>
-        <li><a href="#tab-scores-winloss" data-toggle="tab"><i class="fa fa-trophy"></i> Score</a></li>
+        <li>
+            <a href="#tab-scores-winloss" data-toggle="tab"><i class="fa fa-trophy"></i> Win Loss</a>
+        </li>
     </ul>
     <div class="tab-content clearfix">
-        <div class="tab-pane active" id="tab-scores-networth">
+        <div class="tab-pane active" id="tab-elo">
+            {% include 'CronkdBundle:World:partials/kingdomsByElo.html.twig' %}
+        </div>
+        <div class="tab-pane" id="tab-scores-networth">
             {% include 'CronkdBundle:World:partials/kingdomsByNetworth.html.twig' %}
         </div>
         <div class="tab-pane" id="tab-scores-winloss">

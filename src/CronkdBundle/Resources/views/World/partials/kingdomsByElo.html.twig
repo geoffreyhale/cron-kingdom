@@ -1,0 +1,24 @@
+<table class="table">
+    <thead>
+    <tr>
+        <th title="Rank"><i class="fa fa-hashtag"></i></th>
+        <th title="Kingdom"><i class="fa fa-fort-awesome"></i></th>
+        <th title="ELO">ELO</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for kingdomByElo in worldState.kingdomsByElo %}
+        <tr>
+            {% if kingdomByElo.id == kingdom.id %}
+                <td><strong>{{ loop.index }}</strong></td>
+                <td><strong>{{ kingdomByElo.name }}</strong></td>
+                <td><strong>{{ kingdomByElo.elo }}</strong></td>
+            {% else %}
+                <td>{{ loop.index }}</td>
+                <td>{{ kingdomByElo.name }}</td>
+                <td>{{ kingdomByElo.elo }}</td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
