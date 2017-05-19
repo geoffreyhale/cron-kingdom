@@ -46,8 +46,11 @@ class WorldController extends Controller
             $kingdom = $em->getRepository(Kingdom::class)->findOneByUserWorld($user, $world);
         }
 
+        $worldState = $worldManager->generateWorldState($world);
+
         return [
             'world'              => $world,
+            'worldState'         => $worldState,
             'kingdom'            => $kingdom,
             'worldNetworth'      => $worldManager->calculateWorldNetWorth($world),
             'kingdoms'           => $world->getKingdoms(),
