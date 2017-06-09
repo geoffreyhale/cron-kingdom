@@ -18,10 +18,10 @@ class TickCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
-        $logger = $this->getContainer()->get('logger');
+        $em           = $this->getContainer()->get('doctrine.orm.default_entity_manager');
+        $logger       = $this->getContainer()->get('logger');
         $worldManager = $this->getContainer()->get('cronkd.manager.world');
-        $tickService = $this->getContainer()->get('cronkd.tick');
+        $tickService  = $this->getContainer()->get('cronkd.tick');
 
         $worldManager->deactivateExpiringWorlds();
         $worlds = $em->getRepository(World::class)->findByActive(true);
@@ -30,7 +30,7 @@ class TickCommand extends ContainerAwareCommand
 
         /** @var World $world */
         foreach ($worlds as $world) {
-            $tickService->performTick($world);
+            $tickService->attemptTick($world);
         }
 
         $worldManager->activateUpcomingWorlds();

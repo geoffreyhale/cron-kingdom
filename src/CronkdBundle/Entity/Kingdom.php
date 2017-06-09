@@ -145,7 +145,7 @@ class Kingdom extends BaseEntity
      *
      * @return int
      */
-    public function getElo(): int
+    public function getElo()
     {
         return $this->elo;
     }
@@ -165,7 +165,7 @@ class Kingdom extends BaseEntity
     }
 
     /**
-     * Set Default ELO
+     * @ORM\PrePersist()
      *
      * @return Kingdom
      */
