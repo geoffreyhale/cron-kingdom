@@ -26,7 +26,7 @@ class KingdomController extends Controller
         if (null !== $id) {
             $world = $em->getRepository(World::class)->find($id);
         } else {
-            $world = $em->getRepository(World::class)->findOneBy(['active' => true]);
+            $world = $em->getRepository(World::class)->findActiveWorld();
         }
         if (!$world) {
             throw $this->createNotFoundException('No active world found!');
