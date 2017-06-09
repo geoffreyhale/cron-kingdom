@@ -84,6 +84,8 @@ class AttackingService
             true
         );
 
+        $this->applyDeath($report, $kingdom, $targetKingdom);
+
         if ($result) {
             $this->awardResources($report, $kingdom, $targetKingdom);
         }
@@ -228,21 +230,55 @@ class AttackingService
         $resource = $this->resourceManager->get($resourceName);
         $targetKingdomResource = $this->kingdomManager->lookupResource($targetKingdom, $resourceName);
 
-        $resourceToTransfer = ceil($targetKingdomResource->getQuantity() * $percent / 100);
-        $this->kingdomManager->modifyResources($kingdom, $resource, $resourceToTransfer);
-        $this->kingdomManager->modifyResources($targetKingdom, $resource, -1 * $resourceToTransfer);
-        $report->addModifiedResource($kingdom, $resource, $resourceToTransfer);
+        $quantity = ceil($targetKingdomResource->getQuantity() * $percent / 100);
+        $this->kingdomManager->modifyResources($kingdom, $resource, $quantity);
+        $this->kingdomManager->modifyResources($targetKingdom, $resource, -1 * $quantity);
+        $report->addModifiedResource($kingdom, $resource, $quantity);
 
         $this->logManager->createLog(
             $kingdom,
             Log::TYPE_ATTACK,
-            "Attack awarded $resourceToTransfer $resourceName"
+            "Attack awarded $quantity $resourceName"
         );
         $this->logManager->createLog(
             $targetKingdom,
             Log::TYPE_ATTACK,
-            "Attack lost $resourceToTransfer $resourceName"
+            "Attack lost $quantity $resourceName"
         );
+    }
+
+    /**
+     * Apply Death
+     *
+     * Attack loser loses 20% of Civilians
+     *
+     * @param AttackReport $report
+     * @param Kingdom $kingdom
+     * @param Kingdom $targetKingdom
+     */
+    private function applyDeath(AttackReport $report, Kingdom $kingdom, Kingdom $targetKingdom) {
+        $resourceName = 'Civilian';
+        $resource = $this->resourceManager->get($resourceName);
+        $targetKingdomResource = $this->kingdomManager->lookupResource($targetKingdom, $resourceName);
+        $kingdomResource = $this->kingdomManager->lookupResource($kingdom, $resourceName);
+
+        // Attacker Win / Defender Lose
+        if ($report->getResult()) {
+            $this->kingdomManager->modifyResources(
+                $targetKingdom,
+                $resource,
+                -floor($targetKingdomResource->getQuantity() * 20 / 100)
+            );
+        }
+
+        // Attacker Lose / Defender Win
+        if (!$report->getResult()) {
+            $this->kingdomManager->modifyResources(
+                $kingdom,
+                $resource,
+                -floor($kingdomResource->getQuantity() * 20 / 100)
+            );
+        }
     }
 
     /**
