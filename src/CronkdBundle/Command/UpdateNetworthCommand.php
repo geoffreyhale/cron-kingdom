@@ -22,12 +22,16 @@ class UpdateNetworthCommand extends ContainerAwareCommand
         $kingdomManager = $this->getContainer()->get('cronkd.manager.kingdom');
         $logger = $this->getContainer()->get('logger');
 
-        $worlds = $em->getRepository(World::class)->findByActive(true);
+        $worlds = $em->getRepository(World::class)->findByInitialized(true);
 
         $logger->info('Starting update networth command');
 
         /** @var World $world */
         foreach ($worlds as $world) {
+            if ($world->isInactive()) {
+                continue;
+            }
+
             $logger->info('Update networth for world ' . $world->getName());
 
             foreach ($world->getKingdoms() as $kingdom) {
