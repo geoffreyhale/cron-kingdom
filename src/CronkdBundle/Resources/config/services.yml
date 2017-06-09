@@ -123,7 +123,7 @@ services:
             - "@doctrine.orm.default_entity_manager"
             - "@event_dispatcher"
         tags:
-            - {name: kernel.event_listener, event: event.activate_world, method: onActivateWorld}
+            - {name: kernel.event_listener, event: event.initialize_world, method: onInitializeWorld}
 
     # Twig
     cronkd.twig_extension:

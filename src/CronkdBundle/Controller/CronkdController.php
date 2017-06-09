@@ -15,7 +15,7 @@ class CronkdController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $user = $this->getUser();
-        $world = $em->getRepository(World::class)->findOneBy(['active' => true]);
+        $world = $em->getRepository(World::class)->findActiveWorld();
         if (!$world) {
             return null;
         }
@@ -32,7 +32,7 @@ class CronkdController extends Controller
     public function extractActiveWorld()
     {
         $em = $this->getDoctrine()->getManager();
-        $world = $em->getRepository(World::class)->findOneBy(['active' => true]);
+        $world = $em->getRepository(World::class)->findActiveWorld();
         if (!$world) {
             return null;
         }

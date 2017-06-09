@@ -3,7 +3,7 @@ namespace CronkdBundle\Manager;
 
 use CronkdBundle\Entity\Policy;
 use CronkdBundle\Entity\World;
-use CronkdBundle\Event\ActivateWorldEvent;
+use CronkdBundle\Event\InitializeWorldEvent;
 use CronkdBundle\Model\WorldState;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -100,33 +100,18 @@ class WorldManager
         return $worldNetWorth;
     }
 
-    public function deactivateExpiringWorlds()
-    {
-        $worlds = $this->em->getRepository(World::class)->findAll();
-        /** @var World $world */
-        foreach ($worlds as $world) {
-            if ($world->shouldBeDeactivated()) {
-                $this->logger->info('Deactivating ' . $world->getName());
-                $world->setActive(false);
-            }
-            $this->em->persist($world);
-        }
-
-        $this->em->flush();
-    }
-
-    public function activateUpcomingWorlds()
+    public function initializeUpcomingWorlds()
     {
         $worlds = $this->em->getRepository(World::class)->findAll();
 
         /** @var World $world */
         foreach ($worlds as $world) {
-            if ($world->shouldBeActivated()) {
-                $this->logger->info('Activating ' . $world->getName());
-                $world->setActive(true);
+            if ($world->shouldBeInitialized()) {
+                $this->logger->info('Initializing world ' . $world->getName());
+                $world->setInitialized(true);
 
-                $event = new ActivateWorldEvent($world);
-                $this->eventDispatcher->dispatch('event.activate_world', $event);
+                $event = new InitializeWorldEvent($world);
+                $this->eventDispatcher->dispatch('event.initialize_world', $event);
             }
             $this->em->persist($world);
         }
