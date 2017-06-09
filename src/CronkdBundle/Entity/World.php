@@ -437,7 +437,7 @@ class World extends BaseEntity
     /**
      * @return World
      */
-    public function skipTick()
+    public function incrementTimeSinceLastTick()
     {
         $this->addMinuteSinceLastTick();
 

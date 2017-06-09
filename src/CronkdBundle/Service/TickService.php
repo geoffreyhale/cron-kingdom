@@ -44,6 +44,8 @@ class TickService
      */
     public function attemptTick(World $world)
     {
+        $world->incrementTimeSinceLastTick();
+        
         if (!$world->isActive()) {
             $this->logger->info($world->getName() . " world is not active");
 
@@ -52,7 +54,7 @@ class TickService
 
         if (!$world->readyToPerformTick()) {
             $this->logger->info($world->getName() . " world is not ready to perform tick");
-            $world->skipTick();
+
             $this->em->persist($world);
             $this->em->flush();
 
