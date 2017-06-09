@@ -188,12 +188,16 @@ class World extends BaseEntity
 
     /**
      * @ORM\PrePersist()
+     *
+     * @return World
      */
     public function setDefaultActive()
     {
         if (null === $this->active) {
-            $this->setActive(false);
+            return $this->setActive(false);
         }
+
+        return $this;
     }
 
     /**
@@ -300,6 +304,20 @@ class World extends BaseEntity
     public function getMinutesSinceLastTick()
     {
         return $this->minutesSinceLastTick;
+    }
+
+    /**
+     * @ORM\PrePersist()
+     *
+     * @return World
+     */
+    public function setDefaultMinutesSinceLastTick()
+    {
+        if (null === $this->active) {
+            return $this->setMinutesSinceLastTick(0);
+        }
+
+        return $this;
     }
 
     /**
