@@ -23,7 +23,6 @@ class TickCommand extends ContainerAwareCommand
         $worldManager = $this->getContainer()->get('cronkd.manager.world');
         $tickService  = $this->getContainer()->get('cronkd.tick');
 
-        $worldManager->deactivateExpiringWorlds();
         $worlds = $em->getRepository(World::class)->findActiveWorlds(true);
 
         $logger->info('Starting tick command');
