@@ -43,7 +43,7 @@ class KingdomCachedStatsListener
 
     public function onCreateKingdom(CreateKingdomEvent $event)
     {
-        if ($event->kingdom->getWorld()->getActive()) {
+        if ($event->kingdom->getWorld()->isActive()) {
             $this->kingdomManager->calculateNetWorth($event->kingdom);
             $this->kingdomManager->calculateAttackAndDefense($event->kingdom);
         }
