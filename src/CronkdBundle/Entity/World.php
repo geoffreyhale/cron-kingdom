@@ -24,6 +24,11 @@ class World extends BaseEntity
     private $id;
 
     /**
+     * @ORM\Column(name="initialized", type="boolean", options={"default": 0})
+     */
+    private $initialized;
+
+    /**
      * @var int
      *
      * @ORM\Column(name="tick", type="bigint", options={"default": 1})
@@ -36,13 +41,6 @@ class World extends BaseEntity
      * @ORM\Column(name="name", type="string", length=255, unique=true)
      */
     private $name;
-
-    /**
-     * @var boolean
-     *
-     * @ORM\Column(name="active", type="boolean")
-     */
-    private $active;
 
     /**
      * @var \DateTime
@@ -101,6 +99,44 @@ class World extends BaseEntity
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set initialized
+     *
+     * @param boolean $initialized
+     *
+     * @return World
+     */
+    public function setInitialized($initialized)
+    {
+        $this->initialized = $initialized;
+
+        return $this;
+    }
+
+    /**
+     * Get initialized
+     *
+     * @return boolean
+     */
+    public function getInitialized()
+    {
+        return $this->initialized;
+    }
+
+    /**
+     * @ORM\PrePersist()
+     *
+     * @return World
+     */
+    public function setDefaultInitialized()
+    {
+        if (null === $this->getInitialized()) {
+            return $this->setInitialized(false);
+        }
+
+        return $this;
     }
 
     /**
@@ -170,44 +206,6 @@ class World extends BaseEntity
     public function getName()
     {
         return $this->name;
-    }
-
-    /**
-     * Set active
-     *
-     * @param boolean $active
-     *
-     * @return World
-     */
-    public function setActive($active)
-    {
-        $this->active = $active;
-
-        return $this;
-    }
-
-    /**
-     * @ORM\PrePersist()
-     *
-     * @return World
-     */
-    public function setDefaultActive()
-    {
-        if (null === $this->active) {
-            return $this->setActive(false);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get active
-     *
-     * @return boolean
-     */
-    public function getActive()
-    {
-        return $this->active;
     }
 
     /**
@@ -368,40 +366,43 @@ class World extends BaseEntity
     /**
      * @return bool
      */
-    public function shouldBeActivated()
-    {
-        $now = new \DateTime();
-        if (!$this->getActive() &&
-            $now > $this->getStartTime() &&
-            $now < $this->getEndTime()
-        ) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * @return bool
-     */
-    public function shouldBeDeactivated()
-    {
-        $now = new \DateTime();
-        if ($this->getActive() &&
-            $now > $this->getEndTime()
-        ) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * @return bool
-     */
     public function isUpcoming()
     {
-        return !$this->getActive() && time() < strtotime($this->startTime->format('Y-m-d h:i A'));
+        $now = new \DateTime();
+
+        return $now < $this->getStartTime();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive()
+    {
+        $now = new \DateTime();
+
+        return $now > $this->getStartTime() && $now < $this->getEndTime();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInactive()
+    {
+        $now = new \DateTime();
+
+        return $now > $this->getEndTime();
+    }
+
+    /**
+     * @return bool
+     */
+    public function shouldBeInitialized()
+    {
+        if (!$this->getInitialized() && $this->isActive()) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -411,7 +412,7 @@ class World extends BaseEntity
     {
         $soon = (new \DateTime)->add(new \DateInterval('P3D'));
 
-        return $this->getActive() && $soon > $this->getEndTime();
+        return $this->isActive() && $soon > $this->getEndTime();
     }
 
     /**

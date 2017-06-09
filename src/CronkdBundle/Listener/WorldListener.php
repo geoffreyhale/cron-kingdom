@@ -1,8 +1,7 @@
 <?php
 namespace CronkdBundle\Listener;
 
-use CronkdBundle\Entity\World;
-use CronkdBundle\Event\ActivateWorldEvent;
+use CronkdBundle\Event\InitializeWorldEvent;
 use CronkdBundle\Event\CreateKingdomEvent;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -20,7 +19,7 @@ class WorldListener
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    public function onActivateWorld(ActivateWorldEvent $event)
+    public function onInitializeWorld(InitializeWorldEvent $event)
     {
         foreach ($event->world->getKingdoms() as $kingdom) {
             // Set initial resources, calculate initial net worth

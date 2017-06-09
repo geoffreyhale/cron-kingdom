@@ -33,7 +33,7 @@ class TickCommand extends ContainerAwareCommand
             $tickService->attemptTick($world);
         }
 
-        $worldManager->activateUpcomingWorlds();
+        $worldManager->initializeUpcomingWorlds();
 
         $logger->info('Completed command');
     }

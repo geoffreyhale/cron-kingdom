@@ -12,7 +12,7 @@
         {% for world in worlds %}
             <tr>
                 <td>
-                    {% if is_granted("ROLE_ADMIN") and world.active %}
+                    {% if is_granted("ROLE_ADMIN") %}
                         <div class="pull-right"><a href="{{ path('world_configure', {'world': world.id}) }}"><i class="fa fa-cogs"></i></a></div>
                     {% endif %}
                     <a href="{{ path('world_show', {'id': world.id}) }}">{{ world.name }}</a>
