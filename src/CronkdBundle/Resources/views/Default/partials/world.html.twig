@@ -1,24 +1,32 @@
 <div class="row clearfix" style="font-size: 24px;">
     <div class="col-md-12">
-        <div class="panel panel-default">
-            <table class="table">
-                <tbody>
-                <tr>
-                    <td title="World"><i class="fa fa-globe"></i> <strong>{{ world.name }}</strong></td>
-                    <td title="Net Worth">
-                        <a href="{{ path('world_show', {'id': world.id}) }}">
-                            <i class="fa fa-line-chart"></i>
-                        </a>
-                        {{ worldState.aggregateNetWorth|filterNumber }}
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+        {% include 'CronkdBundle:World:partials/world_card.html.twig' %}
     </div>
 </div>
+
 <div class="row clearfix">
-    <div class="col-md-12">
-        {% include 'CronkdBundle:World:partials/kingdomScores.html.twig' %}
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-line-chart"></i> Networth</h3>
+            </div>
+            {% include 'CronkdBundle:World:partials/kingdomsByNetworth.html.twig' %}
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-trophy"></i> ELO</h3>
+            </div>
+            {% include 'CronkdBundle:World:partials/kingdomsByElo.html.twig' %}
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Win - Loss</h3>
+            </div>
+            {% include 'CronkdBundle:World:partials/kingdomsByWinLoss.html.twig' %}
+        </div>
     </div>
 </div>

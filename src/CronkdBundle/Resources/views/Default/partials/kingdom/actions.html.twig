@@ -1,7 +1,7 @@
 {% if kingdomState.hasAvailableProbingResources or kingdomState.availableAttack %}
 <div class="btn-group-vertical" role="group">
     {% if kingdomState.hasAvailableProbingResources %}
-    <a href="{{ path('probe_send', {id: kingdom.id}) }}" class="btn btn-warning">Spy</a>
+        <a href="{{ path('probe_send', {id: kingdom.id}) }}" class="btn btn-warning">Spy</a>
     {% endif %}
     {% if kingdomState.availableAttack %}
         <a href="{{ path('attack', {id: kingdom.id}) }}" class="btn btn-danger">Plan Attack</a>

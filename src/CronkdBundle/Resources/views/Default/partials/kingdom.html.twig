@@ -1,70 +1,11 @@
 <div class="row clearfix" style="font-size: 24px;">
     <div class="col-md-12">
-        <div class="panel panel-default">
-            <table class="table" title="Kingdom">
-                <tbody>
-                <tr>
-                    <td>
-                        <span>
-                            <i class="fa fa-fort-awesome"></i> <strong>{{ kingdom.name }}</strong>
-                            {% if kingdomState.notificationCount %}
-                                <div class="pull-right">
-                                <a href="{{ path('log_index', {'id': kingdom.id}) }}"><span class="label label-danger">{{ kingdomState.notificationCount }}</span></a>
-                            </div>
-                            {% endif %}
-                        </span>
-                        <span class="pull-right">
-                            <span title="ELO" style="margin-right: 60px;">
-                                <i class="fa fa-trophy"></i> {{ kingdom.elo }} ({{ kingdomState.winLossRecord }})
-                            </span>
-                            <span title="Net Worth" style="margin-right: 60px;">
-                                <i class="fa fa-line-chart"></i> {{ kingdom.networth|filterNumber }}
-                            </span>
-                            <span title="Attack and Defense Power" style="margin-right: 60px;">
-                                <i class="fa fa-shield"></i> {{ kingdom.attack|filterNumber }}/{{ kingdom.defense|filterNumber }}
-                            </span>
-                        </span>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+        {% include 'CronkdBundle:Default:partials/kingdom/kingdom_card.html.twig' %}
     </div>
 </div>
 
 <div class="row clearfix">
-    <div class="col-md-3">
-        <div class="panel panel-default">
-            <div class="panel-body" style="text-align: center;">
-                {% if worldState.hasPolicies %}
-                <div>
-                    {% include 'CronkdBundle:Default:partials/kingdom/policy.html.twig' %}
-                </div>
-                <hr />
-                {% endif %}
-                {% include 'CronkdBundle:Default:partials/kingdom/actions.html.twig' %}
-            </div>
-        </div>
+    <div class="col-md-12">
+        {% include 'CronkdBundle:Default:partials/kingdom/queues.html.twig' %}
     </div>
-
-    <div class="col-md-9">
-        {#
-        <div class="panel panel-default">
-            {% include 'CronkdBundle:Default:partials/kingdom/resources.html.twig' %}
-        </div>
-        #}
-
-            {% include 'CronkdBundle:Default:partials/kingdom/queues.html.twig' %}
-
-        <div class="row clearfix">
-            <div class="col-md-6">
-                {% include 'CronkdBundle:Default:partials/kingdom/compositionChart.html.twig' %}
-            </div>
-
-            <div class="col-md-6 clearfix">
-                {% include 'CronkdBundle:Default:partials/kingdom/populationChart.html.twig' %}
-            </div>
-        </div>
-    </div>
-
 </div>

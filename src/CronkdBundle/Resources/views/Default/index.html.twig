@@ -9,12 +9,51 @@
         </div>
     {% else %}
         <div class="row-fluid">
-            <div class="col-md-8">
-                {% include 'CronkdBundle:Default:partials/kingdom.html.twig' %}
+
+            <div class="col-md-2">
+                <ul class="nav nav-pills nav-stacked">
+                    <li role="presentation" class="active"><a href="#home" data-toggle="tab">Home</a></li>
+                    <li role="presentation"><a href="#kingdom" data-toggle="tab">Kingdom</a></li>
+                    <li role="presentation"><a href="#world" data-toggle="tab">World</a></li>
+                    <li class="nav-divider"></li>
+                    <li>
+                        {% if kingdomState.activePolicy is null %}
+                            <a href="{{ path('policy_select', {id: kingdom.id}) }}" class="btn btn-info">Select Policy</a>
+                        {% else %}
+                            <div><strong>{{ kingdomState.activePolicyName }}</strong></div>
+                            <div class="text-muted"><em>time remaining: {{ kingdomState.activePolicyEndDiff }}</em></div>
+                        {% endif %}
+                    </li>
+                    {% if kingdomState.hasAvailableProbingResources %}
+                        <li>
+                            <a href="{{ path('probe_send', {id: kingdom.id}) }}" class="btn btn-warning">Spy</a>
+                        </li>
+                    {% endif %}
+                    {% if kingdomState.availableAttack %}
+                        <li>
+                            <a href="{{ path('attack', {id: kingdom.id}) }}" class="btn btn-danger">Attack</a>
+                        </li>
+                    {% endif %}
+                    <li><a href="{{ path('log_index', {id: kingdom.id}) }}" class="btn btn-default">Event Log{% if kingdomState.notificationCount > 0 %} <span class="badge">{{ kingdomState.notificationCount }}</span>{% endif %}</a></li>
+                </ul>
             </div>
-            <div class="col-md-4">
-                {% include 'CronkdBundle:Default:partials/world.html.twig' %}
+
+            <div class="col-md-10">
+                <div class="tab-content clearfix">
+                    <div class="tab-pane active" id="home">
+                        {% include 'CronkdBundle:Default:partials/home.html.twig' %}
+                    </div>
+
+                    <div class="tab-pane" id="kingdom">
+                        {% include 'CronkdBundle:Default:partials/kingdom.html.twig' %}
+                    </div>
+
+                    <div class="tab-pane" id="world">
+                        {% include 'CronkdBundle:Default:partials/world.html.twig' %}
+                    </div>
+                </div>
             </div>
+
         </div>
     {% endif %}
 {% endblock %}

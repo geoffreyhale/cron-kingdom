@@ -1,0 +1,29 @@
+<h1>Welcome to CronKD!</h1>
+<h2>Introduction</h2>
+<p>CronKD is a free multi-player online game involving resource management and strategic interactions with other kingdoms to become the strongest in the world.</p>
+
+{% include 'CronkdBundle:Help:partials/introduction.html.twig' %}
+
+<h2>Overview</h2>
+{% include 'CronkdBundle:Help:partials/overview.html.twig' %}
+
+<h2>Getting Started</h2>
+<ol>
+    <li><a href="{{ path('fos_user_registration_register') }}" class="navbar-link">Create a free user account</a> by registering with your email address and password.</li>
+    <li>Choose a name for your kingdom.</li>
+    <li>Choose actions to allocate your resources.  For example, build 8 housing and produce 8 materials.</li>
+</ol>
+
+<h2>Goals</h2>
+<ul>
+    <li>Compete for the highest <i class="fa fa-line-chart"></i> <strong>Net Worth</strong> in the world.</li>
+    <li>Compete for the highest Win-Loss Ratio in the world.</li>
+    <li>Improve your strategy and beat your past performance.</li>
+</ul>
+
+<h2>A Turn</h2>
+<p>Sign on each hour, or at least every 8 hours, to make an attack and put your resources back to work for you.</p>
+<ol>
+    <li>When you have military to spare, use your spies to find out how much military a kingdom currently has at home and attack them with at least one extra point of military to win the battle.  Send an extra 50% if you think they may have Defender Policy enabled.</li>
+    <li>Use your resources wisely, building housing, producing materials, training military and spies.</li>
+</ol>

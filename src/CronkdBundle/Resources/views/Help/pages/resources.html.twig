@@ -1,0 +1,81 @@
+<h2>Resources</h2>
+<p>
+    There are {{ settings.resource_types|length }} types of resources: {{ settings.resource_types|join(", ") }}.
+    Each hour, on the hour, the world will take one step forward in <strong>time</strong> and <strong>resources</strong> will move one step in their <strong>queues</strong>.
+    Resources will be dispersed evenly over time.  For example, if 8 resources are constructed, 1 will be awarded back to your kingdom per tick.
+</p>
+<p>&nbsp;</p>
+<h4>Initial Amounts</h4>
+<p>Kingdoms start out with initial resources amounts which can be immediately used as soon as the world starts:</p>
+<div class="row">
+    <div class="col-md-6">
+        <table class="table table-bordered">
+            <tbody>
+            {% for resourceName, resource in settings.resources %}
+                {% if resource.initial > 0 %}
+                    <tr>
+                        <td style="background-color: #f5f5f5;">{{ resourceIcon(resourceName)|raw }} {{ resourceName }}</td>
+                        <td>{{ resource.initial }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h4>How to build every resource</h4>
+<p>Not all resources can be created immediately.  Rather, some resources require other resources in order to be built:</p>
+<div class="row">
+    <div class="col-md-6">
+        <table class="table table-bordered">
+            <tbody>
+            {% for resourceName, resource in settings.resources %}
+                {% if resource.action.verb is defined %}
+                    <tr>
+                        <td style="background-color: #f5f5f5;">{{ resource.action.verb }} {{ resource.action.output.quantity }} {{ resourceIcon(resourceName)|raw }} {{ resourceName }}</td>
+                        <td>
+                            <ul>
+                                {% for inputResource, input in resource.action.inputs %}
+                                    <li>{{ input.quantity }} {{ inputResource }} {{ input.requeue ? ' (comes back after '~input.queue_size~' ticks)' : ' (lost forever)' }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h4>Overview</h4>
+<p>Lastly, a table that describes all of the characteristics and properties for all resources:</p>
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Net Worth Value</th>
+        <th>Initial Amount</th>
+        <th>Attack Power</th>
+        <th>Defense Power</th>
+        <th>Spy Power</th>
+        <th>Can be won by attacking?</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for resourceName, resource in settings.resources %}
+        <tr>
+            <td style="background-color: #f5f5f5;">{{ resourceIcon(resourceName)|raw }} {{ resourceName }}</td>
+            <td>{{ resource.type }}</td>
+            <td>{{ resource.value }}</td>
+            <td>{{ resource.initial }}</td>
+            <td>{{ resource.attack }}</td>
+            <td>{{ resource.defense }}</td>
+            <td>{{ resource.probe_power }}</td>
+            <td>{{ resource.spoil_of_war ? 'Yes' : 'No' }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
