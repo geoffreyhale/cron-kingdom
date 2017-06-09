@@ -42,9 +42,18 @@ class TickService
     /**
      * @param World $world
      */
-    public function performTick(World $world)
+    public function attemptTick(World $world)
     {
-        $this->logger->info('Starting world ' . $world->getName() . ': tick ' . $world->getTick());
+        if (!$world->readyToPerformTick()) {
+            $this->logger->info($world->getName() . " world is not ready to perform tick");
+            $world->skipTick();
+            $this->em->persist($world);
+            $this->em->flush();
+
+            return;
+        }
+
+        $this->logger->info($world->getName() . ' world starting tick ' . $world->getTick());
 
         $queues = $this->em->getRepository(Queue::class)->findNextByWorld($world);
         $this->logger->info('Found ' . count($queues) . ' queues to parse');
@@ -67,8 +76,6 @@ class TickService
             $this->logger->info('Adding ' . $queue->getQuantity() . ' ' . $queue->getResource()->getName() . '; New balance is ' . $kingdomResource->getQuantity());
         }
 
-        $this->logger->info('Completed queues');
-
         foreach ($world->getKingdoms() as $kingdom) {
             if (!$this->kingdomManager->isAtMaxPopulation($kingdom)) {
                 $addition = $this->kingdomManager->incrementPopulation($kingdom);
@@ -83,7 +90,7 @@ class TickService
             }
         }
 
-        $world->addTick();
+        $world->performTick();
         $this->em->persist($world);
         $this->em->flush();
 

@@ -1,6 +1,6 @@
 cronkd
 ======
-Updated 2017-05-18.
+Updated 2017-06-08.
 
 ## Installation Guide
 
@@ -11,9 +11,7 @@ CronKD operates by periodically running a cron job to update all of the active w
 
 Modify the following line to accommodate your environment and add:
 
-    0 * * * *   /your/path/to/php /your/path/to/symfony/root/bin/console cronkd:tick --env=prod 2>&1
-
-This will perform a tick every hour at the top of the hour.  For development or testing, change the 0 to an asterisk to perform a tick every minute.
+    * * * * *   /your/path/to/php /your/path/to/symfony/root/bin/console cronkd:tick --env=prod 2>&1
 
 #### Seed database
 Go into the Symfony root directory and run the following command:

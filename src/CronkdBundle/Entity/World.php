@@ -3,6 +3,7 @@ namespace CronkdBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * World
@@ -56,6 +57,25 @@ class World extends BaseEntity
      * @ORM\Column(name="end_time", type="datetime", nullable=true)
      */
     private $endTime;
+
+    /**
+     * Tick interval in minutes.
+     *
+     * @var int
+     *
+     * @ORM\Column(name="tick_interval", type="integer")
+     * @Assert\Range(min=1, minMessage="Interval must be greater than zero.")
+     */
+    private $tickInterval;
+
+    /**
+     * Countdown till next tick.
+     *
+     * @var int
+     *
+     * @ORM\Column(name="minutes_since_last_tick", type="integer")
+     */
+    private $minutesSinceLastTick;
 
     /**
      * @var Kingdom[]
@@ -120,7 +140,7 @@ class World extends BaseEntity
     /**
      * @return World
      */
-    public function addTick()
+    protected function addTick()
     {
         $tick = $this->getTick();
         $this->setTick(++$tick);
@@ -235,6 +255,65 @@ class World extends BaseEntity
     }
 
     /**
+     * Set tickInterval
+     *
+     * @param integer $tickInterval
+     *
+     * @return World
+     */
+    public function setTickInterval($tickInterval)
+    {
+        $this->tickInterval = $tickInterval;
+
+        return $this;
+    }
+
+    /**
+     * Get tickInterval
+     *
+     * @return integer
+     */
+    public function getTickInterval()
+    {
+        return $this->tickInterval;
+    }
+
+    /**
+     * Set minutesSinceLastTick
+     *
+     * @param integer $minutesSinceLastTick
+     *
+     * @return World
+     */
+    public function setMinutesSinceLastTick($minutesSinceLastTick)
+    {
+        $this->minutesSinceLastTick = $minutesSinceLastTick;
+
+        return $this;
+    }
+
+    /**
+     * Get minutesSinceLastTick
+     *
+     * @return integer
+     */
+    public function getMinutesSinceLastTick()
+    {
+        return $this->minutesSinceLastTick;
+    }
+
+    /**
+     * @return World
+     */
+    protected function addMinuteSinceLastTick()
+    {
+        $min = $this->getMinutesSinceLastTick();
+        $this->setMinutesSinceLastTick(++$min);
+
+        return $this;
+    }
+
+    /**
      * Add kingdom
      *
      * @param Kingdom $kingdom
@@ -315,5 +394,34 @@ class World extends BaseEntity
         $soon = (new \DateTime)->add(new \DateInterval('P3D'));
 
         return $this->getActive() && $soon > $this->getEndTime();
+    }
+
+    /**
+     * @return bool
+     */
+    public function readyToPerformTick()
+    {
+        return $this->getMinutesSinceLastTick() >= $this->getTickInterval();
+    }
+
+    /**
+     * @return World
+     */
+    public function performTick()
+    {
+        $this->addTick();
+        $this->setMinutesSinceLastTick(0);
+
+        return $this;
+    }
+
+    /**
+     * @return World
+     */
+    public function skipTick()
+    {
+        $this->addMinuteSinceLastTick();
+
+        return $this;
     }
 }

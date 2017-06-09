@@ -13,6 +13,14 @@
         <td>{{ world.endTime|date('Y-m-d h:i A') }}</td>
     </tr>
     <tr>
+        <td><strong>Tick Interval (in minutes):</strong></td>
+        <td>{{ world.tickInterval }}</td>
+    </tr>
+    <tr>
+        <td><strong>Minutes Since Last Tick</strong></td>
+        <td>{{ world.minutesSinceLastTick }}</td>
+    </tr>
+    <tr>
         <td><strong>Active:</strong></td>
         <td>{{ world.active ? 'Yes' : 'No' }}</td>
     </tr>
