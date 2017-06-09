@@ -313,7 +313,7 @@ class World extends BaseEntity
      */
     public function setDefaultMinutesSinceLastTick()
     {
-        if (null === $this->active) {
+        if (null === $this->getMinutesSinceLastTick()) {
             return $this->setMinutesSinceLastTick(0);
         }
 
