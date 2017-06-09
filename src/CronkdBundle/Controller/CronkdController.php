@@ -47,7 +47,7 @@ class CronkdController extends Controller
     public function validateWorldIsActive(Kingdom $kingdom)
     {
         $world = $kingdom->getWorld();
-        if (!$world->getActive()) {
+        if (!$world->isActive()) {
             throw new WorldNotActiveException($world->getName());
         }
     }

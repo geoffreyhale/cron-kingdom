@@ -34,7 +34,7 @@ class ResourceListener
      */
     public function onCreateKingdom(CreateKingdomEvent $event)
     {
-        if (!$event->kingdom->getWorld()->getActive()) {
+        if (!$event->kingdom->getWorld()->isActive()) {
             return;
         }
 

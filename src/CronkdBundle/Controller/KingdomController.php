@@ -45,7 +45,7 @@ class KingdomController extends Controller
             $kingdomManager = $this->get('cronkd.manager.kingdom');
             $kingdomManager->createKingdom($kingdom, $world, $currentUser);
 
-            if ($world->getActive()) {
+            if ($world->isActive()) {
                 return $this->redirectToRoute('homepage');
             }
 
