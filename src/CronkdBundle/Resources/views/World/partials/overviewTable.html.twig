@@ -1,0 +1,32 @@
+<table class="table table-striped table-bordered">
+    <tbody>
+    <tr>
+        <td><strong>Name:</strong></td>
+        <td>{{ world.name }}</td>
+    </tr>
+    <tr>
+        <td><strong>Start Time:</strong></td>
+        <td>{{ world.startTime|date('Y-m-d h:i A') }}</td>
+    </tr>
+    <tr>
+        <td><strong>End Time:</strong></td>
+        <td>{{ world.endTime|date('Y-m-d h:i A') }}</td>
+    </tr>
+    <tr>
+        <td><strong>Tick Interval (in minutes):</strong></td>
+        <td>{{ world.tickInterval }}</td>
+    </tr>
+    <tr>
+        <td><strong>Minutes Since Last Tick</strong></td>
+        <td>{{ world.minutesSinceLastTick }}</td>
+    </tr>
+    <tr>
+        <td><strong>Active:</strong></td>
+        <td>{{ world.active ? 'Yes' : 'No' }}</td>
+    </tr>
+    <tr>
+        <td><strong>Tick:</strong></td>
+        <td>{{ world.tick }}</td>
+    </tr>
+    </tbody>
+</table>

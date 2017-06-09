@@ -1,0 +1,12 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+    <div class="row-fluid">
+        <div class="col-md-12">
+
+            <h1>Create New World</h1>
+            {% include 'CronkdBundle:World/partials:form.html.twig' with {'action': 'Create'} %}
+
+        </div>
+    </div>
+{% endblock %}

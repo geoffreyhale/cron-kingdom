@@ -5,6 +5,12 @@
         <div class="col-md-12">
 
             <div class="col-md-8 col-md-offset-2">
+                <div class="pull-right">
+                    <a class="btn btn-success" href="{{ path('world_create') }}"><i class="fa fa-plus"></i> Create New World</a>
+                </div>
+            </div>
+
+            <div class="col-md-8 col-md-offset-2">
                 {% if activeWorlds|length > 0 %}
                     <h2>Active Worlds</h2>
                     {% include '@Cronkd/World/partials/worldTable.html.twig' with {'worlds': activeWorlds} %}
@@ -23,6 +29,12 @@
                     <h2>Inactive Worlds</h2>
                     {% include '@Cronkd/World/partials/worldTable.html.twig' with {'worlds': inactiveWorlds} %}
                 {% endif %}
+            </div>
+
+            <div class="col-md-8 col-md-offset-2">
+                <div class="pull-right">
+                    <a class="btn btn-success" href="{{ path('world_create') }}"><i class="fa fa-plus"></i> Create New World</a>
+                </div>
             </div>
 
         </div>

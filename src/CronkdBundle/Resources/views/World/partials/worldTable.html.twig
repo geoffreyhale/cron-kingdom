@@ -11,7 +11,12 @@
         <tbody>
         {% for world in worlds %}
             <tr>
-                <td><a href="{{ path('world_show', {'id': world.id}) }}">{{ world.name }}</a></td>
+                <td>
+                    {% if is_granted("ROLE_ADMIN") and world.active %}
+                        <div class="pull-right"><a href="{{ path('world_configure', {'world': world.id}) }}"><i class="fa fa-cogs"></i></a></div>
+                    {% endif %}
+                    <a href="{{ path('world_show', {'id': world.id}) }}">{{ world.name }}</a>
+                </td>
                 <td>{{ world.kingdoms|length }}</td>
                 <td>{{ world.startTime|date('Y-m-d h:i A') }}</td>
                 <td>{{ world.endTime|date('Y-m-d h:i A') }}</td>
