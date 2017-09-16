@@ -42,6 +42,14 @@ class ResourceType extends BaseEntity
     private $resources;
 
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->resources = new ArrayCollection();
+    }
+
+    /**
      * Get id
      *
      * @return int
@@ -74,22 +82,15 @@ class ResourceType extends BaseEntity
     {
         return $this->name;
     }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->resources = new \Doctrine\Common\Collections\ArrayCollection();
-    }
 
     /**
      * Add resource
      *
-     * @param \CronkdBundle\Entity\Resource $resource
+     * @param Resource $resource
      *
      * @return ResourceType
      */
-    public function addResource(\CronkdBundle\Entity\Resource $resource)
+    public function addResource(Resource $resource)
     {
         $this->resources[] = $resource;
 
@@ -99,9 +100,9 @@ class ResourceType extends BaseEntity
     /**
      * Remove resource
      *
-     * @param \CronkdBundle\Entity\Resource $resource
+     * @param Resource $resource
      */
-    public function removeResource(\CronkdBundle\Entity\Resource $resource)
+    public function removeResource(Resource $resource)
     {
         $this->resources->removeElement($resource);
     }
@@ -114,5 +115,10 @@ class ResourceType extends BaseEntity
     public function getResources()
     {
         return $this->resources;
+    }
+
+    public function __toString()
+    {
+        return $this->getName();
     }
 }

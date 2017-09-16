@@ -1,19 +1,10 @@
 <?php
 namespace CronkdBundle\Form;
 
-use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\World;
-use CronkdBundle\Exceptions\InvalidKingdomStateException;
-use CronkdBundle\Exceptions\InvalidSettingsToParseException;
-use CronkdBundle\Model\KingdomState;
-use CronkdBundle\Model\ProbeAttempt;
-use Doctrine\ORM\EntityRepository;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -89,6 +80,6 @@ class WorldType extends AbstractType
      */
     public function getBlockPrefix()
     {
-        return 'cronkdbundle_probe_attempt';
+        return 'cronkdbundle_world';
     }
 }

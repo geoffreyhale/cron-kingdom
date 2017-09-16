@@ -89,11 +89,17 @@ class World extends BaseEntity
     private $kingdoms;
 
     /**
+     * @ORM\OneToMany(targetEntity="Resource", mappedBy="world")
+     */
+    private $resources;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
-        $this->kingdoms = new ArrayCollection();
+        $this->kingdoms  = new ArrayCollection();
+        $this->resources = new ArrayCollection();
     }
 
     /**
@@ -366,6 +372,40 @@ class World extends BaseEntity
     public function getKingdoms()
     {
         return $this->kingdoms;
+    }
+
+    /**
+     * Add resource
+     *
+     * @param Resource $resource
+     *
+     * @return World
+     */
+    public function addResource(Resource $resource)
+    {
+        $this->resources[] = $resource;
+
+        return $this;
+    }
+
+    /**
+     * Remove resource
+     *
+     * @param Resource $resource
+     */
+    public function removeResource(Resource $resource)
+    {
+        $this->resources->removeElement($resource);
+    }
+
+    /**
+     * Get resources
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getResources()
+    {
+        return $this->resources;
     }
 
     /**

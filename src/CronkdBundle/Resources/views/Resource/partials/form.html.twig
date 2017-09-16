@@ -1,0 +1,40 @@
+{% if action is not defined %}
+    {% set action = 'Submit' %}
+{% endif %}
+
+<div class="row-fluid">
+    <div class="col-sm-12">
+        {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
+        <div class="form-group">
+            {{ form_row(form.name, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_row(form.type, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_row(form.value, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_row(form.canBeProduced, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_row(form.canBeProbed, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_row(form.attack, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_row(form.defense, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_row(form.probePower, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_row(form.capacity, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_widget(form.submit, {'label': action, 'attr': {'class': 'btn btn-primary'}}) }}
+        </div>
+        {{ form_end(form) }}
+    </div>
+</div>

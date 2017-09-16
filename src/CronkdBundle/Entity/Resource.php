@@ -4,6 +4,7 @@ namespace CronkdBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Jms;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Resource
@@ -15,12 +16,6 @@ use JMS\Serializer\Annotation as Jms;
  */
 class Resource extends BaseEntity
 {
-    const CIVILIAN = 'Civilian';
-    const MATERIAL = 'Material';
-    const HOUSING  = 'Housing';
-    const MILITARY = 'Military';
-    const HACKER   = 'Hacker';
-
     /**
      * @var int
      *
@@ -34,8 +29,8 @@ class Resource extends BaseEntity
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, unique=true)
-     *
      * @Jms\Expose()
+     * @Assert\NotBlank()
      */
     private $name;
 
@@ -43,8 +38,8 @@ class Resource extends BaseEntity
      * @var int
      *
      * @ORM\Column(name="value", type="integer")
-     *
      * @Jms\Expose()
+     * @Assert\Range(min=0, minMessage="Value cannot be negative")
      */
     private $value;
 
@@ -70,8 +65,8 @@ class Resource extends BaseEntity
      * @var int
      *
      * @ORM\Column(name="probe_power", type="integer")
-     *
      * @Jms\Expose()
+     * @Assert\Range(min=0, minMessage="Probe Power cannot be negative")
      */
     private $probePower;
 
@@ -79,8 +74,8 @@ class Resource extends BaseEntity
      * @var int
      *
      * @ORM\Column(name="capacity", type="integer")
-     *
      * @Jms\Expose()
+     * @Assert\Range(min=0, minMessage="Capacity cannot be negative")
      */
     private $capacity;
 
@@ -88,8 +83,8 @@ class Resource extends BaseEntity
      * @var int
      *
      * @ORM\Column(name="attack", type="integer")
-     *
      * @Jms\Expose()
+     * @Assert\Range(min=0, minMessage="Attack Power cannot be negative")
      */
     private $attack;
 
@@ -97,8 +92,8 @@ class Resource extends BaseEntity
      * @var int
      *
      * @ORM\Column(name="defense", type="integer")
-     *
      * @Jms\Expose()
+     * @Assert\Range(min=0, minMessage="Defense Power cannot be negative")
      */
     private $defense;
 
@@ -113,6 +108,11 @@ class Resource extends BaseEntity
      * @ORM\ManyToOne(targetEntity="ResourceType", inversedBy="resources")
      */
     private $type;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="World", inversedBy="resources")
+     */
+    private $world;
 
     /**
      * Constructor
@@ -380,5 +380,29 @@ class Resource extends BaseEntity
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * Set world
+     *
+     * @param World $world
+     *
+     * @return Resource
+     */
+    public function setWorld(World $world = null)
+    {
+        $this->world = $world;
+
+        return $this;
+    }
+
+    /**
+     * Get world
+     *
+     * @return World
+     */
+    public function getWorld()
+    {
+        return $this->world;
     }
 }
