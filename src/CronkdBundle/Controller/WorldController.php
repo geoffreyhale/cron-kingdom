@@ -43,13 +43,6 @@ class WorldController extends Controller
         $form = $this->createForm(WorldType::class, $world);
         $form->handleRequest($request);
 
-        // Extra validation
-        if ($form->isValid()) {
-            if ($world->getStartTime()->getTimestamp() > $world->getEndTime()->getTimestamp()) {
-                $form->get('startTime')->addError(new FormError('End time must be later than start time!'));
-            }
-        }
-
         if ($form->isValid()) {
             $worldManager = $this->get('cronkd.manager.world');
             $worldManager->create($world);
@@ -108,8 +101,6 @@ class WorldController extends Controller
 
     /**
      * @Route("/{id}", name="world_show")
-     * @ParamConverter(name="id", class="CronkdBundle:World")
-     * @Template()
      */
     public function showAction(World $world)
     {
@@ -125,13 +116,13 @@ class WorldController extends Controller
 
         $worldState = $worldManager->generateWorldState($world);
 
-        return [
+        return $this->render('Cronkd:World:show.html.twig', [
             'world'              => $world,
             'worldState'         => $worldState,
             'kingdom'            => $kingdom,
             'worldNetworth'      => $worldManager->calculateWorldNetWorth($world),
             'kingdoms'           => $world->getKingdoms(),
             'kingdomsByNetworth' => $kingdomManager->calculateKingdomsByNetWorth($world),
-        ];
+        ]);
     }
 }

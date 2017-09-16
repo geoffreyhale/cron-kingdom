@@ -53,6 +53,11 @@ class World extends BaseEntity
      * @var \DateTime
      *
      * @ORM\Column(name="end_time", type="datetime", nullable=true)
+     *
+     * @Assert\Expression(
+     *     "this.getStartTime() <= this.getEndTime()",
+     *     message="End time must be later than start time!"
+     * )
      */
     private $endTime;
 
