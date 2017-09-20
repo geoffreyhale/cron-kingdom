@@ -2,6 +2,7 @@
 namespace CronkdBundle\Listener;
 
 use CronkdBundle\Entity\Log;
+use CronkdBundle\Entity\Resource;
 use CronkdBundle\Event\CreateKingdomEvent;
 use CronkdBundle\Event\ViewLogEvent;
 use CronkdBundle\Exceptions\InvalidResourceException;
@@ -38,17 +39,14 @@ class ResourceListener
             return;
         }
 
-        $kingdom = $event->kingdom;
+        $kingdom   = $event->kingdom;
+        $world     = $kingdom->getWorld();
+        $resources = $this->em->getRepository(Resource::class)->findByWorld($world);
 
-        $initialResources = $this->resourceManager->getKingdomStartingResources();
-        foreach ($initialResources as $resourceName => $count) {
-            $resource = $this->resourceManager->get($resourceName);
-            if (!$resource) {
-                throw new InvalidResourceException($resourceName);
-            }
-
+        /** @var Resource $resource */
+        foreach ($resources as $resource) {
             $kingdomResource = $this->kingdomManager->findOrCreateResource($kingdom, $resource);
-            $kingdomResource->setQuantity($count);
+            $kingdomResource->setQuantity($resource->getStartingAmount());
             $kingdom->addResource($kingdomResource);
         }
 

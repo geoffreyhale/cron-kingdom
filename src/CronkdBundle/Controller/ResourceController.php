@@ -32,7 +32,10 @@ class ResourceController extends Controller
 
             $this->get('session')->getFlashBag()->add('success', 'Resource Created!');
 
-            return $this->redirectToRoute('world_configure', ['world' => $resource->getWorld()->getId()]);
+            return $this->redirectToRoute('world_configure', [
+                'world' => $resource->getWorld()->getId(),
+                'tab'   => 'resources',
+            ]);
         }
 
         return $this->render('CronkdBundle:Resource:create.html.twig', [
@@ -57,7 +60,10 @@ class ResourceController extends Controller
 
             $this->get('session')->getFlashBag()->add('success', 'Resource Updated!');
 
-            return $this->redirectToRoute('world_configure', ['world' => $resource->getWorld()->getId()]);
+            return $this->redirectToRoute('world_configure', [
+                'world' => $resource->getWorld()->getId(),
+                'tab'   => 'resources',
+            ]);
         }
 
         return $this->render('CronkdBundle:Resource:update.html.twig', [

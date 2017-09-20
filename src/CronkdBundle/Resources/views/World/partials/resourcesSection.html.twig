@@ -4,6 +4,7 @@
         <th>Name</th>
         <th>Type</th>
         <th>Value</th>
+        <th>Starting Amount</th>
         <th>Can Be Produced?</th>
         <th>Can Be Probed?</th>
         <th>Attack Power</th>
@@ -16,13 +17,16 @@
     {% for resource in world.resources %}
     <tr>
         <td>
+            {% if not world.isInactive %}
             <div class="pull-right">
                 <a href="{{ path('resource_update', {'id': resource.id}) }}"><i class="fa fa-cogs"></i></a>
             </div>
+            {% endif %}
             <strong>{{ resource.name }}</strong>
         </td>
         <td>{{ resource.type.name }}</td>
         <td>{{ resource.value }}</td>
+        <td>{{ resource.startingAmount }}</td>
         <td>{{ resource.canBeProduced ? 'Yes' : 'No' }}</td>
         <td>{{ resource.canBeProbed ? 'Yes' : 'No' }}</td>
         <td>{{ resource.attack }}</td>

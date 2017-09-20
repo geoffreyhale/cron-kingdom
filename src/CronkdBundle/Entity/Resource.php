@@ -98,6 +98,15 @@ class Resource extends BaseEntity
     private $defense;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="starting_amount", type="integer")
+     * @Jms\Expose()
+     * @Assert\Range(min=0, minMessage="Starting amount cannot be negative")
+     */
+    private $startingAmount;
+
+    /**
      * @var KingdomResource[]
      *
      * @ORM\OneToMany(targetEntity="KingdomResource", mappedBy="resource")
@@ -202,40 +211,6 @@ class Resource extends BaseEntity
     public function getCanBeProbed()
     {
         return $this->canBeProbed;
-    }
-
-    /**
-     * Add kingdom
-     *
-     * @param KingdomResource $kingdom
-     *
-     * @return Resource
-     */
-    public function addKingdom(KingdomResource $kingdom)
-    {
-        $this->kingdoms[] = $kingdom;
-
-        return $this;
-    }
-
-    /**
-     * Remove kingdom
-     *
-     * @param KingdomResource $kingdom
-     */
-    public function removeKingdom(KingdomResource $kingdom)
-    {
-        $this->kingdoms->removeElement($kingdom);
-    }
-
-    /**
-     * Get kingdoms
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getKingdoms()
-    {
-        return $this->kingdoms;
     }
 
     /**
@@ -356,6 +331,64 @@ class Resource extends BaseEntity
     public function getProbePower()
     {
         return $this->probePower;
+    }
+
+    /**
+     * Set startingAmount
+     *
+     * @param integer $startingAmount
+     *
+     * @return Resource
+     */
+    public function setStartingAmount($startingAmount)
+    {
+        $this->startingAmount = $startingAmount;
+
+        return $this;
+    }
+
+    /**
+     * Get startingAmount
+     *
+     * @return integer
+     */
+    public function getStartingAmount()
+    {
+        return $this->startingAmount;
+    }
+
+    /**
+     * Add kingdom
+     *
+     * @param KingdomResource $kingdom
+     *
+     * @return Resource
+     */
+    public function addKingdom(KingdomResource $kingdom)
+    {
+        $this->kingdoms[] = $kingdom;
+
+        return $this;
+    }
+
+    /**
+     * Remove kingdom
+     *
+     * @param KingdomResource $kingdom
+     */
+    public function removeKingdom(KingdomResource $kingdom)
+    {
+        $this->kingdoms->removeElement($kingdom);
+    }
+
+    /**
+     * Get kingdoms
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getKingdoms()
+    {
+        return $this->kingdoms;
     }
 
     /**

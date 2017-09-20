@@ -58,13 +58,15 @@ class WorldController extends Controller
     }
 
     /**
-     * @Route("/{world}/configure", name="world_configure")
+     * @Route("/{world}/configure/{tab}", name="world_configure")
      * @Security("has_role('ROLE_ADMIN')")
      */
-    public function configureAction(World $world)
+    public function configureAction(Request $request, World $world, string $tab = 'world')
     {
+        $tab = $request->get('tab', 'world');
         return $this->render('CronkdBundle:World:configure.html.twig', [
             'world' => $world,
+            'tab'   => $tab,
         ]);
     }
 

@@ -3,6 +3,7 @@ namespace CronkdBundle\Manager;
 
 use CronkdBundle\Entity\Resource;
 use CronkdBundle\Entity\ResourceType;
+use CronkdBundle\Entity\World;
 use CronkdBundle\Exceptions\InvalidResourceException;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -23,13 +24,17 @@ class ResourceManager
     }
 
     /**
+     * @param World $world
      * @return array
      */
-    public function getKingdomStartingResources()
+    public function getKingdomStartingResources(World $world)
     {
+        $resources        = $this->em->getRepository(Resource::class)->findByWorld($world);
         $initialResources = [];
-        foreach ($this->settings['resources'] as $resourceName => $resourceData) {
-            $initialResources[$resourceName] = $resourceData['initial'];
+
+        /** @var Resource $resource */
+        foreach ($resources as $resource) {
+            $initialResources[$resource->getName()] = $resource->getStartingAmount();
         }
 
         return $initialResources;

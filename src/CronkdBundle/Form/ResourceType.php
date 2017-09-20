@@ -32,6 +32,10 @@ class ResourceType extends AbstractType
                 'required' => true,
                 'label'    => 'Value (for liquidity and net worth)',
             ])
+            ->add('startingAmount', IntegerType::class, [
+                'required' => true,
+                'label'    => 'Starting Amount',
+            ])
             ->add('canBeProbed', CheckboxType::class, [
                 'label'    => 'Can Be Probed?',
                 'required' => false,
