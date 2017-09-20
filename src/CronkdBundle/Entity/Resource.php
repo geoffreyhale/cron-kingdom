@@ -4,6 +4,7 @@ namespace CronkdBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Jms;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -13,6 +14,12 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="CronkdBundle\Repository\ResourceRepository")
  *
  * @Jms\ExclusionPolicy("all")
+ *
+ * @UniqueEntity(
+ *      fields={"name", "world"},
+ *      errorPath="name",
+ *      message="This resource name already exists."
+ * )
  */
 class Resource extends BaseEntity
 {
