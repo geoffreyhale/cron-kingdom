@@ -114,6 +114,15 @@ class Resource extends BaseEntity
     private $startingAmount;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="spoil_of_war", type="boolean")
+     *
+     * @Jms\Expose()
+     */
+    private $spoilOfWar;
+
+    /**
      * @var KingdomResource[]
      *
      * @ORM\OneToMany(targetEntity="KingdomResource", mappedBy="resource")
@@ -362,6 +371,30 @@ class Resource extends BaseEntity
     public function getStartingAmount()
     {
         return $this->startingAmount;
+    }
+
+    /**
+     * Set spoilOfWar
+     *
+     * @param boolean $spoilOfWar
+     *
+     * @return Resource
+     */
+    public function setSpoilOfWar($spoilOfWar)
+    {
+        $this->spoilOfWar = $spoilOfWar;
+
+        return $this;
+    }
+
+    /**
+     * Get spoilOfWar
+     *
+     * @return boolean
+     */
+    public function isSpoilOfWar()
+    {
+        return $this->spoilOfWar;
     }
 
     /**

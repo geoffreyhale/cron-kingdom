@@ -59,6 +59,10 @@ class ResourceType extends AbstractType
             ->add('capacity', IntegerType::class, [
                 'required' => true,
             ])
+            ->add('spoilOfWar', CheckboxType::class, [
+                'label'    => 'Is Spoil of War?',
+                'required' => false,
+            ])
 
             ->add('submit', SubmitType::class)
         ;

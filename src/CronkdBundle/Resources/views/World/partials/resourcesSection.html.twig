@@ -11,6 +11,7 @@
         <th>Defense Power</th>
         <th>Probe Power</th>
         <th>Capacity</th>
+        <th>Spoil of War</th>
     </tr>
     </thead>
     <tbody>
@@ -33,6 +34,7 @@
         <td>{{ resource.defense }}</td>
         <td>{{ resource.probePower }}</td>
         <td>{{ resource.capacity }}</td>
+        <td>{{ resource.isSpoilOfWar ? 'Yes' : 'No' }}</td>
     </tr>
     {% endfor %}
     </tbody>
