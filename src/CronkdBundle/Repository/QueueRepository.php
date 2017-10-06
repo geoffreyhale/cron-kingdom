@@ -3,7 +3,7 @@ namespace CronkdBundle\Repository;
 
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
-use CronkdBundle\Entity\Resource;
+use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Entity\World;
 
 /**

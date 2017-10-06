@@ -1,7 +1,7 @@
 <?php
 
 use CronkdBundle\Entity\Kingdom;
-use CronkdBundle\Entity\Resource;
+use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Entity\World;
 use CronkdBundle\Service\QueuePopulator;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;

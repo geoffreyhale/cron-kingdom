@@ -2,11 +2,10 @@
 namespace CronkdBundle\Service;
 
 use CronkdBundle\Entity\Kingdom;
-use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\NetWorthLog;
 use CronkdBundle\Entity\Queue;
-use CronkdBundle\Entity\Resource;
-use CronkdBundle\Entity\ResourceType;
+use CronkdBundle\Entity\Resource\Resource;
+use CronkdBundle\Entity\Resource\ResourceType;
 use CronkdBundle\Entity\World;
 use CronkdBundle\Exceptions\EmptyGraphingDatasetException;
 use CronkdBundle\Manager\KingdomManager;

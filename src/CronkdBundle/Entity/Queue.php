@@ -1,6 +1,7 @@
 <?php
 namespace CronkdBundle\Entity;
 
+use CronkdBundle\Entity\Resource\Resource;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Jms;
 
@@ -53,7 +54,7 @@ class Queue extends BaseEntity
     /**
      * @var Resource
      *
-     * @ORM\ManyToOne(targetEntity="Resource")
+     * @ORM\ManyToOne(targetEntity="CronkdBundle\Entity\Resource\Resource")
      * @ORM\JoinColumn(name="resource_id", referencedColumnName="id")
      *
      * @Jms\Expose()

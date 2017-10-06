@@ -2,7 +2,7 @@
 namespace CronkdBundle\Model;
 
 use CronkdBundle\Entity\Kingdom;
-use CronkdBundle\Entity\Resource;
+use CronkdBundle\Entity\Resource\Resource;
 use JMS\Serializer\Annotation as Jms;
 
 /**

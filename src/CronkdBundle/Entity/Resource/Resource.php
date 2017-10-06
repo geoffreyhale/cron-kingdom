@@ -1,6 +1,9 @@
 <?php
-namespace CronkdBundle\Entity;
+namespace CronkdBundle\Entity\Resource;
 
+use CronkdBundle\Entity\BaseEntity;
+use CronkdBundle\Entity\KingdomResource;
+use CronkdBundle\Entity\World;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Jms;
@@ -11,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Resource
  *
  * @ORM\Table(name="resource")
- * @ORM\Entity(repositoryClass="CronkdBundle\Repository\ResourceRepository")
+ * @ORM\Entity(repositoryClass="CronkdBundle\Repository\Resource\ResourceRepository")
  *
  * @Jms\ExclusionPolicy("all")
  *
@@ -125,7 +128,7 @@ class Resource extends BaseEntity
     /**
      * @var KingdomResource[]
      *
-     * @ORM\OneToMany(targetEntity="KingdomResource", mappedBy="resource")
+     * @ORM\OneToMany(targetEntity="CronkdBundle\Entity\KingdomResource", mappedBy="resource")
      */
     private $kingdoms;
 
@@ -135,15 +138,21 @@ class Resource extends BaseEntity
     private $type;
 
     /**
-     * @ORM\ManyToOne(targetEntity="World", inversedBy="resources")
+     * @ORM\ManyToOne(targetEntity="CronkdBundle\Entity\World", inversedBy="resources")
      */
     private $world;
+
+    /**
+     * @ORM\OneToMany(targetEntity="ResourceAction", mappedBy="resource")
+     */
+    private $actions;
 
     /**
      * Constructor
      */
     public function __construct()
     {
+        $this->actions  = new ArrayCollection();
         $this->kingdoms = new ArrayCollection();
     }
 
@@ -477,5 +486,57 @@ class Resource extends BaseEntity
     public function getWorld()
     {
         return $this->world;
+    }
+
+    /**
+     * Get spoilOfWar
+     *
+     * @return boolean
+     */
+    public function getSpoilOfWar()
+    {
+        return $this->spoilOfWar;
+    }
+
+    /**
+     * Add action
+     *
+     * @param ResourceAction $action
+     *
+     * @return Resource
+     */
+    public function addAction(ResourceAction $action)
+    {
+        $this->actions[] = $action;
+
+        return $this;
+    }
+
+    /**
+     * Remove action
+     *
+     * @param ResourceAction $action
+     */
+    public function removeAction(ResourceAction $action)
+    {
+        $this->actions->removeElement($action);
+    }
+
+    /**
+     * Get actions
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getActions()
+    {
+        return $this->actions;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getName();
     }
 }

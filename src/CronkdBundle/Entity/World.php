@@ -1,6 +1,7 @@
 <?php
 namespace CronkdBundle\Entity;
 
+use CronkdBundle\Entity\Resource\Resource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -89,7 +90,7 @@ class World extends BaseEntity
     private $kingdoms;
 
     /**
-     * @ORM\OneToMany(targetEntity="Resource", mappedBy="world")
+     * @ORM\OneToMany(targetEntity="CronkdBundle\Entity\Resource\Resource", mappedBy="world")
      */
     private $resources;
 

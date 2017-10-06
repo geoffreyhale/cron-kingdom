@@ -1,8 +1,8 @@
 <?php
 namespace CronkdBundle\Form;
 
-use CronkdBundle\Entity\Resource;
-use CronkdBundle\Entity\ResourceType as ResourceTypeEntity;
+use CronkdBundle\Entity\Resource\Resource;
+use CronkdBundle\Entity\Resource\ResourceType as ResourceTypeEntity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;

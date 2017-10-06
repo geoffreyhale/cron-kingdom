@@ -1,15 +1,16 @@
 <?php
-namespace CronkdBundle\Entity;
+namespace CronkdBundle\Entity\Resource;
 
+use CronkdBundle\Entity\BaseEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Jms;
 
 /**
- * Resource
+ * ResourceType
  *
  * @ORM\Table(name="resource_type")
- * @ORM\Entity(repositoryClass="CronkdBundle\Repository\ResourceRepository")
+ * @ORM\Entity()
  *
  * @Jms\ExclusionPolicy("all")
  */

@@ -7,7 +7,6 @@
             <ul class="nav nav-pills nav-stacked">
                 <li role="presentation" {{ tab == 'world' ? 'class="active"' : '' }}><a href="#settings" data-toggle="tab">World Settings</a></li>
                 <li role="presentation" {{ tab == 'resources' ? 'class="active"' : '' }}><a href="#resources" data-toggle="tab">Resources</a></li>
-                <li role="presentation" {{ tab == 'actions' ? 'class="active"' : '' }}><a href="#actions" data-toggle="tab">Actions</a></li>
             </ul>
         </div>
         <div class="col-md-10">
@@ -31,13 +30,8 @@
                     <h2>Resources</h2>
                     {% include '@Cronkd/World/partials/resourcesSection.html.twig' %}
                 </div>
-
-                <div class="tab-pane {{ tab == 'actions' ? 'active' : '' }}" id="actions">
-                    <h2>Actions</h2>
-                </div>
             </div>
         </div>
-    </div>
     </div>
 {% endblock %}
 

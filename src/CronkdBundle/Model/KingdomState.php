@@ -4,7 +4,7 @@ namespace CronkdBundle\Model;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomPolicy;
 use CronkdBundle\Entity\KingdomResource;
-use CronkdBundle\Entity\Resource;
+use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Exceptions\KingdomDoesNotHaveResourceException;
 
 class KingdomState

@@ -1,7 +1,7 @@
 <?php
 namespace CronkdBundle\Controller;
 
-use CronkdBundle\Entity\Resource;
+use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Entity\World;
 use CronkdBundle\Form\ResourceType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;

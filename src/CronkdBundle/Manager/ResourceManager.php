@@ -1,8 +1,8 @@
 <?php
 namespace CronkdBundle\Manager;
 
-use CronkdBundle\Entity\Resource;
-use CronkdBundle\Entity\ResourceType;
+use CronkdBundle\Entity\Resource\Resource;
+use CronkdBundle\Entity\Resource\ResourceType;
 use CronkdBundle\Entity\World;
 use CronkdBundle\Exceptions\InvalidResourceException;
 use Doctrine\ORM\EntityManagerInterface;

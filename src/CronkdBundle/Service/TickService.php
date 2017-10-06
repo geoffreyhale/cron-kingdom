@@ -3,7 +3,7 @@ namespace CronkdBundle\Service;
 
 use CronkdBundle\Entity\Log;
 use CronkdBundle\Entity\Queue;
-use CronkdBundle\Entity\Resource;
+use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Entity\World;
 use CronkdBundle\Event\WorldTickEvent;
 use CronkdBundle\Manager\KingdomManager;

@@ -1,6 +1,7 @@
 <?php
 namespace CronkdBundle\Entity;
 
+use CronkdBundle\Entity\Resource\Resource;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -37,7 +38,7 @@ class KingdomResource extends BaseEntity
     /**
      * @var Resource
      *
-     * @ORM\ManyToOne(targetEntity="Resource", inversedBy="kingdoms", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="CronkdBundle\Entity\Resource\Resource", inversedBy="kingdoms", fetch="EAGER")
      */
     private $resource;
 

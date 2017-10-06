@@ -3,7 +3,7 @@ namespace CronkdBundle\Controller\Api;
 
 use CronkdBundle\Entity\AttackLog;
 use CronkdBundle\Entity\Kingdom;
-use CronkdBundle\Entity\Resource;
+use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Service\AttackingService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
