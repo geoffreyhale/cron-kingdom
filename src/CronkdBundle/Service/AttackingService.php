@@ -17,7 +17,6 @@ use CronkdBundle\Manager\PolicyManager;
 use CronkdBundle\Manager\ResourceManager;
 use CronkdBundle\Model\Army;
 use CronkdBundle\Model\AttackReport;
-use CronkdBundle\Model\KingdomState;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -45,8 +44,7 @@ class AttackingService
         KingdomManager $kingdomManager,
         ResourceManager $resourceManager,
         LogManager $logManager,
-        PolicyManager $policyManager,
-        array $settings
+        PolicyManager $policyManager
     ) {
         $this->em              = $em;
         $this->eventDispatcher = $dispatcher;
@@ -55,7 +53,6 @@ class AttackingService
         $this->resourceManager = $resourceManager;
         $this->logManager      = $logManager;
         $this->policyManager   = $policyManager;
-        $this->settings        = $settings;
     }
 
     /**

@@ -33,7 +33,9 @@
                 {% endif %}
             </div>
 
-            {% if is_granted("ROLE_ADMIN") %}
+            {% if is_granted("ROLE_ADMIN") and
+                (activeWorlds|length > 0 or upcomingWorlds|length > 0 or inactiveWorlds|length > 0)
+            %}
             <div class="col-md-8 col-md-offset-2">
                 <div class="pull-right">
                     <a class="btn btn-success" href="{{ path('world_create') }}"><i class="fa fa-plus"></i> Create New World</a>

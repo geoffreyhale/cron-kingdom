@@ -2,6 +2,7 @@
 namespace CronkdBundle\Controller;
 
 use CronkdBundle\Entity\Kingdom;
+use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Form\AttackPlanType;
 use CronkdBundle\Model\AttackPlan;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -34,11 +35,12 @@ class AttackController extends CronkdController
             throw $this->createAccessDeniedException("You may only attack once per tick");
         }
 
-        $settings = $this->getParameter('cronkd.settings');
+        $em = $this->getDoctrine()->getManager();
+        $resources = $em->getRepository(Resource::class)->findByWorld($kingdom->getWorld());
         $attackPlan = new AttackPlan();
         $form = $this->createForm(AttackPlanType::class, $attackPlan, [
             'kingdomState'  => $kingdomState,
-            'settings'      => $settings,
+            'resources'     => $resources,
         ]);
 
         $form->handleRequest($request);
@@ -61,7 +63,7 @@ class AttackController extends CronkdController
         return [
             'form'         => $form->createView(),
             'kingdomState' => $kingdomState,
-            'settings'     => $settings,
+            'resources'    => $resources,
         ];
     }
 }

@@ -33,13 +33,11 @@ class KingdomManager
     public function __construct(
         EntityManagerInterface $em,
         ResourceManager $resourceManager,
-        EventDispatcherInterface $eventDispatcher,
-        array $settings
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->em              = $em;
         $this->resourceManager = $resourceManager;
         $this->eventDispatcher = $eventDispatcher;
-        $this->settings        = $settings;
         $this->logger          = new NullLogger();
     }
 
@@ -80,7 +78,7 @@ class KingdomManager
      */
     public function generateKingdomState(Kingdom $kingdom)
     {
-        $kingdomState = new KingdomState($kingdom, $this->settings);
+        $kingdomState = new KingdomState($kingdom);
         $winLossRecord = $this->em->getRepository(AttackLog::class)->getWinLossRecord($kingdom);
         $kingdomState
             ->setWinLossRecord($winLossRecord['win'], $winLossRecord['loss'])

@@ -118,7 +118,7 @@ class WorldController extends Controller
 
         $worldState = $worldManager->generateWorldState($world);
 
-        return $this->render('Cronkd:World:show.html.twig', [
+        return $this->render('CronkdBundle:World:show.html.twig', [
             'world'              => $world,
             'worldState'         => $worldState,
             'kingdom'            => $kingdom,

@@ -15,7 +15,7 @@
                 <p>Send military units to attack another Kingdom.  Use caution: you may only attack once per Tick!</p>
                 <p>
                     <ul>
-                    {% for resourceName,resource in settings.resources %}
+                    {% for resourceName,resource in resources %}
                         {% if resource.attack > 0 and kingdomState.hasAvailableResource(resourceName) %}
                             <strong>{{ resourceName }}</strong>: {{ resource.attack }} attack each | {{ kingdomState.availableResourceQuantity(resourceName) }} available<br />
                         {% endif %}

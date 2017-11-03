@@ -1,6 +1,7 @@
 <?php
 namespace CronkdBundle\Entity;
 
+use CronkdBundle\Entity\Resource\Resource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Jms;
@@ -434,6 +435,21 @@ class Kingdom extends BaseEntity
     public function getResources()
     {
         return $this->resources;
+    }
+
+    /**
+     * @param Resource $resource
+     * @return null|KingdomResource
+     */
+    public function getResource(Resource $resource)
+    {
+        foreach ($this->getResources() as $kingdomResource) {
+            if ($resource === $kingdomResource->getResource()) {
+                return $kingdomResource;
+            }
+        }
+
+        return null;
     }
 
     /**

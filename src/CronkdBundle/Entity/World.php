@@ -227,7 +227,7 @@ class World extends BaseEntity
      *
      * @return World
      */
-    public function setStartTime($startTime)
+    public function setStartTime(\DateTime $startTime)
     {
         $this->startTime = $startTime;
 
@@ -251,7 +251,7 @@ class World extends BaseEntity
      *
      * @return World
      */
-    public function setEndTime($endTime)
+    public function setEndTime(\DateTime $endTime)
     {
         $this->endTime = $endTime;
 
@@ -270,13 +270,18 @@ class World extends BaseEntity
 
     /**
      * Set tickInterval
+     * 1 minute is the minimum value for tick interval.
      *
      * @param integer $tickInterval
      *
      * @return World
      */
-    public function setTickInterval($tickInterval)
+    public function setTickInterval(int $tickInterval)
     {
+        if (0 >= $tickInterval) {
+            $tickInterval = 1;
+        }
+
         $this->tickInterval = $tickInterval;
 
         return $this;
@@ -416,7 +421,7 @@ class World extends BaseEntity
     {
         $now = new \DateTime();
 
-        return $now < $this->getStartTime();
+        return null !== $this->getStartTime() && $now < $this->getStartTime();
     }
 
     /**
@@ -424,9 +429,14 @@ class World extends BaseEntity
      */
     public function isActive()
     {
-        $now = new \DateTime();
+        if (null === $this->getStartTime()) {
+            return false;
+        }
 
-        return $now > $this->getStartTime() && $now < $this->getEndTime();
+        $now = new \DateTime();
+        $isNowBeforeEnd = null === $this->getEndTime() || $now < $this->getEndTime();
+
+        return $now > $this->getStartTime() && $isNowBeforeEnd;
     }
 
     /**
@@ -434,9 +444,13 @@ class World extends BaseEntity
      */
     public function isInactive()
     {
+        if (null === $this->getStartTime()) {
+            return false;
+        }
+
         $now = new \DateTime();
 
-        return $now > $this->getEndTime();
+        return null !== $this->getEndTime() && $now > $this->getEndTime();
     }
 
     /**
@@ -456,6 +470,10 @@ class World extends BaseEntity
      */
     public function isEndingSoon()
     {
+        if (null === $this->getStartTime()) {
+            return false;
+        }
+
         $soon = (new \DateTime)->add(new \DateInterval('P3D'));
 
         return $this->isActive() && $soon > $this->getEndTime();

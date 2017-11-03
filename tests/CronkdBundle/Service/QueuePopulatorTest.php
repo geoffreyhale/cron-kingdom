@@ -55,7 +55,7 @@ class QueuePopulatorTest extends KernelTestCase
     {
         $world = $this->createOrGetWorld('TestWorld');
         $kingdom = $this->createOrGetKingdom($world, 'TestKingdom');
-        $resource = $this->createOrGetResource(Resource::MATERIAL);
+        $resource = $this->createOrGetResource('Material');
 
         $this->queuePopulator->build($kingdom, $resource, $expectedQueueSize, 10);
     }
@@ -81,7 +81,7 @@ class QueuePopulatorTest extends KernelTestCase
     {
         $world = $this->createOrGetWorld('TestWorld');
         $kingdom = $this->createOrGetKingdom($world, 'TestKingdom');
-        $resource = $this->createOrGetResource(Resource::MATERIAL);
+        $resource = $this->createOrGetResource('Material');
 
         $queues = $this->queuePopulator->build($kingdom, $resource, $expectedQueueSize, 10);
 
@@ -111,7 +111,7 @@ class QueuePopulatorTest extends KernelTestCase
     {
         $world = $this->createOrGetWorld('TestWorld');
         $kingdom = $this->createOrGetKingdom($world, 'TestKingdom');
-        $resource = $this->createOrGetResource(Resource::MATERIAL);
+        $resource = $this->createOrGetResource('Material');
 
         $queues = $this->queuePopulator->build($kingdom, $resource, $queueSize, $quantity);
 
@@ -137,7 +137,7 @@ class QueuePopulatorTest extends KernelTestCase
     {
         $world = $this->createOrGetWorld('TestWorld', $startingTick);
         $kingdom = $this->createOrGetKingdom($world, 'TestKingdom');
-        $resource = $this->createOrGetResource(Resource::MATERIAL);
+        $resource = $this->createOrGetResource('Material');
 
         $queues = $this->queuePopulator->build($kingdom, $resource, $queueSize, $quantity);
 
@@ -156,8 +156,9 @@ class QueuePopulatorTest extends KernelTestCase
             $world = new World();
             $world->setName($name);
             $world->setTick($tick);
-            $world->setActive(true);
-            $world->setActive(true);
+            $world->setStartTime((new DateTime())->sub(new DateInterval('P1M')));
+            $world->setEndTime((new DateTime())->add(new DateInterval('P1M')));
+            $world->setTickInterval(1);
             $this->em->persist($world);
             $this->em->flush();
         }
@@ -197,6 +198,8 @@ class QueuePopulatorTest extends KernelTestCase
             $resource->setAttack(0);
             $resource->setDefense(0);
             $resource->setCapacity(0);
+            $resource->setStartingAmount(100);
+            $resource->setSpoilOfWar(true);
             $this->em->persist($resource);
             $this->em->flush();
         }

@@ -133,16 +133,22 @@ class Resource extends BaseEntity
     private $kingdoms;
 
     /**
+     * @var ResourceType
+     *
      * @ORM\ManyToOne(targetEntity="ResourceType", inversedBy="resources")
      */
     private $type;
 
     /**
+     * @var World
+     *
      * @ORM\ManyToOne(targetEntity="CronkdBundle\Entity\World", inversedBy="resources")
      */
     private $world;
 
     /**
+     * @var ResourceAction[]
+     *
      * @ORM\OneToMany(targetEntity="ResourceAction", mappedBy="resource")
      */
     private $actions;

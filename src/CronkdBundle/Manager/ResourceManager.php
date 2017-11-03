@@ -11,15 +11,12 @@ class ResourceManager
 {
     /** @var EntityManagerInterface */
     private $em;
-    /** @var array  */
-    private $settings;
     /** @var  array */
     private $cachedResources;
 
-    public function __construct(EntityManagerInterface $em, array $settings)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->em              = $em;
-        $this->settings        = $settings;
         $this->cachedResources = [];
     }
 
