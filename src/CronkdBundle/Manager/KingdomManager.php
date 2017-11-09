@@ -11,6 +11,7 @@ use CronkdBundle\Entity\User;
 use CronkdBundle\Entity\World;
 use CronkdBundle\Event\CreateKingdomEvent;
 use CronkdBundle\Exceptions\InvalidResourceException;
+use CronkdBundle\Exceptions\InvalidWorldSettingsException;
 use CronkdBundle\Model\KingdomState;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -197,8 +198,12 @@ class KingdomManager
      */
     public function incrementPopulation(Kingdom $kingdom)
     {
-        $civilianResource  = $this->resourceManager->get(Resource::CIVILIAN);
-        $activeCivilians   = $this->lookupResource($kingdom, Resource::CIVILIAN);
+        $civilianResource  = $this->resourceManager->getCivilianResources();
+        if (null === $civilianResource) {
+            throw new InvalidWorldSettingsException("No base population resource is configured!");
+        }
+
+        $activeCivilians   = $kingdom->getResource($civilianResource);
         $inactiveCivilians = $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $civilianResource);
         $totalCivilians    = $activeCivilians->getQuantity() + $inactiveCivilians;
 

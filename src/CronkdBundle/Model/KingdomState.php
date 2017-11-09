@@ -107,6 +107,10 @@ class KingdomState
      */
     public function canPerformActionOnResource(Resource $resource)
     {
+        if (!$resource->getCanBeProduced()) {
+            return false;
+        }
+
         $kingdomResource = $this->kingdom->getResource($resource);
         if (null === $kingdomResource) {
             return false;

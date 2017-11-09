@@ -76,4 +76,23 @@ class ResourceManager
 
         return $resources;
     }
+
+    /**
+     * Need to get away from hardcoding "Civilian" as the base population resource.
+     * Treat the first population resource that cannot be produced as the base population resource
+     * and return that.
+     *
+     * @return Resource|null
+     */
+    public function getCivilianResources()
+    {
+        $populationResources = $this->getPopulationResources();
+        foreach ($populationResources as $resource) {
+            if (!$resource->getCanBeProduced()) {
+                return $resource;
+            }
+        }
+
+        return null;
+    }
 }

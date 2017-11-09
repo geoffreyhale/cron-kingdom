@@ -6,8 +6,10 @@ use CronkdBundle\Entity\Queue;
 use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Entity\World;
 use CronkdBundle\Event\WorldTickEvent;
+use CronkdBundle\Exceptions\InvalidWorldSettingsException;
 use CronkdBundle\Manager\KingdomManager;
 use CronkdBundle\Manager\LogManager;
+use CronkdBundle\Manager\ResourceManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -18,6 +20,8 @@ class TickService
     private $em;
     /** @var KingdomManager  */
     private $kingdomManager;
+    /** @var ResourceManager  */
+    private $resourceManager;
     /** @var LogManager  */
     private $logManager;
     /** @var EventDispatcherInterface  */
@@ -28,12 +32,14 @@ class TickService
     public function __construct(
         EntityManagerInterface $em,
         KingdomManager $kingdomManager,
+        ResourceManager $resourceManager,
         LogManager $logManager,
         EventDispatcherInterface $eventDispatcher,
         LoggerInterface $logger
     ) {
         $this->em              = $em;
         $this->kingdomManager  = $kingdomManager;
+        $this->resourceManager = $resourceManager;
         $this->logManager      = $logManager;
         $this->eventDispatcher = $eventDispatcher;
         $this->logger          = $logger;
@@ -41,10 +47,16 @@ class TickService
 
     /**
      * @param World $world
+     * @throws InvalidWorldSettingsException
      */
     public function attemptTick(World $world)
     {
         $world->incrementTimeSinceLastTick();
+
+        $civilianResource = $this->resourceManager->getCivilianResources();
+        if (null === $civilianResource) {
+            throw new InvalidWorldSettingsException("No base population resource is configured!");
+        }
         
         if (!$world->isActive()) {
             $this->logger->info($world->getName() . " world is not active");
@@ -90,7 +102,7 @@ class TickService
                 $this->logManager->createLog(
                     $kingdom,
                     Log::TYPE_TICK,
-                    'Gave birth to ' . $addition . ' ' . Resource::CIVILIAN
+                    'Gave birth to ' . $addition . ' ' . $civilianResource->getName()
                 );
                 $this->logger->info($kingdom->getName() . ' kingdom is not at capacity, adding ' . $addition . ' to population');
             } else {
