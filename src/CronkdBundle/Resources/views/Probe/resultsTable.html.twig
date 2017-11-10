@@ -1,7 +1,8 @@
 <table class="table table-bordered" style="margin-top: 15px;">
     <tbody>
     <tr>
-        <td><i class="fa fa-fort-awesome fa-fw"></i> {{ results.data.report.data.Resources|first.kingdom.name }}</td>
+        <td>
+            <i class="fa fa-fort-awesome fa-fw"></i> {{ results.data.report.data.Kingdom }}</td>
     </tr>
     <tr>
         <td>
@@ -17,4 +18,6 @@
         </tr>
     {% endfor %}
     </tbody>
+        </td>
+    </tr>
 </table>

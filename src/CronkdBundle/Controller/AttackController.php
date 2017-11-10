@@ -27,6 +27,7 @@ class AttackController extends CronkdController
         $this->validateWorldIsActive($kingdom);
         $this->validateUserOwnsKingdom($kingdom);
 
+        $resourceManager = $this->get('cronkd.manager.resource');
         $kingdomManager = $this->get('cronkd.manager.kingdom');
         $kingdomState = $kingdomManager->generateKingdomState($kingdom);
 
@@ -35,12 +36,11 @@ class AttackController extends CronkdController
             throw $this->createAccessDeniedException("You may only attack once per tick");
         }
 
-        $em = $this->getDoctrine()->getManager();
-        $resources = $em->getRepository(Resource::class)->findByWorld($kingdom->getWorld());
+        $resources = $resourceManager->getWorldResources($kingdom->getWorld());
         $attackPlan = new AttackPlan();
         $form = $this->createForm(AttackPlanType::class, $attackPlan, [
-            'kingdomState'  => $kingdomState,
-            'resources'     => $resources,
+            'kingdomState' => $kingdomState,
+            'resources'    => $resources,
         ]);
 
         $form->handleRequest($request);

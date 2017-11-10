@@ -55,8 +55,7 @@ class ResourceAction extends BaseEntity
     private $queueSize;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Resource")
-     * @ORM\JoinColumn(name="resource_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Resource", inversedBy="actions")
      */
     private $resource;
 

@@ -22,11 +22,22 @@ class ResourceManager
 
     /**
      * @param World $world
+     * @return Resource[]
+     */
+    public function getWorldResources(World $world)
+    {
+        $resources = $this->em->getRepository(Resource::class)->findByWorld($world);
+
+        return $resources;
+    }
+
+    /**
+     * @param World $world
      * @return array
      */
     public function getKingdomStartingResources(World $world)
     {
-        $resources        = $this->em->getRepository(Resource::class)->findByWorld($world);
+        $resources        = $this->getWorldResources($world);
         $initialResources = [];
 
         /** @var Resource $resource */
