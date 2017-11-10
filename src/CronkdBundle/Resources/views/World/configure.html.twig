@@ -5,33 +5,42 @@
         <div class="col-md-2">
 
             <ul class="nav nav-pills nav-stacked">
-                <li role="presentation" class="active"><a href="#settings" data-toggle="tab">World Settings</a></li>
-                <li role="presentation"><a href="#resources" data-toggle="tab">Resources</a></li>
-                <li role="presentation"><a href="#actions" data-toggle="tab">Actions</a></li>
+                <li role="presentation" {{ tab == 'world' ? 'class="active"' : '' }}><a href="#settings" data-toggle="tab">World Settings</a></li>
+                <li role="presentation" {{ tab == 'resources' ? 'class="active"' : '' }}><a href="#resources" data-toggle="tab">Resources</a></li>
             </ul>
         </div>
         <div class="col-md-10">
 
             <div class="tab-content clearfix">
 
-                <div class="tab-pane active" id="settings">
+                <div class="tab-pane {{ tab == 'world' ? 'active' : '' }}" id="settings">
                     <div class="pull-right">
                         <a class="btn btn-info" href="{{ path('world_update', {'world': world.id}) }}"><i class="fa fa-pencil"></i> Edit</a>
                     </div>
                     <h2>World Settings</h2>
-                    {% include '@Cronkd/World/partials/overviewTable.html.twig' %}
+                    {% include '@Cronkd/World/partials/overviewSection.html.twig' %}
                 </div>
 
-                <div class="tab-pane" id="resources">
+                <div class="tab-pane {{ tab == 'resources' ? 'active' : '' }}" id="resources">
+                    {% if not world.isInactive %}
+                    <div class="pull-right">
+                        <a class="btn btn-info" href="{{ path('resource_create', {'id': world.id}) }}"><i class="fa fa-plus"></i> Add</a>
+                    </div>
+                    {% endif %}
                     <h2>Resources</h2>
-
-                </div>
-
-                <div class="tab-pane" id="actions">
-                    <h2>Actions</h2>
+                    {% include '@Cronkd/World/partials/resourcesSection.html.twig' %}
                 </div>
             </div>
         </div>
     </div>
-    </div>
+{% endblock %}
+
+{% block js %}
+    {{ parent() }}
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#resourceTable').dataTable();
+        });
+    </script>
 {% endblock %}

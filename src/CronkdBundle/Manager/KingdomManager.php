@@ -6,11 +6,12 @@ use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Log;
 use CronkdBundle\Entity\Queue;
-use CronkdBundle\Entity\Resource;
+use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Entity\User;
 use CronkdBundle\Entity\World;
 use CronkdBundle\Event\CreateKingdomEvent;
 use CronkdBundle\Exceptions\InvalidResourceException;
+use CronkdBundle\Exceptions\InvalidWorldSettingsException;
 use CronkdBundle\Model\KingdomState;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -33,13 +34,11 @@ class KingdomManager
     public function __construct(
         EntityManagerInterface $em,
         ResourceManager $resourceManager,
-        EventDispatcherInterface $eventDispatcher,
-        array $settings
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->em              = $em;
         $this->resourceManager = $resourceManager;
         $this->eventDispatcher = $eventDispatcher;
-        $this->settings        = $settings;
         $this->logger          = new NullLogger();
     }
 
@@ -80,7 +79,7 @@ class KingdomManager
      */
     public function generateKingdomState(Kingdom $kingdom)
     {
-        $kingdomState = new KingdomState($kingdom, $this->settings);
+        $kingdomState = new KingdomState($kingdom);
         $winLossRecord = $this->em->getRepository(AttackLog::class)->getWinLossRecord($kingdom);
         $kingdomState
             ->setWinLossRecord($winLossRecord['win'], $winLossRecord['loss'])
@@ -199,8 +198,12 @@ class KingdomManager
      */
     public function incrementPopulation(Kingdom $kingdom)
     {
-        $civilianResource  = $this->resourceManager->get(Resource::CIVILIAN);
-        $activeCivilians   = $this->lookupResource($kingdom, Resource::CIVILIAN);
+        $civilianResource  = $this->resourceManager->getCivilianResources();
+        if (null === $civilianResource) {
+            throw new InvalidWorldSettingsException("No base population resource is configured!");
+        }
+
+        $activeCivilians   = $kingdom->getResource($civilianResource);
         $inactiveCivilians = $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $civilianResource);
         $totalCivilians    = $activeCivilians->getQuantity() + $inactiveCivilians;
 

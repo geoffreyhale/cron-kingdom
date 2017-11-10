@@ -35,7 +35,7 @@
                     {{ resourceIcon(resourceName)|raw }}
                     <strong>{{ resourceQueues.kingdomResource.quantity|filterNumber }}</strong>
                     {{ resourceName }}
-                    {% if resource.canBeProduced and kingdomState.canPerformActionOnResource(resource) %}
+                    {% if kingdomState.canPerformActionOnResource(resource) %}
                         <a href="{{ path('action_perform', {'resourceName': resourceName}) }}" class="btn btn-success btn-xs"><i class="fa fa-plus"></i></a>
                     {% endif %}
                 </td>

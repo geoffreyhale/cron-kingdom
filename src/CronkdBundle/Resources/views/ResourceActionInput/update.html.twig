@@ -1,0 +1,14 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="col-md-12">
+
+                <h1>Update {{ input.resource.name }} Input for {{ resourceAction.verb }} {{ resourceAction.resource.name }}</h1>
+                {% include 'CronkdBundle:ResourceActionInput/partials:form.html.twig' with {'action': 'Update'} %}
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

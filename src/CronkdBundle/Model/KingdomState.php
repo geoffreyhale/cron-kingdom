@@ -4,7 +4,7 @@ namespace CronkdBundle\Model;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomPolicy;
 use CronkdBundle\Entity\KingdomResource;
-use CronkdBundle\Entity\Resource;
+use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Exceptions\KingdomDoesNotHaveResourceException;
 
 class KingdomState
@@ -22,10 +22,9 @@ class KingdomState
     /** @var bool  */
     private $availableAttack = false;
 
-    public function __construct(Kingdom $kingdom, array $settings)
+    public function __construct(Kingdom $kingdom)
     {
         $this->kingdom  = $kingdom;
-        $this->settings = $settings;
     }
 
     /**
@@ -108,23 +107,26 @@ class KingdomState
      */
     public function canPerformActionOnResource(Resource $resource)
     {
-        $actionSettings = $this->settings['resources'][$resource->getName()]['action'];
-        if (!$actionSettings) {
+        if (!$resource->getCanBeProduced()) {
             return false;
         }
 
-        try {
-            foreach ($actionSettings['inputs'] as $inputResourceName => $inputSetting) {
-                $kingdomResource = $this->getKingdomResource($inputResourceName);
-                if ($kingdomResource->getQuantity() < $inputSetting['quantity']) {
-                    return false;
-                }
+        $kingdomResource = $this->kingdom->getResource($resource);
+        if (null === $kingdomResource) {
+            return false;
+        }
+
+        $action = $kingdomResource->getResource()->getActions()->first();
+        if (null === $action) {
+            return false;
+        }
+
+        foreach ($action->getInputs() as $resourceActionInput) {
+            $kingdomResource = $this->getKingdomResource($resourceActionInput->getResource()->getName());
+            if ($kingdomResource->getQuantity() < $resourceActionInput->getInputQuantity()) {
+                return false;
             }
-        } catch (KingdomDoesNotHaveResourceException $e) {
-            return false;
         }
-
-
 
         return true;
     }
@@ -144,6 +146,7 @@ class KingdomState
 
         throw new KingdomDoesNotHaveResourceException($resourceName);
     }
+
 
     /**
      * @param bool $availableAttack

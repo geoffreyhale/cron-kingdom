@@ -1,6 +1,7 @@
 <?php
 namespace CronkdBundle\Entity;
 
+use CronkdBundle\Entity\Resource\Resource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -53,6 +54,11 @@ class World extends BaseEntity
      * @var \DateTime
      *
      * @ORM\Column(name="end_time", type="datetime", nullable=true)
+     *
+     * @Assert\Expression(
+     *     "this.getStartTime() <= this.getEndTime()",
+     *     message="End time must be later than start time!"
+     * )
      */
     private $endTime;
 
@@ -84,11 +90,17 @@ class World extends BaseEntity
     private $kingdoms;
 
     /**
+     * @ORM\OneToMany(targetEntity="CronkdBundle\Entity\Resource\Resource", mappedBy="world")
+     */
+    private $resources;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
-        $this->kingdoms = new ArrayCollection();
+        $this->kingdoms  = new ArrayCollection();
+        $this->resources = new ArrayCollection();
     }
 
     /**
@@ -215,7 +227,7 @@ class World extends BaseEntity
      *
      * @return World
      */
-    public function setStartTime($startTime)
+    public function setStartTime(\DateTime $startTime)
     {
         $this->startTime = $startTime;
 
@@ -239,7 +251,7 @@ class World extends BaseEntity
      *
      * @return World
      */
-    public function setEndTime($endTime)
+    public function setEndTime(\DateTime $endTime)
     {
         $this->endTime = $endTime;
 
@@ -258,13 +270,18 @@ class World extends BaseEntity
 
     /**
      * Set tickInterval
+     * 1 minute is the minimum value for tick interval.
      *
      * @param integer $tickInterval
      *
      * @return World
      */
-    public function setTickInterval($tickInterval)
+    public function setTickInterval(int $tickInterval)
     {
+        if (0 >= $tickInterval) {
+            $tickInterval = 1;
+        }
+
         $this->tickInterval = $tickInterval;
 
         return $this;
@@ -364,13 +381,47 @@ class World extends BaseEntity
     }
 
     /**
+     * Add resource
+     *
+     * @param Resource $resource
+     *
+     * @return World
+     */
+    public function addResource(Resource $resource)
+    {
+        $this->resources[] = $resource;
+
+        return $this;
+    }
+
+    /**
+     * Remove resource
+     *
+     * @param Resource $resource
+     */
+    public function removeResource(Resource $resource)
+    {
+        $this->resources->removeElement($resource);
+    }
+
+    /**
+     * Get resources
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getResources()
+    {
+        return $this->resources;
+    }
+
+    /**
      * @return bool
      */
     public function isUpcoming()
     {
         $now = new \DateTime();
 
-        return $now < $this->getStartTime();
+        return null !== $this->getStartTime() && $now < $this->getStartTime();
     }
 
     /**
@@ -378,9 +429,14 @@ class World extends BaseEntity
      */
     public function isActive()
     {
-        $now = new \DateTime();
+        if (null === $this->getStartTime()) {
+            return false;
+        }
 
-        return $now > $this->getStartTime() && $now < $this->getEndTime();
+        $now = new \DateTime();
+        $isNowBeforeEnd = null === $this->getEndTime() || $now < $this->getEndTime();
+
+        return $now > $this->getStartTime() && $isNowBeforeEnd;
     }
 
     /**
@@ -388,9 +444,13 @@ class World extends BaseEntity
      */
     public function isInactive()
     {
+        if (null === $this->getStartTime()) {
+            return false;
+        }
+
         $now = new \DateTime();
 
-        return $now > $this->getEndTime();
+        return null !== $this->getEndTime() && $now > $this->getEndTime();
     }
 
     /**
@@ -410,6 +470,10 @@ class World extends BaseEntity
      */
     public function isEndingSoon()
     {
+        if (null === $this->getStartTime()) {
+            return false;
+        }
+
         $soon = (new \DateTime)->add(new \DateInterval('P3D'));
 
         return $this->isActive() && $soon > $this->getEndTime();

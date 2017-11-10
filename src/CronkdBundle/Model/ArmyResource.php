@@ -1,7 +1,7 @@
 <?php
 namespace CronkdBundle\Model;
 
-use CronkdBundle\Entity\Resource;
+use CronkdBundle\Entity\Resource\Resource;
 
 class ArmyResource
 {

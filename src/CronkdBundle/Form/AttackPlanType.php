@@ -2,6 +2,7 @@
 namespace CronkdBundle\Form;
 
 use CronkdBundle\Entity\Kingdom;
+use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Exceptions\InvalidKingdomStateException;
 use CronkdBundle\Exceptions\InvalidSettingsToParseException;
 use CronkdBundle\Model\AttackPlan;
@@ -21,25 +22,24 @@ class AttackPlanType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        if (empty($options['settings'])) {
-            throw new InvalidSettingsToParseException();
-        }
         if (!$options['kingdomState'] instanceof KingdomState) {
             throw new InvalidKingdomStateException();
         }
 
-        foreach ($options['settings']['resources'] as $resourceName => $resourceSetting) {
-            if ($resourceSetting['attack'] > 0 && $options['kingdomState']->hasAvailableResource($resourceName)) {
-                $builder->add($resourceName, TextType::class, [
+        /** @var Resource $resource */
+        foreach ($options['resources'] as $resource) {
+            if ($resource->getAttack() > 0 && $options['kingdomState']->hasAvailableResource($resource->getName())) {
+                $builder->add($resource->getName(), TextType::class, [
                     'required' => true,
                 ]);
             }
         }
+
         $builder
             ->add('target', EntityType::class, [
-                'required' => true,
-                'class' => Kingdom::class,
-                'placeholder' => '--- Select Kingdom ---',
+                'required'      => true,
+                'class'         => Kingdom::class,
+                'placeholder'   => '--- Select Kingdom ---',
                 'query_builder' => function(EntityRepository $er) use ($options) {
                     $qb = $er->createQueryBuilder('k');
                     $qb->orderBy('k.name', 'ASC');
@@ -47,7 +47,7 @@ class AttackPlanType extends AbstractType
                         $qb->where('k.world = :world');
                         $qb->andWhere('k.id != :kingdom');
                         $qb->setParameters([
-                            'world' => $options['kingdomState']->getKingdom()->getWorld(),
+                            'world'   => $options['kingdomState']->getKingdom()->getWorld(),
                             'kingdom' => $options['kingdomState']->getKingdom(),
                         ]);
                     }
@@ -67,9 +67,9 @@ class AttackPlanType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class'    => AttackPlan::class,
-            'kingdomState'  => null,
-            'settings'      => [],
+            'data_class'   => AttackPlan::class,
+            'kingdomState' => null,
+            'resources'    => [],
 
         ]);
     }

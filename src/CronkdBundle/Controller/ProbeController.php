@@ -27,14 +27,15 @@ class ProbeController extends CronkdController
         $this->validateWorldIsActive($kingdom);
         $this->validateUserOwnsKingdom($kingdom);
 
+        $resourceManager = $this->get('cronkd.manager.resource');
         $kingdomManager = $this->get('cronkd.manager.kingdom');
         $kingdomState = $kingdomManager->generateKingdomState($kingdom);
 
         $probeAttempt = new ProbeAttempt();
         $probeAttempt->setKingdom($kingdom);
         $form = $this->createForm(ProbeAttemptType::class, $probeAttempt, [
-            'kingdomState'  => $kingdomState,
-            'settings'      => $this->getParameter('cronkd.settings')
+            'kingdomState' => $kingdomState,
+            'resources'    => $resourceManager->getWorldResources($kingdom->getWorld()),
         ]);
 
         $form->handleRequest($request);
