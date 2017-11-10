@@ -20,19 +20,15 @@ class GraphingService
     private $kingdomManager;
     /** @var ResourceManager  */
     private $resourceManager;
-    /** @var array  */
-    private $settings;
 
     public function __construct(
         EntityManagerInterface $em,
         KingdomManager $kingdomManager,
-        ResourceManager $resourceManager,
-        array $settings
+        ResourceManager $resourceManager
     ) {
         $this->em              = $em;
         $this->kingdomManager  = $kingdomManager;
         $this->resourceManager = $resourceManager;
-        $this->settings        = $settings;
     }
 
     /**
@@ -110,17 +106,13 @@ class GraphingService
             'Housing'    => 0,
         ];
 
-        foreach ($this->settings['resources'] as $resourceName => $resourceData) {
-            $resource = $this->em->getRepository(Resource::class)->findOneByName($resourceName);
-            if (null === $resource) {
-                throw new InvalidResourceException($resourceName);
-            }
-
-            $kingdomResource = $this->kingdomManager->lookupResource($kingdom, $resourceName);
-            $data = $this->addResourceData($data, $kingdomResource->getQuantity(), $resourceData);
+        $resources = $this->resourceManager->getWorldResources($kingdom->getWorld());
+        foreach ($resources as $resource) {
+            $kingdomResource = $this->kingdomManager->lookupResource($kingdom, $resource->getName());
+            $data = $this->addResourceData($data, $kingdomResource->getQuantity(), $resource);
             $queuedResourceQty = $this->em->getRepository(Queue::class)
-                ->findTotalQueued($kingdom, $this->resourceManager->get($resourceName));
-            $data = $this->addResourceData($data, $queuedResourceQty, $resourceData);
+                ->findTotalQueued($kingdom, $this->resourceManager->get($resource->getName()));
+            $data = $this->addResourceData($data, $queuedResourceQty, $resource);
         }
 
         $dataStructure = [
@@ -143,15 +135,15 @@ class GraphingService
     /**
      * @param array $data
      * @param int $quantity
-     * @param array $resourceData
+     * @param Resource $resource
      * @return array
      */
-    private function addResourceData(array $data, int $quantity, array $resourceData)
+    private function addResourceData(array $data, int $quantity, Resource $resource)
     {
-        $data['Attack'] += ($quantity * $resourceData['attack']);
-        $data['Defense'] += ($quantity * $resourceData['defense']);
-        $data['Housing'] += ($quantity * $resourceData['capacity']);
-        if ($resourceData['type'] == ResourceType::MATERIAL) {
+        $data['Attack'] += ($quantity * $resource->getAttack());
+        $data['Defense'] += ($quantity * $resource->getDefense());
+        $data['Housing'] += ($quantity * $resource->getCapacity());
+        if ($resource->getType()->getName() == ResourceType::MATERIAL) {
             $data['Materials'] += $quantity;
         }
 
