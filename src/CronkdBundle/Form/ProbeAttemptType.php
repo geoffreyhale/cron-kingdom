@@ -57,7 +57,7 @@ class ProbeAttemptType extends AbstractType
                 },
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Hack',
+                'label' => 'Spy',
             ])
         ;
     }
