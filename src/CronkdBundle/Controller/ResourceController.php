@@ -3,7 +3,7 @@ namespace CronkdBundle\Controller;
 
 use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Entity\World;
-use CronkdBundle\Form\ResourceType;
+use CronkdBundle\Form\Resource\ResourceType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;

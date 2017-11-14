@@ -30,6 +30,7 @@ class ResourceActionType extends AbstractType
                 'required' => true,
                 'label'    => 'Queue Size (number of Ticks to fully pay out)',
             ])
+            ->add('description', TextType::class)
             ->add('submit', SubmitType::class)
         ;
     }

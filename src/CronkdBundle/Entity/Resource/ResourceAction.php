@@ -55,6 +55,14 @@ class ResourceAction extends BaseEntity
     private $queueSize;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="description", type="string", length=255)
+     * @Jms\Expose()
+     */
+    private $description;
+
+    /**
      * @ORM\ManyToOne(targetEntity="Resource", inversedBy="actions")
      */
     private $resource;
@@ -152,6 +160,30 @@ class ResourceAction extends BaseEntity
     public function getQueueSize()
     {
         return $this->queueSize;
+    }
+
+    /**
+     * Set description
+     *
+     * @param string $description
+     *
+     * @return ResourceAction
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 
     /**

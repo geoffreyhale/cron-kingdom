@@ -126,6 +126,13 @@ class Resource extends BaseEntity
     private $spoilOfWar;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="definition", type="string", length=255)
+     */
+    private $description;
+
+    /**
      * @var KingdomResource[]
      *
      * @ORM\OneToMany(targetEntity="CronkdBundle\Entity\KingdomResource", mappedBy="resource")
@@ -502,6 +509,30 @@ class Resource extends BaseEntity
     public function getSpoilOfWar()
     {
         return $this->spoilOfWar;
+    }
+
+    /**
+     * Set description
+     *
+     * @param string $description
+     *
+     * @return ResourceAction
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 
     /**

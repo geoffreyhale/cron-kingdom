@@ -1,5 +1,5 @@
 <?php
-namespace CronkdBundle\Form;
+namespace CronkdBundle\Form\Resource;
 
 use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Entity\Resource\ResourceType as ResourceTypeEntity;
@@ -63,6 +63,7 @@ class ResourceType extends AbstractType
                 'label'    => 'Is Spoil of War?',
                 'required' => false,
             ])
+            ->add('description', TextType::class)
 
             ->add('submit', SubmitType::class)
         ;
