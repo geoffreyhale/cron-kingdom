@@ -126,6 +126,13 @@ class Resource extends BaseEntity
     private $spoilOfWar;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="spoil_of_war_capture_percentage", type="integer")
+     */
+    private $spoilOfWarCapturePercentage;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="definition", type="string", length=255)
@@ -575,5 +582,29 @@ class Resource extends BaseEntity
     public function __toString()
     {
         return $this->getName();
+    }
+
+    /**
+     * Set spoilOfWarCapturePercentage
+     *
+     * @param integer $spoilOfWarCapturePercentage
+     *
+     * @return Resource
+     */
+    public function setSpoilOfWarCapturePercentage($spoilOfWarCapturePercentage)
+    {
+        $this->spoilOfWarCapturePercentage = $spoilOfWarCapturePercentage;
+
+        return $this;
+    }
+
+    /**
+     * Get spoilOfWarCapturePercentage
+     *
+     * @return integer
+     */
+    public function getSpoilOfWarCapturePercentage()
+    {
+        return $this->spoilOfWarCapturePercentage;
     }
 }

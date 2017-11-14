@@ -34,7 +34,7 @@
         <td>{{ resource.defense }}</td>
         <td>{{ resource.probePower }}</td>
         <td>{{ resource.capacity }}</td>
-        <td>{{ resource.isSpoilOfWar ? 'Yes' : 'No' }}</td>
+        <td>{{ resource.isSpoilOfWar ? resource.spoilOfWarCapturePercentage~'%' : 'No' }}</td>
     </tr>
     {% endfor %}
     </tbody>

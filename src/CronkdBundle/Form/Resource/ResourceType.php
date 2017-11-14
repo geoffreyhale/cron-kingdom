@@ -63,6 +63,10 @@ class ResourceType extends AbstractType
                 'label'    => 'Is Spoil of War?',
                 'required' => false,
             ])
+            ->add('spoilOfWarCapturePercentage', IntegerType::class, [
+                'label'    => 'Spoil of War Capture Percentage',
+                'required' => false,
+            ])
             ->add('description', TextType::class)
 
             ->add('submit', SubmitType::class)

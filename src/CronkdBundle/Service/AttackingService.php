@@ -200,18 +200,10 @@ class AttackingService
         foreach ($resources as $resource) {
             $percentage = 0;
             if ($resource->getSpoilOfWar()) {
-                switch ($resource->getType()->getName()) {
-                    case ResourceType::BUILDING:
-                        $percentage = $housingPercentage;
-                        break;
-                    case ResourceType::MATERIAL:
-                        $percentage = 50;
-                        break;
-                    case ResourceType::POPULATION:
-                        $percentage = 20;
-                        break;
-                }
+                $percentage = $resource->getSpoilOfWarCapturePercentage();
+            }
 
+            if ($percentage > 0) {
                 $this->awardResource($report, $kingdom, $targetKingdom, $resource->getName(), $percentage);
             }
         }
