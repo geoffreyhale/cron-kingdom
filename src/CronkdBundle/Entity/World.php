@@ -73,6 +73,16 @@ class World extends BaseEntity
     private $tickInterval;
 
     /**
+     * Birth rate as a percentage.
+     *
+     * @var int
+     *
+     * @ORM\Column(name="birth_rate", type="integer")
+     * @Assert\Range(min=1, minMessage="Birth rate must be greater than zero.")
+     */
+    private $birthRate;
+
+    /**
      * Countdown till next tick.
      *
      * @var int
@@ -295,6 +305,30 @@ class World extends BaseEntity
     public function getTickInterval()
     {
         return $this->tickInterval;
+    }
+
+    /**
+     * Set birthRate
+     *
+     * @param integer $birthRate
+     *
+     * @return World
+     */
+    public function setBirthRate($birthRate)
+    {
+        $this->birthRate = $birthRate;
+
+        return $this;
+    }
+
+    /**
+     * Get birthRate
+     *
+     * @return integer
+     */
+    public function getBirthRate()
+    {
+        return $this->birthRate;
     }
 
     /**

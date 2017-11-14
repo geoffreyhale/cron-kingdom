@@ -207,7 +207,7 @@ class KingdomManager
         $inactiveCivilians = $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $civilianResource);
         $totalCivilians    = $activeCivilians->getQuantity() + $inactiveCivilians;
 
-        $birthedCivilians  = floor(log($totalCivilians)); // 10 => 2, 100 => 4, 1000 => 6
+        $birthedCivilians  = floor($kingdom->getWorld()->getBirthRate() / 100 * $totalCivilians);
         if (0 == $birthedCivilians) {
             $birthedCivilians = 1;
         }

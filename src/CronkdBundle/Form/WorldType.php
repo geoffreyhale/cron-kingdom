@@ -31,6 +31,10 @@ class WorldType extends AbstractType
                 'required' => true,
                 'label' => 'Tick Interval (in minutes)',
             ])
+            ->add('birthRate', IntegerType::class, [
+                'required' => true,
+                'label' => 'Birth Rate %',
+            ])
             ->add('submit', SubmitType::class)
         ;
 
