@@ -1,6 +1,6 @@
-<h2>Resources</h2>
+<h2>{{ world.name }} Resources</h2>
 <p>
-    There are {{ settings.resource_types|length }} types of resources: {{ settings.resource_types|join(", ") }}.
+    There are {{ resourceTypes|length }} types of resources: {{ resourceTypes|join(", ") }}.
     Each hour, on the hour, the world will take one step forward in <strong>time</strong> and <strong>resources</strong> will move one step in their <strong>queues</strong>.
     Resources will be dispersed evenly over time.  For example, if 8 resources are constructed, 1 will be awarded back to your kingdom per tick.
 </p>
@@ -11,11 +11,11 @@
     <div class="col-md-6">
         <table class="table table-bordered">
             <tbody>
-            {% for resourceName, resource in settings.resources %}
-                {% if resource.initial > 0 %}
+            {% for resource in resources %}
+                {% if resource.startingAmount > 0 %}
                     <tr>
-                        <td style="background-color: #f5f5f5;">{{ resourceIcon(resourceName)|raw }} {{ resourceName }}</td>
-                        <td>{{ resource.initial }}</td>
+                        <td style="background-color: #f5f5f5;">{{ resourceIcon(resource.name)|raw }} {{ resource.name }}</td>
+                        <td>{{ resource.startingAmount }}</td>
                     </tr>
                 {% endif %}
             {% endfor %}
@@ -30,14 +30,15 @@
     <div class="col-md-6">
         <table class="table table-bordered">
             <tbody>
-            {% for resourceName, resource in settings.resources %}
-                {% if resource.action.verb is defined %}
+            {% for resource in resources %}
+                {% if resource.actions[0] is defined %}
+                    {% set action = resource.actions[0] %}
                     <tr>
-                        <td style="background-color: #f5f5f5;">{{ resource.action.verb }} {{ resource.action.output.quantity }} {{ resourceIcon(resourceName)|raw }} {{ resourceName }}</td>
+                        <td style="background-color: #f5f5f5;">{{ action.verb }} {{ action.outputQuantity }} {{ resourceIcon(resource.name)|raw }} {{ resource.name }}</td>
                         <td>
                             <ul>
-                                {% for inputResource, input in resource.action.inputs %}
-                                    <li>{{ input.quantity }} {{ inputResource }} {{ input.requeue ? ' (comes back after '~input.queue_size~' ticks)' : ' (lost forever)' }}</li>
+                                {% for input in action.inputs %}
+                                    <li>{{ input.inputQuantity }} {{ input.resource.name }} {{ input.requeue ? ' (comes back after '~input.queueSize~' ticks)' : ' (lost forever)' }}</li>
                                 {% endfor %}
                             </ul>
                         </td>
@@ -57,7 +58,6 @@
         <th>Name</th>
         <th>Type</th>
         <th>Net Worth Value</th>
-        <th>Initial Amount</th>
         <th>Attack Power</th>
         <th>Defense Power</th>
         <th>Spy Power</th>
@@ -65,16 +65,15 @@
     </tr>
     </thead>
     <tbody>
-    {% for resourceName, resource in settings.resources %}
+    {% for resource in resources %}
         <tr>
-            <td style="background-color: #f5f5f5;">{{ resourceIcon(resourceName)|raw }} {{ resourceName }}</td>
+            <td style="background-color: #f5f5f5;">{{ resourceIcon(resource.name)|raw }} {{ resource.name }}</td>
             <td>{{ resource.type }}</td>
             <td>{{ resource.value }}</td>
-            <td>{{ resource.initial }}</td>
             <td>{{ resource.attack }}</td>
             <td>{{ resource.defense }}</td>
-            <td>{{ resource.probe_power }}</td>
-            <td>{{ resource.spoil_of_war ? 'Yes' : 'No' }}</td>
+            <td>{{ resource.probePower }}</td>
+            <td>{{ resource.spoilOfWar ? 'Yes, '~resource.spoilOfWarCapturePercentage~'% awarded to attacker' : 'No' }}</td>
         </tr>
     {% endfor %}
     </tbody>

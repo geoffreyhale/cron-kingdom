@@ -1,0 +1,32 @@
+<div class="row">
+    <h1>{{ world.name }}</h1>
+    <p>Each world has unique properties.  Resources can also vary world to world.  View the <a href="#resources" data-toggle="tab" aria-expanded="true">Resources</a> tab to see the specific resources related to {{ world.name }}.</p>
+</div>
+
+<div class="row">
+    <h2>Start and end dates</h2>
+    <ul>
+        <li>Start date: {{ world.startTime|date('F d, Y h:i A') }} PST</li>
+        <li>End date: {{ world.endTime|date('F d, Y h:i A') }} PST</li>
+        <li>A warning message will appear three days before the world is going to end.</li>
+        <li>Statistics about the world will be frozen and available for all users to see after the world has stopped.</li>
+    </ul>
+</div>
+
+<div class="row">
+    <h2>{{ world.name }}-specific properties</h2>
+    <div class="col-md-6">
+        <table class="table table-bordered">
+            <tbody>
+            <tr>
+                <td style="background-color: #f5f5f5;">Tick Interval</td>
+                <td>Every {{ world.tickInterval != 1 ? world.tickInterval : '' }} minute{{ world.tickInterval != 1 ? 's' : '' }}</td>
+            </tr>
+            <tr>
+                <td style="background-color: #f5f5f5;">Birth Rate</td>
+                <td>{{ world.birthRate }}% of total population</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

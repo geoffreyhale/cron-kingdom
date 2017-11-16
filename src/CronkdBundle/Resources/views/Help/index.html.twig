@@ -6,6 +6,7 @@
         <div class="col-md-2">
             <ul class="nav nav-pills nav-stacked">
                 <li role="presentation" class="active"><a href="#introduction" data-toggle="tab">Introduction</a></li>
+                <li role="presentation"><a href="#world" data-toggle="tab">{{ world.name }}</a></li>
                 <li role="presentation"><a href="#resources" data-toggle="tab">Resources</a></li>
                 <li role="presentation"><a href="#spying-and-attacking" data-toggle="tab">Spying and Attacking</a></li>
             </ul>
@@ -15,6 +16,10 @@
             <div class="tab-content clearfix">
                 <div class="tab-pane active" id="introduction">
                     {% include 'CronkdBundle:Help:pages/introduction.html.twig' %}
+                </div>
+
+                <div class="tab-pane" id="world">
+                    {% include 'CronkdBundle:Help:pages/world.html.twig' %}
                 </div>
 
                 <div class="tab-pane" id="resources">
