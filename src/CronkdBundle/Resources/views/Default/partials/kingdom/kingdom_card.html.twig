@@ -18,7 +18,7 @@
                     <i class="fa fa-trophy"></i> {{ kingdom.elo }} ({{ kingdomState.winLossRecord }})
                 </span>&nbsp;
                 <span title="Attack and Defense Power">
-                    <i class="fa fa-shield"></i> {{ kingdom.attack|filterNumber }}/{{ kingdom.defense|filterNumber }}
+                    <i class="fa fa-shield"></i> {{ kingdomState.modifiedAttackPower|filterNumber }}/{{ kingdomState.modifiedDefensePower|filterNumber }}
                 </span>
             </li>
             <li>

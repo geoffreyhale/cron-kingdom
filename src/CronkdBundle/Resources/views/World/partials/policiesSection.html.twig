@@ -1,0 +1,34 @@
+<table id="policyTable" class="table table-striped table-bordered">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Kingdom Attributes</th>
+        <th>Resource Attributes</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for policy in world.policies %}
+        <tr>
+            <td>
+                {% if not world.isInactive %}
+                    <div class="pull-right">
+                        <a href="{{ path('policy_update', {'id': policy.id}) }}"><i class="fa fa-cogs"></i></a>
+                    </div>
+                {% endif %}
+                <strong>{{ policy.name }}</strong>
+            </td>
+            <td>
+                {% include '@Cronkd/Policy/partials/_overview.html.twig' %}
+            </td>
+            <td>
+                {% for policyResource in policy.resources %}
+                    {% if policyResource.hasAttributes %}
+                        <strong>{{ policyResource.resource.name }}</strong><br />
+                        {% include '@Cronkd/Policy/partials/_overview.html.twig' with {'policy': policyResource} %}
+                    {% endif %}
+                {% endfor %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

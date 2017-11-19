@@ -14,7 +14,7 @@
             {% for resource in resources %}
                 {% if resource.startingAmount > 0 %}
                     <tr>
-                        <td style="background-color: #f5f5f5;">{{ resourceIcon(resource.name)|raw }} {{ resource.name }}</td>
+                        <td style="background-color: #f5f5f5;">{{ resourceIcon(resource)|raw }} {{ resource.name }}</td>
                         <td>{{ resource.startingAmount }}</td>
                     </tr>
                 {% endif %}
@@ -34,7 +34,7 @@
                 {% if resource.actions[0] is defined %}
                     {% set action = resource.actions[0] %}
                     <tr>
-                        <td style="background-color: #f5f5f5;">{{ action.verb }} {{ action.outputQuantity }} {{ resourceIcon(resource.name)|raw }} {{ resource.name }}</td>
+                        <td style="background-color: #f5f5f5;">{{ action.verb }} {{ action.outputQuantity }} {{ resourceIcon(resource)|raw }} {{ resource.name }}</td>
                         <td>
                             <ul>
                                 {% for input in action.inputs %}
@@ -45,6 +45,51 @@
                     </tr>
                 {% endif %}
             {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h4>Resource Units</h4>
+<p>As resource amounts get larger, the units are abbreviated.</p>
+<div class="row">
+    <div class="col-md-6">
+        <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Abbreviation</th>
+                <th>Unit</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="background-color: #f5f5f5;">k</td>
+                <td>thousand</td>
+            </tr>
+            <tr>
+                <td style="background-color: #f5f5f5;">M</td>
+                <td>million</td>
+            </tr>
+            <tr>
+                <td style="background-color: #f5f5f5;">T</td>
+                <td>trillion</td>
+            </tr>
+            <tr>
+                <td style="background-color: #f5f5f5;">q</td>
+                <td>quadrillion</td>
+            </tr>
+            <tr>
+                <td style="background-color: #f5f5f5;">Q</td>
+                <td>quintillion</td>
+            </tr>
+            <tr>
+                <td style="background-color: #f5f5f5;">s</td>
+                <td>sextillion</td>
+            </tr>
+            <tr>
+                <td style="background-color: #f5f5f5;">S</td>
+                <td>septillion</td>
+            </tr>
             </tbody>
         </table>
     </div>
@@ -67,7 +112,7 @@
     <tbody>
     {% for resource in resources %}
         <tr>
-            <td style="background-color: #f5f5f5;">{{ resourceIcon(resource.name)|raw }} {{ resource.name }}</td>
+            <td style="background-color: #f5f5f5;">{{ resourceIcon(resource)|raw }} {{ resource.name }}</td>
             <td>{{ resource.type }}</td>
             <td>{{ resource.value }}</td>
             <td>{{ resource.attack }}</td>

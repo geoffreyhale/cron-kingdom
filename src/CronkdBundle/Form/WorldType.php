@@ -29,11 +29,15 @@ class WorldType extends AbstractType
             ])
             ->add('tickInterval', IntegerType::class, [
                 'required' => true,
-                'label' => 'Tick Interval (in minutes)',
+                'label'    => 'Tick Interval (in minutes)',
             ])
             ->add('birthRate', IntegerType::class, [
                 'required' => true,
-                'label' => 'Birth Rate %',
+                'label'    => 'Birth Rate %',
+            ])
+            ->add('policyDuration', IntegerType::class, [
+                'required' => true,
+                'label'    => 'Policy Duration (number of ticks)',
             ])
             ->add('submit', SubmitType::class)
         ;

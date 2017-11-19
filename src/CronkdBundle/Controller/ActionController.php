@@ -62,7 +62,7 @@ class ActionController extends CronkdController
             } elseif (isset($results['error'])) {
                 $flashBag->add('danger' , $results['error']);
             } else {
-                $flashBag->add('success', $action->getQuantity() . ' ' . $resourceName . ' successfully queued');
+                $flashBag->add('success', $results['data']['outputQuantity'] . ' ' . $resourceName . ' successfully queued');
             }
 
             return $this->redirectToRoute('homepage');

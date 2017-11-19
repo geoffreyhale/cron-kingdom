@@ -1,6 +1,8 @@
 <?php
-namespace CronkdBundle\Entity;
+namespace CronkdBundle\Entity\Policy;
 
+use CronkdBundle\Entity\BaseEntity;
+use CronkdBundle\Entity\World;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Jms;
@@ -13,12 +15,7 @@ use JMS\Serializer\Annotation as Jms;
  */
 class Policy extends BaseEntity
 {
-    const DEFENDER  = 'Defender';
-    const ECONOMIST = 'Economist';
-    const WARMONGER = 'Warmonger';
-
-    const DEFENDER_BONUS  = 1.5;
-    const WARMONGER_BONUS = 5;
+    use PolicyTrait;
 
     /**
      * @var int
@@ -44,11 +41,28 @@ class Policy extends BaseEntity
     private $description;
 
     /**
-     * @var KingdomPolicy[]
+     * Individual resource multipliers.
      *
-     * @ORM\OneToMany(targetEntity="KingdomPolicy", mappedBy="policy")
+     * @var PolicyResourceModifier[]
+     *
+     * @ORM\OneToMany(targetEntity="PolicyResource", mappedBy="policy")
      */
-    private $kingdoms;
+    private $resources;
+
+    /**
+     * @var World
+     *
+     * @ORM\ManyToOne(targetEntity="CronkdBundle\Entity\World", inversedBy="policies")
+     */
+    private $world;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->resources = new ArrayCollection();
+    }
 
     /**
      * Get id
@@ -58,13 +72,6 @@ class Policy extends BaseEntity
     public function getId()
     {
         return $this->id;
-    }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->kingdoms = new ArrayCollection();
     }
 
     /**
@@ -116,37 +123,61 @@ class Policy extends BaseEntity
     }
 
     /**
-     * Add kingdom
+     * Add resource
      *
-     * @param KingdomPolicy $kingdom
+     * @param PolicyResource $resource
      *
      * @return Policy
      */
-    public function addKingdom(KingdomPolicy $kingdom)
+    public function addResource(PolicyResource $resource)
     {
-        $this->kingdoms[] = $kingdom;
+        $this->resources[] = $resource;
 
         return $this;
     }
 
     /**
-     * Remove kingdom
+     * Remove resource
      *
-     * @param KingdomPolicy $kingdom
+     * @param PolicyResource $resource
      */
-    public function removeKingdom(KingdomPolicy $kingdom)
+    public function removeResource(PolicyResource $resource)
     {
-        $this->kingdoms->removeElement($kingdom);
+        $this->resources->removeElement($resource);
     }
 
     /**
-     * Get kingdoms
+     * Get resources
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getKingdoms()
+    public function getResources()
     {
-        return $this->kingdoms;
+        return $this->resources;
+    }
+
+    /**
+     * Set world
+     *
+     * @param World $world
+     *
+     * @return Policy
+     */
+    public function setWorld(World $world = null)
+    {
+        $this->world = $world;
+
+        return $this;
+    }
+
+    /**
+     * Get world
+     *
+     * @return World
+     */
+    public function getWorld()
+    {
+        return $this->world;
     }
 
     /**
@@ -155,5 +186,29 @@ class Policy extends BaseEntity
     public function __toString()
     {
         return $this->getName();
+    }
+
+    /**
+     * Set netWorthMultiplier
+     *
+     * @param float $netWorthMultiplier
+     *
+     * @return Policy
+     */
+    public function setNetWorthMultiplier($netWorthMultiplier)
+    {
+        $this->netWorthMultiplier = $netWorthMultiplier;
+
+        return $this;
+    }
+
+    /**
+     * Get netWorthMultiplier
+     *
+     * @return float
+     */
+    public function getNetWorthMultiplier()
+    {
+        return $this->netWorthMultiplier;
     }
 }

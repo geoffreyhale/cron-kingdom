@@ -6,6 +6,7 @@
 
             <ul class="nav nav-pills nav-stacked">
                 <li role="presentation" {{ tab == 'world' ? 'class="active"' : '' }}><a href="#settings" data-toggle="tab">World Settings</a></li>
+                <li role="presentation" {{ tab == 'policies' ? 'class="active"' : '' }}><a href="#policies" data-toggle="tab">Policies</a></li>
                 <li role="presentation" {{ tab == 'resources' ? 'class="active"' : '' }}><a href="#resources" data-toggle="tab">Resources</a></li>
             </ul>
         </div>
@@ -19,6 +20,16 @@
                     </div>
                     <h2>World Settings</h2>
                     {% include '@Cronkd/World/partials/overviewSection.html.twig' %}
+                </div>
+
+                <div class="tab-pane {{ tab == 'policies' ? 'active' : '' }}" id="policies">
+                    {% if not world.isInactive %}
+                        <div class="pull-right">
+                            <a class="btn btn-info" href="{{ path('policy_create', {'id': world.id}) }}"><i class="fa fa-plus"></i> Add</a>
+                        </div>
+                    {% endif %}
+                    <h2>Policies</h2>
+                    {% include '@Cronkd/World/partials/policiesSection.html.twig' %}
                 </div>
 
                 <div class="tab-pane {{ tab == 'resources' ? 'active' : '' }}" id="resources">

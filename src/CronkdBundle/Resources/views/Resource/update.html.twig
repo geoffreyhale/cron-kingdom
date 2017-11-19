@@ -6,10 +6,10 @@
 
             <ol class="breadcrumb">
                 <li><a href="{{ path('world_configure', {'world': world.id}) }}">Configure {{ world.name }}</a></li>
-                <li class="active">Update {{ resource.name }}</li>
+                <li class="active">Update {{ resource.name }} Resource</li>
             </ol>
 
-            <h1>Update {{ resource.name }}</h1>
+            <h1>Update {{ resource.name }} Resource</h1>
             {% include 'CronkdBundle:Resource/partials:form.html.twig' with {'action': 'Update'} %}
 
             <div class="pull-right">

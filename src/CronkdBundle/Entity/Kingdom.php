@@ -1,6 +1,7 @@
 <?php
 namespace CronkdBundle\Entity;
 
+use CronkdBundle\Entity\Policy\PolicyInstance;
 use CronkdBundle\Entity\Resource\Resource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -115,9 +116,9 @@ class Kingdom extends BaseEntity
     private $queues;
 
     /**
-     * @var Policy[]
+     * @var PolicyInstance[]
      *
-     * @ORM\OneToMany(targetEntity="KingdomPolicy", mappedBy="kingdom")
+     * @ORM\OneToMany(targetEntity="CronkdBundle\Entity\Policy\PolicyInstance", mappedBy="kingdom")
      * @ORM\OrderBy({"createdAt": "DESC"})
      */
     private $policies;
@@ -127,6 +128,7 @@ class Kingdom extends BaseEntity
      */
     public function __construct()
     {
+        $this->policies  = new ArrayCollection();
         $this->queues    = new ArrayCollection();
         $this->resources = new ArrayCollection();
     }
@@ -489,11 +491,11 @@ class Kingdom extends BaseEntity
     /**
      * Add policy
      *
-     * @param KingdomPolicy $policy
+     * @param PolicyInstance $policy
      *
      * @return Kingdom
      */
-    public function addPolicy(KingdomPolicy $policy)
+    public function addPolicy(PolicyInstance $policy)
     {
         $this->policies[] = $policy;
 
@@ -503,9 +505,9 @@ class Kingdom extends BaseEntity
     /**
      * Remove policy
      *
-     * @param KingdomPolicy $policy
+     * @param PolicyInstance $policy
      */
-    public function removePolicy(KingdomPolicy $policy)
+    public function removePolicy(PolicyInstance $policy)
     {
         $this->policies->removeElement($policy);
     }
@@ -521,7 +523,7 @@ class Kingdom extends BaseEntity
     }
 
     /**
-     * @return KingdomPolicy|null
+     * @return PolicyInstance|null
      */
     public function getActivePolicy()
     {
@@ -529,10 +531,11 @@ class Kingdom extends BaseEntity
             return null;
         }
 
-        /** @var KingdomPolicy */
+        /** @var PolicyInstance */
         $activePolicy = $this->getPolicies()->first();
-        $now = new \DateTime();
-        if ($now > $activePolicy->getStartTime() && $now < $activePolicy->getEndTime()) {
+        $worldTick = $this->getWorld()->getTick();
+        $policyEndTick = $activePolicy->getStartTick() + $activePolicy->getTickDuration();
+        if ($worldTick >= $activePolicy->getStartTick() && $worldTick < $policyEndTick) {
             return $activePolicy;
         }
 

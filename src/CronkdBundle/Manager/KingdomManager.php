@@ -24,21 +24,23 @@ class KingdomManager
     private $em;
     /** @var ResourceManager  */
     private $resourceManager;
+    /** @var PolicyManager  */
+    private $policyManager;
     /** @var EventDispatcherInterface  */
     private $eventDispatcher;
-    /** @var array */
-    private $settings;
     /** @var NullLogger  */
     private $logger;
 
     public function __construct(
         EntityManagerInterface $em,
         ResourceManager $resourceManager,
+        PolicyManager $policyManager,
         EventDispatcherInterface $eventDispatcher
     ) {
         $this->em              = $em;
         $this->resourceManager = $resourceManager;
         $this->eventDispatcher = $eventDispatcher;
+        $this->policyManager   = $policyManager;
         $this->logger          = new NullLogger();
     }
 
@@ -141,7 +143,9 @@ class KingdomManager
         foreach ($housingResources as $resource) {
             $kingdomResourceSum = $this->em->getRepository(KingdomResource::class)
                 ->findSumOfSpecificResources($kingdom, [$resource->getId()]);
-            $capacity += ($kingdomResourceSum * $resource->getCapacity());
+            $resourceCapacity = ($kingdomResourceSum * $resource->getCapacity());
+            $capacityMultiplier = $this->policyManager->calculateCapacityMultiplier($kingdom, $resource);
+            $capacity += floor($resourceCapacity * $capacityMultiplier);
         }
 
         return $capacity;
@@ -194,7 +198,8 @@ class KingdomManager
 
     /**
      * @param Kingdom $kingdom
-     * @return int
+     * @return float|int
+     * @throws InvalidWorldSettingsException
      */
     public function incrementPopulation(Kingdom $kingdom)
     {
@@ -223,6 +228,19 @@ class KingdomManager
         $this->em->flush();
 
         return $birthedCivilians;
+    }
+
+    /**
+     * If a resource is added after the Kingdom has started, add it now.
+     *
+     * @param Kingdom $kingdom
+     */
+    public function syncResources(Kingdom $kingdom)
+    {
+        $resources = $this->resourceManager->getWorldResources($kingdom->getWorld());
+        foreach ($resources as $resource) {
+            $this->findOrCreateResource($kingdom, $resource);
+        }
     }
 
     /**

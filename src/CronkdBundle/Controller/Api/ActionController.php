@@ -93,6 +93,13 @@ class ActionController extends ApiController
         $outputQuantity = $quantity * $action->getOutputQuantity();
         $queueSize = $action->getQueueSize() + $this->calculateQueueModifier($kingdomState->getActivePolicyName(), $outputResource);
 
+        $policyManager = $this->get('cronkd.manager.policy');
+        $queueSizeModifier = $policyManager->calculateQueueSizeModifier($kingdom, $outputResource);
+        $queueSize += $queueSizeModifier;
+
+        $outputMultiplier = $policyManager->calculateOutputMultiplier($kingdom, $outputResource);
+        $outputQuantity = floor($outputQuantity * $outputMultiplier);
+
         $outputQueue = $queuePopulator->build(
             $kingdom,
             $kingdomOutputResource->getResource(),
@@ -108,8 +115,9 @@ class ActionController extends ApiController
 
         return new JsonResponse([
             'data' => [
-                'inputs' => $inputQueues,
-                'output' => $outputQueue,
+                'inputs'         => $inputQueues,
+                'output'         => $outputQueue,
+                'outputQuantity' => $outputQuantity,
             ],
         ]);
     }
@@ -121,6 +129,8 @@ class ActionController extends ApiController
      */
     private function calculateQueueModifier(string $policyName, Resource $resource)
     {
+        return 0;
+
         $queueLengthModifier = 0;
         if ($policyName == Policy::ECONOMIST) {
             if ($resource->getType()->getName() == ResourceType::POPULATION &&

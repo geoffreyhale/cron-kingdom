@@ -31,9 +31,7 @@
         <div class="col-sm-12">
             <div class="pull-left btn-group" role="group" aria-label="...">
             {% if results.error is not defined %}
-                {% if results.data.report.result %}
-
-                {% else %}
+                {% if results.data.report.result is defined %}
                     {% if rehackForm is not null %}
                         {{ form_start(rehackForm) }}
                         {{ form_row(rehackForm.target) }}

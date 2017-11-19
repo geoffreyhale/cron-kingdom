@@ -1,6 +1,7 @@
 <?php
 namespace CronkdBundle\Entity;
 
+use CronkdBundle\Entity\Policy\Policy;
 use CronkdBundle\Entity\Resource\Resource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -83,6 +84,16 @@ class World extends BaseEntity
     private $birthRate;
 
     /**
+     * Number of ticks a policy lasts.
+     *
+     * @var int
+     *
+     * @ORM\Column(name="policy_duration", type="integer")
+     * @Assert\Range(min=1, minMessage="Policy duration must be greater than zero.")"
+     */
+    private $policyDuration;
+
+    /**
      * Countdown till next tick.
      *
      * @var int
@@ -100,7 +111,16 @@ class World extends BaseEntity
     private $kingdoms;
 
     /**
+     * @var Policy[]
+     *
+     * @ORM\OneToMany(targetEntity="CronkdBundle\Entity\Policy\Policy", mappedBy="world")
+     * @ORM\OrderBy({"name" = "ASC"})
+     */
+    private $policies;
+
+    /**
      * @ORM\OneToMany(targetEntity="CronkdBundle\Entity\Resource\Resource", mappedBy="world")
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     private $resources;
 
@@ -110,6 +130,7 @@ class World extends BaseEntity
     public function __construct()
     {
         $this->kingdoms  = new ArrayCollection();
+        $this->policies  = new ArrayCollection();
         $this->resources = new ArrayCollection();
     }
 
@@ -332,6 +353,30 @@ class World extends BaseEntity
     }
 
     /**
+     * Set policyDuration
+     *
+     * @param integer $policyDuration
+     *
+     * @return World
+     */
+    public function setPolicyDuration($policyDuration)
+    {
+        $this->policyDuration = $policyDuration;
+
+        return $this;
+    }
+
+    /**
+     * Get policyDuration
+     *
+     * @return integer
+     */
+    public function getPolicyDuration()
+    {
+        return $this->policyDuration;
+    }
+
+    /**
      * Set minutesSinceLastTick
      *
      * @param integer $minutesSinceLastTick
@@ -412,6 +457,40 @@ class World extends BaseEntity
     public function getKingdoms()
     {
         return $this->kingdoms;
+    }
+
+    /**
+     * Add policy
+     *
+     * @param Policy $policy
+     *
+     * @return World
+     */
+    public function addPolicy(Policy $policy)
+    {
+        $this->policies[] = $policy;
+
+        return $this;
+    }
+
+    /**
+     * Remove policy
+     *
+     * @param Policy $policy
+     */
+    public function removePolicy(Policy $policy)
+    {
+        $this->policies->removeElement($policy);
+    }
+
+    /**
+     * Get policies
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getPolicies()
+    {
+        return $this->policies;
     }
 
     /**

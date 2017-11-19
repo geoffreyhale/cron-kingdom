@@ -136,7 +136,9 @@ class AttackingService
                 throw new NotEnoughResourcesException($resourceName);
             }
 
-            $attackPower += ($quantity * $kingdomResource->getResource()->getAttack());
+            $resourceAttackPower = ($quantity * $kingdomResource->getResource()->getAttack());
+            $attackPowerMultiplier = $this->policyManager->calculateAttackMultiplier($kingdom, $resource);
+            $attackPower += ($resourceAttackPower * $attackPowerMultiplier);
         }
 
         return $attackPower;
@@ -149,23 +151,20 @@ class AttackingService
      */
     private function getArmyDefensePower(Kingdom $kingdom)
     {
-        $defendingPower = 0;
+        $defensePower = 0;
         $resources = $this->resourceManager->getWorldResources($kingdom->getWorld());
 
         /** @var Resource $resource */
         foreach ($resources as $resource) {
             if ($resource->getDefense() > 0) {
                 $kingdomResource = $this->kingdomManager->lookupResource($kingdom, $resource->getName());
-                $defendingPower += ($resource->getDefense() * $kingdomResource->getQuantity());
+                $defensePowerMultiplier = $this->policyManager->calculateDefenseMultiplier($kingdom, $resource);
+                $resourceDefensePower = ($resource->getDefense() * $kingdomResource->getQuantity());
+                $defensePower += ($resourceDefensePower * $defensePowerMultiplier);
             }
         }
 
-        $kingdomState = $this->kingdomManager->generateKingdomState($kingdom);
-        if (Policy::DEFENDER == $kingdomState->getActivePolicyName()) {
-            $defendingPower *= Policy::DEFENDER_BONUS;
-        }
-
-        return $defendingPower;
+        return $defensePower;
     }
 
     /**
@@ -189,12 +188,6 @@ class AttackingService
      */
     private function awardResources(AttackReport $report, Kingdom $kingdom, Kingdom $targetKingdom)
     {
-        $kingdomState = $this->kingdomManager->generateKingdomState($kingdom);
-        $housingPercentage = 1;
-        if ($kingdomState->getActivePolicyName() == Policy::WARMONGER) {
-            $housingPercentage *= Policy::WARMONGER_BONUS;
-        }
-
         $resources = $this->resourceManager->getWorldResources($kingdom->getWorld());
         /** @var Resource $resource */
         foreach ($resources as $resource) {
@@ -202,6 +195,10 @@ class AttackingService
             if ($resource->getSpoilOfWar()) {
                 $percentage = $resource->getSpoilOfWarCapturePercentage();
             }
+
+            $attackerPercentage = $this->policyManager->calculateAttackerSpoilOfWarPercentageMultiplier($kingdom, $resource);
+            $defenderPercentage = $this->policyManager->calculateDefenderSpoilOfWarPercentageMultiplier($targetKingdom, $resource);
+            $percentage = $percentage + $attackerPercentage - $defenderPercentage;
 
             if ($percentage > 0) {
                 $this->awardResource($report, $kingdom, $targetKingdom, $resource->getName(), $percentage);

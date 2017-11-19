@@ -2,7 +2,7 @@
 namespace CronkdBundle\Model;
 
 use CronkdBundle\Entity\Kingdom;
-use CronkdBundle\Entity\KingdomPolicy;
+use CronkdBundle\Entity\PolicyInstance;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Exceptions\KingdomDoesNotHaveResourceException;
@@ -24,7 +24,7 @@ class KingdomState
 
     public function __construct(Kingdom $kingdom)
     {
-        $this->kingdom  = $kingdom;
+        $this->kingdom = $kingdom;
     }
 
     /**
@@ -187,7 +187,7 @@ class KingdomState
     }
 
     /**
-     * @return KingdomPolicy|null
+     * @return PolicyInstance|null
      */
     public function getActivePolicy()
     {
@@ -207,8 +207,18 @@ class KingdomState
      */
     public function getActivePolicyEndDiff()
     {
-        if (null !== $this->kingdom->getActivePolicy()) {
-            return $this->kingdom->getActivePolicy()->getEndTime()->diff(new \DateTime())->format('%h:%I');
+        $activePolicy = $this->kingdom->getActivePolicy();
+        $world = $this->kingdom->getWorld();
+        if (null !== $activePolicy) {
+            $endTick = $activePolicy->getStartTick() + $activePolicy->getTickDuration();
+            $ticksLeft = $endTick - $this->kingdom->getWorld()->getTick();
+            $minutesToEndTick = $world->getTickInterval() * $ticksLeft + ($world->getTickInterval() - $world->getMinutesSinceLastTick());
+
+            return (new \DateTime())
+                ->add(new \DateInterval('PT'.$minutesToEndTick.'M'))
+                ->diff(new \DateTime())
+                ->format('%dd, %hh, %im')
+            ;
         }
 
         return '';
@@ -268,5 +278,37 @@ class KingdomState
     public function getNotificationCount()
     {
         return $this->notificationCount;
+    }
+
+    /**
+     * @return int
+     */
+    public function getModifiedAttackPower()
+    {
+        $attack = $this->kingdom->getAttack();
+
+        $activePolicy = $this->kingdom->getActivePolicy();
+        if ($activePolicy) {
+            $attackMultiplier = ($activePolicy->getPolicy()->getAttackMultiplier() / 100);
+            $attack *= $attackMultiplier;
+        }
+
+        return floor($attack);
+    }
+
+    /**
+     * @return int
+     */
+    public function getModifiedDefensePower()
+    {
+        $defense = $this->kingdom->getDefense();
+
+        $activePolicy = $this->kingdom->getActivePolicy();
+        if ($activePolicy) {
+            $defenseMultiplier = ($activePolicy->getPolicy()->getDefenseMultiplier() / 100);
+            $defense *= $defenseMultiplier;
+        }
+
+        return floor($defense);
     }
 }

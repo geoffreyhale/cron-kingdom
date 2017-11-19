@@ -1,6 +1,8 @@
 <?php
 namespace CronkdBundle\Twig;
 
+use CronkdBundle\Entity\Resource\Resource;
+
 class CronkdExtension extends \Twig_Extension
 {
     public function getFilters()
@@ -13,6 +15,10 @@ class CronkdExtension extends \Twig_Extension
     public function filterNumber($number)
     {
         $modifiers = [
+            'S' => 1E24,
+            's' => 1E21,
+            'Q' => 1E18,
+            'q' => 1E15,
             'T' => 1E12,
             'B' => 1E9,
             'M' => 1E6,
@@ -35,9 +41,15 @@ class CronkdExtension extends \Twig_Extension
         ];
     }
 
-    public function getResourceIcon($resourceName)
+    public function getResourceIcon($resource)
     {
-        switch (strtolower($resourceName)) {
+        $resourceType = '';
+        if ($resource instanceof Resource) {
+            $resourceType = $resource->getType()->getName();
+            $resource = $resource->getName();
+        }
+
+        switch (strtolower($resource)) {
             case 'civilian':
                 return '<i class="fa fa-users fa-fw"></i> ';
             case 'housing':
@@ -56,6 +68,15 @@ class CronkdExtension extends \Twig_Extension
                 return '<i class="fa fa-user-secret fa-fw"></i> ';
             case 'trainer':
                 return '<i class="fa fa-male fa-fw"></i> ';
+        }
+
+        switch (strtolower($resourceType)) {
+            case 'material':
+                return '<i class="fa fa-cubes fa-fw"></i> ';
+            case 'building':
+                return '<i class="fa fa-home fa-fw"></i> ';
+            case 'population':
+                return '<i class="fa fa-users fa-fw"></i> ';
         }
 
         return '';

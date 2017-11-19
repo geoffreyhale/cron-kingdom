@@ -83,8 +83,6 @@ class ProbeController extends CronkdController
                 'kingdom'                     => $kingdom,
                 'kingdomState'                => $kingdomState,
                 'probeReport'                 => $probeAttempt,
-                //'formAttack'                  => ($formAttack === null ? null : $formAttack->createView()),
-                //'formAttackStrongDefense'     => ($formAttackStrongDefense === null ? null : $formAttackStrongDefense->createView()),
                 'rehackForm'                  => ($rehackForm === null ? null : $rehackForm->createView()),
                 'defenderBonusMilitaryToSend' => $defenderBonusMilitaryToSend,
                 'militaryToSend'              => $militaryToSend,

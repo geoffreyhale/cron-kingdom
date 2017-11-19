@@ -18,6 +18,7 @@ services:
         class: CronkdBundle\Service\ProbingService
         arguments:
             - "@doctrine.orm.default_entity_manager"
+            - "@cronkd.manager.policy"
             - "@event_dispatcher"
             - "@cronkd.manager.log"
 
@@ -54,6 +55,7 @@ services:
         arguments:
             - "@doctrine.orm.default_entity_manager"
             - "@cronkd.manager.resource"
+            - "@cronkd.manager.policy"
             - "@event_dispatcher"
         calls:
             - [setLogger, ["@logger"]]
