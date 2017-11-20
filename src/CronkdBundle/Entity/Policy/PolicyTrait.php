@@ -1,6 +1,8 @@
 <?php
 namespace CronkdBundle\Entity\Policy;
 
+use Symfony\Component\Validator\Constraints as Assert;
+
 trait PolicyTrait
 {
     /**
@@ -9,6 +11,8 @@ trait PolicyTrait
      * @var float
      *
      * @ORM\Column(name="output_multiplier", type="float")
+     *
+     * @Assert\Range(min=1, minMessage="Output multiplier must be at least 1.")
      */
     private $outputMultiplier = 100;
 
@@ -71,7 +75,7 @@ trait PolicyTrait
      *
      * @ORM\Column(name="spoil_of_war_attack_capture_multiplier", type="float")
      */
-    private $spoilOfWarAttackCaptureMultiplier = 100;
+    private $spoilOfWarAttackCaptureMultiplier = 0;
 
     /**
      * Defending spoil of war modifier as a multiplier.
@@ -80,7 +84,7 @@ trait PolicyTrait
      *
      * @ORM\Column(name="spoil_of_war_defense_capture_multiplier", type="float")
      */
-    private $spoilOfWarDefenseCaptureMultiplier = 100;
+    private $spoilOfWarDefenseCaptureMultiplier = 0;
 
     /**
      * Set outputMultiplier
