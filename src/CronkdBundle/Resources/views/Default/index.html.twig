@@ -17,11 +17,13 @@
                     <li role="presentation"><a href="#world" data-toggle="tab">World</a></li>
                     <li class="nav-divider"></li>
                     <li>
-                        {% if kingdomState.activePolicy is null %}
-                            <a href="{{ path('policy_select', {id: kingdom.id}) }}" class="btn btn-info">Select Policy</a>
-                        {% else %}
-                            <div><strong>{{ kingdomState.activePolicyName }}</strong></div>
-                            <div class="text-muted"><em>time remaining: {{ kingdomState.activePolicyEndDiff }}</em></div>
+                        {% if worldState.policies|length > 0 %}
+                            {% if kingdomState.activePolicy is null %}
+                                <a href="{{ path('policy_select', {id: kingdom.id}) }}" class="btn btn-info">Select Policy</a>
+                            {% else %}
+                                <div><strong>{{ kingdomState.activePolicyName }}</strong></div>
+                                <div class="text-muted"><em>time remaining: {{ kingdomState.activePolicyEndDiff }}</em></div>
+                            {% endif %}
                         {% endif %}
                     </li>
                     {% if kingdomState.hasAvailableProbingResources %}

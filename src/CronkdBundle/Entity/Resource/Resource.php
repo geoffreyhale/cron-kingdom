@@ -47,7 +47,7 @@ class Resource extends BaseEntity
     /**
      * @var string
      *
-     * @ORM\Column(name="definition", type="string", length=255)
+     * @ORM\Column(name="description", type="string", length=255)
      */
     private $description;
 

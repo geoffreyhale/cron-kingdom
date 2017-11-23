@@ -12,6 +12,7 @@
             <h1>Update {{ resource.name }} Resource</h1>
             {% include 'CronkdBundle:Resource/partials:form.html.twig' with {'action': 'Update'} %}
 
+            {% if resource.canBeProduced %}
             <div class="pull-right">
                 <a href="{{ path('resource_action_create', {'id': resource.id}) }}" class="btn btn-info btn-sm"><i class="fa fa-plus"></i> Add</a>
             </div>
@@ -48,7 +49,7 @@
                 {% endfor %}
                 </tbody>
             </table>
-
+            {% endif %}
         </div>
     </div>
 {% endblock %}

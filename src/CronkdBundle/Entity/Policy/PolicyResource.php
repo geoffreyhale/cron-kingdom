@@ -97,4 +97,28 @@ class PolicyResource extends BaseEntity
     {
         return $this->policy;
     }
+
+    /**
+     * Set netWorthMultiplier
+     *
+     * @param float $netWorthMultiplier
+     *
+     * @return PolicyResource
+     */
+    public function setNetWorthMultiplier($netWorthMultiplier)
+    {
+        $this->netWorthMultiplier = $netWorthMultiplier;
+
+        return $this;
+    }
+
+    /**
+     * Get netWorthMultiplier
+     *
+     * @return float
+     */
+    public function getNetWorthMultiplier()
+    {
+        return $this->netWorthMultiplier;
+    }
 }

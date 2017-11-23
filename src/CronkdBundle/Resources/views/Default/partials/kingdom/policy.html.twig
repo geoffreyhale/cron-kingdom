@@ -1,4 +1,4 @@
-{% if kingdomState.activePolicy is null %}
+{% if worldState.policies|length > 0 and kingdomState.activePolicy is null %}
     <a href="{{ path('policy_select', {id: kingdom.id}) }}" class="btn btn-info">Select Policy</a>
 {% else %}
     <div><strong>{{ kingdomState.activePolicyName }}</strong></div>
