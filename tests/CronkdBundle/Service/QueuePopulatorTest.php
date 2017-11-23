@@ -200,6 +200,7 @@ class QueuePopulatorTest extends KernelTestCase
             $resource->setCapacity(0);
             $resource->setStartingAmount(100);
             $resource->setSpoilOfWar(true);
+            $resource->setDescription('Description');
             $this->em->persist($resource);
             $this->em->flush();
         }

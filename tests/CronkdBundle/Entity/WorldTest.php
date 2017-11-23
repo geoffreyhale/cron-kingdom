@@ -80,6 +80,23 @@ class WorldTest extends TestCase
     }
 
     /**
+     * @dataProvider isWorldActiveDataProvider
+     */
+    public function testIsWorldActive($start, $end, $isActive)
+    {
+        $world = new World();
+
+        if (null !== $start) {
+            $world->setStartTime($start);
+        }
+        if (null !== $end) {
+            $world->setEndTime($end);
+        }
+
+        $this->assertEquals($isActive, $world->isActive());
+    }
+
+    /**
      * @dataProvider isWorldUpcomingDataProvider
      */
     public function testIsWorldUpcoming($start, $end, $isActive)
@@ -130,7 +147,7 @@ class WorldTest extends TestCase
     /**
      * @dataProvider isWorldInactiveDataProvider
      */
-    public function testIsWorldInctive($start, $end, $isActive)
+    public function testIsWorldInactive($start, $end, $isActive)
     {
         $world = new World();
 
@@ -142,23 +159,6 @@ class WorldTest extends TestCase
         }
 
         $this->assertEquals($isActive, $world->isInactive());
-    }
-
-    /**
-     * @dataProvider isWorldActiveDataProvider
-     */
-    public function testIsWorldActive($start, $end, $isActive)
-    {
-        $world = new World();
-
-        if (null !== $start) {
-            $world->setStartTime($start);
-        }
-        if (null !== $end) {
-            $world->setEndTime($end);
-        }
-
-        $this->assertEquals($isActive, $world->isActive());
     }
 
     public function tickIntervalDataProvider()
@@ -185,5 +185,55 @@ class WorldTest extends TestCase
         $world->setTickInterval($input);
 
         $this->assertEquals($output, $world->getTickInterval());
+    }
+
+    public function readyToPerformTickDataProvider()
+    {
+        return [
+            [
+                new DateTime(),
+                11,
+                false,
+            ],
+            [
+                (new DateTime())->sub(new DateInterval('PT1M')),
+                1,
+                true,
+            ],
+            [
+                (new DateTime())->sub(new DateInterval('PT2M')),
+                1,
+                true,
+            ],
+            [
+                (new DateTime())->sub(new DateInterval('PT1M')),
+                10,
+                false,
+            ],
+            [
+                (new DateTime())->sub(new DateInterval('PT11M')),
+                10,
+                true,
+            ],
+            [
+                (new DateTime())->sub(new DateInterval('PT100M')),
+                1000,
+                false,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider readyToPerformTickDataProvider
+     */
+    public function testReadyToPerformTick($lastTickDate, $tickInterval, $intendedResult)
+    {
+        $world = new World();
+
+        $world->setLastTickTime($lastTickDate);
+        $world->setTickInterval($tickInterval);
+        $world->setLastTickTime($lastTickDate);
+
+        $this->assertEquals($intendedResult, $world->readyToPerformTick());
     }
 }

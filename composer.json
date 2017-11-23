@@ -17,7 +17,7 @@
         }
     },
     "require": {
-        "php": ">=5.5.9",
+        "php": ">=7.0",
         "cboden/ratchet": "^0.3.6",
         "doctrine/doctrine-bundle": "^1.6",
         "doctrine/doctrine-cache-bundle": "^1.2",
@@ -36,7 +36,7 @@
         "twig/twig": "^1.0||^2.0"
     },
     "require-dev": {
-        "doctrine/doctrine-fixtures-bundle": "^2.3",
+        "doctrine/doctrine-fixtures-bundle": "^2.4",
         "phpunit/phpunit": "~4.8",
         "sensio/generator-bundle": "^3.0",
         "symfony/phpunit-bridge": "^3.0"
