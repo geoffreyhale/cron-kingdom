@@ -19,3 +19,8 @@ monolog:
             level: debug
         console:
             type: console
+        tick:
+            type: stream
+            path: '%kernel.logs_dir%/%kernel.environment%.tick.log'
+            level: info
+            channels: ['!main']

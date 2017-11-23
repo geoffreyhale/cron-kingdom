@@ -8,6 +8,8 @@ services:
             - "@cronkd.manager.log"
             - "@event_dispatcher"
             - "@logger"
+        tags:
+            - { name: monolog.logger, channel: tick }
 
     cronkd.queue_populator:
         class: CronkdBundle\Service\QueuePopulator

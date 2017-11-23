@@ -28,14 +28,7 @@ class World extends BaseEntity
     /**
      * @ORM\Column(name="initialized", type="boolean", options={"default": 0})
      */
-    private $initialized;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="tick", type="bigint", options={"default": 1})
-     */
-    private $tick;
+    private $initialized = false;
 
     /**
      * @var string
@@ -64,6 +57,20 @@ class World extends BaseEntity
     private $endTime;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="tick", type="bigint")
+     */
+    private $tick = 0;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="last_tick_time", type="datetime", nullable=true)
+     */
+    private $lastTickTime = null;
+
+    /**
      * Tick interval in minutes.
      *
      * @var int
@@ -71,7 +78,7 @@ class World extends BaseEntity
      * @ORM\Column(name="tick_interval", type="integer")
      * @Assert\Range(min=1, minMessage="Interval must be greater than zero.")
      */
-    private $tickInterval;
+    private $tickInterval = 60;
 
     /**
      * Birth rate as a percentage.
@@ -81,7 +88,7 @@ class World extends BaseEntity
      * @ORM\Column(name="birth_rate", type="integer")
      * @Assert\Range(min=1, minMessage="Birth rate must be greater than zero.")
      */
-    private $birthRate;
+    private $birthRate = 1;
 
     /**
      * Number of ticks a policy lasts.
@@ -91,16 +98,7 @@ class World extends BaseEntity
      * @ORM\Column(name="policy_duration", type="integer")
      * @Assert\Range(min=1, minMessage="Policy duration must be greater than zero.")"
      */
-    private $policyDuration;
-
-    /**
-     * Countdown till next tick.
-     *
-     * @var int
-     *
-     * @ORM\Column(name="minutes_since_last_tick", type="integer")
-     */
-    private $minutesSinceLastTick;
+    private $policyDuration = 24;
 
     /**
      * @var Kingdom[]
@@ -169,20 +167,6 @@ class World extends BaseEntity
     }
 
     /**
-     * @ORM\PrePersist()
-     *
-     * @return World
-     */
-    public function setDefaultInitialized()
-    {
-        if (null === $this->getInitialized()) {
-            return $this->setInitialized(false);
-        }
-
-        return $this;
-    }
-
-    /**
      * Set tick
      *
      * @param integer $tick
@@ -192,37 +176,6 @@ class World extends BaseEntity
     public function setTick($tick)
     {
         $this->tick = $tick;
-
-        return $this;
-    }
-
-    /**
-     * @ORM\PrePersist()
-     */
-    public function setDefaultTick()
-    {
-        if (null === $this->tick) {
-            $this->setTick(0);
-        }
-    }
-
-    /**
-     * Get tick
-     *
-     * @return int
-     */
-    public function getTick()
-    {
-        return $this->tick;
-    }
-
-    /**
-     * @return World
-     */
-    protected function addTick()
-    {
-        $tick = $this->getTick();
-        $this->setTick(++$tick);
 
         return $this;
     }
@@ -300,6 +253,51 @@ class World extends BaseEntity
     }
 
     /**
+     * Get tick
+     *
+     * @return int
+     */
+    public function getTick()
+    {
+        return $this->tick;
+    }
+
+    /**
+     * @return World
+     */
+    protected function addTick()
+    {
+        $tick = $this->getTick();
+        $this->setTick(++$tick);
+
+        return $this;
+    }
+
+    /**
+     * Set tickTime
+     *
+     * @param \DateTime $lastTickTime
+     *
+     * @return World
+     */
+    public function setLastTickTime($lastTickTime)
+    {
+        $this->lastTickTime = $lastTickTime;
+
+        return $this;
+    }
+
+    /**
+     * Get tickTime
+     *
+     * @return \DateTime
+     */
+    public function getLastTickTime()
+    {
+        return $this->lastTickTime;
+    }
+
+    /**
      * Set tickInterval
      * 1 minute is the minimum value for tick interval.
      *
@@ -374,55 +372,6 @@ class World extends BaseEntity
     public function getPolicyDuration()
     {
         return $this->policyDuration;
-    }
-
-    /**
-     * Set minutesSinceLastTick
-     *
-     * @param integer $minutesSinceLastTick
-     *
-     * @return World
-     */
-    public function setMinutesSinceLastTick($minutesSinceLastTick)
-    {
-        $this->minutesSinceLastTick = $minutesSinceLastTick;
-
-        return $this;
-    }
-
-    /**
-     * Get minutesSinceLastTick
-     *
-     * @return integer
-     */
-    public function getMinutesSinceLastTick()
-    {
-        return $this->minutesSinceLastTick;
-    }
-
-    /**
-     * @ORM\PrePersist()
-     *
-     * @return World
-     */
-    public function setDefaultMinutesSinceLastTick()
-    {
-        if (null === $this->getMinutesSinceLastTick()) {
-            return $this->setMinutesSinceLastTick(0);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return World
-     */
-    protected function addMinuteSinceLastTick()
-    {
-        $min = $this->getMinutesSinceLastTick();
-        $this->setMinutesSinceLastTick(++$min);
-
-        return $this;
     }
 
     /**
@@ -571,11 +520,7 @@ class World extends BaseEntity
      */
     public function shouldBeInitialized()
     {
-        if (!$this->getInitialized() && $this->isActive()) {
-            return true;
-        }
-
-        return false;
+        return !$this->getInitialized() && $this->isActive();
     }
 
     /**
@@ -597,7 +542,13 @@ class World extends BaseEntity
      */
     public function readyToPerformTick()
     {
-        return $this->getMinutesSinceLastTick() >= $this->getTickInterval();
+        if (null === $this->getLastTickTime()) {
+            return true;
+        }
+
+        $diff = (new \DateTime())->diff($this->getLastTickTime());
+
+        return $diff->i >= $this->getTickInterval();
     }
 
     /**
@@ -605,18 +556,8 @@ class World extends BaseEntity
      */
     public function performTick()
     {
+        $this->setLastTickTime(new \DateTime());
         $this->addTick();
-        $this->setMinutesSinceLastTick(0);
-
-        return $this;
-    }
-
-    /**
-     * @return World
-     */
-    public function incrementTimeSinceLastTick()
-    {
-        $this->addMinuteSinceLastTick();
 
         return $this;
     }

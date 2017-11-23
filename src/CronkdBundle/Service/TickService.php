@@ -51,8 +51,6 @@ class TickService
      */
     public function attemptTick(World $world)
     {
-        $world->incrementTimeSinceLastTick();
-
         $civilianResource = $this->resourceManager->getCivilianResources();
         if (null === $civilianResource) {
             throw new InvalidWorldSettingsException("No base population resource is configured!");
