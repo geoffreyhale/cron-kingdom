@@ -212,7 +212,8 @@ class KingdomState
         if (null !== $activePolicy) {
             $endTick = $activePolicy->getStartTick() + $activePolicy->getTickDuration();
             $ticksLeft = $endTick - $this->kingdom->getWorld()->getTick();
-            $minutesToEndTick = $world->getTickInterval() * $ticksLeft + ($world->getTickInterval() - $world->getMinutesSinceLastTick());
+            $minutesToEndTick = $world->getTickInterval() * $ticksLeft +
+                ($world->getTickInterval() - $world->getLastTickTime()->diff(new \DateTime())->i);
 
             return (new \DateTime())
                 ->add(new \DateInterval('PT'.$minutesToEndTick.'M'))
