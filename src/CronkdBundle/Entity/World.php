@@ -548,7 +548,11 @@ class World extends BaseEntity
 
         $diff = (new \DateTime())->diff($this->getLastTickTime());
 
-        return $diff->i >= $this->getTickInterval();
+        $minutes = $diff->days * 24 * 60;
+        $minutes += $diff->h * 60;
+        $minutes += $diff->i;
+
+        return $minutes >= $this->getTickInterval();
     }
 
     /**
