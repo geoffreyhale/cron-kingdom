@@ -21,3 +21,23 @@ monolog:
         console:
             type: console
             channels: ['!event', '!doctrine']
+        tick:
+            type:       stream
+            path:       '%kernel.logs_dir%/%kernel.environment%.tick.log'
+            level:      info
+            channels:   ['!main']
+        slack_error:
+            type:       slack
+            token:      "%slack_token%"
+            channel:    "%slack_error_channel%"
+            bot_name:   "%slack_bot_name%"
+            icon_emoji: "%slack_bot_emoji%"
+            level:      error
+            channels:   ['!main']
+        slack_log:
+            type:       slack
+            token:      "%slack_token%"
+            channel:    "%slack_app_channel%"
+            bot_name:   "%slack_bot_name%"
+            icon_emoji: "%slack_bot_emoji%"
+            level:      notice
