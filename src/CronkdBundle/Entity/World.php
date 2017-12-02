@@ -64,23 +64,6 @@ class World extends BaseEntity
     private $tick = 0;
 
     /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="last_tick_time", type="datetime", nullable=true)
-     */
-    private $lastTickTime = null;
-
-    /**
-     * Tick interval in minutes.
-     *
-     * @var int
-     *
-     * @ORM\Column(name="tick_interval", type="integer")
-     * @Assert\Range(min=1, minMessage="Interval must be greater than zero.")
-     */
-    private $tickInterval = 60;
-
-    /**
      * Birth rate as a percentage.
      *
      * @var int
@@ -271,59 +254,6 @@ class World extends BaseEntity
         $this->setTick(++$tick);
 
         return $this;
-    }
-
-    /**
-     * Set tickTime
-     *
-     * @param \DateTime $lastTickTime
-     *
-     * @return World
-     */
-    public function setLastTickTime($lastTickTime)
-    {
-        $this->lastTickTime = $lastTickTime;
-
-        return $this;
-    }
-
-    /**
-     * Get tickTime
-     *
-     * @return \DateTime
-     */
-    public function getLastTickTime()
-    {
-        return $this->lastTickTime;
-    }
-
-    /**
-     * Set tickInterval
-     * 1 minute is the minimum value for tick interval.
-     *
-     * @param integer $tickInterval
-     *
-     * @return World
-     */
-    public function setTickInterval(int $tickInterval)
-    {
-        if (0 >= $tickInterval) {
-            $tickInterval = 1;
-        }
-
-        $this->tickInterval = $tickInterval;
-
-        return $this;
-    }
-
-    /**
-     * Get tickInterval
-     *
-     * @return integer
-     */
-    public function getTickInterval()
-    {
-        return $this->tickInterval;
     }
 
     /**
@@ -538,29 +468,10 @@ class World extends BaseEntity
     }
 
     /**
-     * @return bool
-     */
-    public function readyToPerformTick()
-    {
-        if (null === $this->getLastTickTime()) {
-            return true;
-        }
-
-        $diff = (new \DateTime())->diff($this->getLastTickTime());
-
-        $minutes = $diff->days * 24 * 60;
-        $minutes += $diff->h * 60;
-        $minutes += $diff->i;
-
-        return $minutes >= $this->getTickInterval();
-    }
-
-    /**
      * @return World
      */
     public function performTick()
     {
-        $this->setLastTickTime(new \DateTime());
         $this->addTick();
 
         return $this;

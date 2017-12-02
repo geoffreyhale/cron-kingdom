@@ -62,15 +62,6 @@ class TickService
             return;
         }
 
-        if (!$world->readyToPerformTick()) {
-            $this->logger->info($world->getName() . " world is not ready to perform tick");
-
-            $this->em->persist($world);
-            $this->em->flush();
-
-            return;
-        }
-
         $this->logger->info($world->getName() . ' world starting tick ' . $world->getTick());
 
         $queues = $this->em->getRepository(Queue::class)->findNextByWorld($world);
