@@ -542,32 +542,17 @@ class World extends BaseEntity
      */
     public function readyToPerformTick()
     {
-        /**
-         * @todo
-         *
-         * Replace this hack (return true)
-         * With working code (fix the commented code)
-         * Or delete this function (if it's safe to do so).
-         *
-         * Currently commented code always increased the base last tick time minute by at least 1 cron length.
-         * Example, the tick process resolves some seconds or minutes after the hour and saves that as last tick time.
-         * The next tick would not run until at least an hour after that.
-         *
-         * We need ticks to start and resolve as close to the exact hour, every hour, as possible.
-         */
-        return true; //@todo this is temporary; code below always increases lastTickTime minute by at least 1 cron length
+        if (null === $this->getLastTickTime()) {
+            return true;
+        }
 
-//        if (null === $this->getLastTickTime()) {
-//            return true;
-//        }
-//
-//        $diff = (new \DateTime())->diff($this->getLastTickTime());
-//
-//        $minutes = $diff->days * 24 * 60;
-//        $minutes += $diff->h * 60;
-//        $minutes += $diff->i;
-//
-//        return $minutes >= $this->getTickInterval();
+        $diff = (new \DateTime())->diff($this->getLastTickTime());
+
+        $minutes = $diff->days * 24 * 60;
+        $minutes += $diff->h * 60;
+        $minutes += $diff->i;
+
+        return $minutes >= $this->getTickInterval();
     }
 
     /**
