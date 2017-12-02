@@ -33,4 +33,4 @@ security:
         - { path: ^/admin/, role: ROLE_ADMIN }
         - { path: ^/api/, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/help, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/, role: IS_AUTHENTICATED_FULLY }
+        - { path: ^/, role: IS_AUTHENTICATED_REMEMBERED }
