@@ -84,11 +84,11 @@ services:
 
     # Listeners
     cronkd.listener.elo:
-            class: CronkdBundle\Listener\EloListener
-            arguments:
-                - "@doctrine.orm.default_entity_manager"
-            tags:
-                - {name: kernel.event_listener, event: event.attack, method: onAttack}
+        class: CronkdBundle\Listener\EloListener
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
+        tags:
+            - {name: kernel.event_listener, event: event.attack, method: onAttack}
 
     cronkd.listener.kingdom_cached_stats:
         class: CronkdBundle\Listener\KingdomCachedStatsListener

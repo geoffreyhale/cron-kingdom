@@ -62,7 +62,7 @@ class TickService
             return;
         }
 
-        $this->logger->info($world->getName() . ' world starting tick ' . $world->getTick());
+        $this->logger->notice('World ' . $world->getName() . ' starting tick ' . ($world->getTick()+1));
 
         $queues = $this->em->getRepository(Queue::class)->findNextByWorld($world);
         $this->logger->info('Found ' . count($queues) . ' queues to parse');
@@ -106,6 +106,6 @@ class TickService
 
         $event = new WorldTickEvent($world);
         $this->eventDispatcher->dispatch('event.world_tick', $event);
-        $this->logger->info('Completed tick ' . $world->getTick() . ' for world ' . $world->getName());
+        $this->logger->notice('World ' . $world->getName() . ' completed tick ' . $world->getTick());
     }
 }

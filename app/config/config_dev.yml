@@ -17,15 +17,7 @@ monolog:
             type: stream
             path: '%kernel.logs_dir%/%kernel.environment%.log'
             level: debug
-            channels: ['!event']
+            channels: ['!event', "!tick"]
         console:
             type: console
             channels: ['!event', '!doctrine']
-        tick:
-            type: stream
-            path: '%kernel.logs_dir%/%kernel.environment%.tick.log'
-            level: info
-            channels: ['!main']
-
-#swiftmailer:
-#    delivery_addresses: ['me@example.com']
