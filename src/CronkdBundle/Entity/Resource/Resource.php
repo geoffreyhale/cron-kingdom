@@ -55,7 +55,6 @@ class Resource extends BaseEntity
      * @var int
      *
      * @ORM\Column(name="value", type="integer")
-     * @Jms\Expose()
      * @Assert\Range(min=0, minMessage="Value cannot be negative")
      */
     private $value = 0;
@@ -64,8 +63,6 @@ class Resource extends BaseEntity
      * @var boolean
      *
      * @ORM\Column(name="can_be_probed", type="boolean")
-     *
-     * @Jms\Expose()
      */
     private $canBeProbed = false;
 
@@ -73,8 +70,6 @@ class Resource extends BaseEntity
      * @var boolean
      *
      * @ORM\Column(name="can_be_produced", type="boolean")
-     *
-     * @Jms\Expose()
      */
     private $canBeProduced = false;
 
@@ -82,7 +77,6 @@ class Resource extends BaseEntity
      * @var int
      *
      * @ORM\Column(name="probe_power", type="integer")
-     * @Jms\Expose()
      * @Assert\Range(min=0, minMessage="Probe Power cannot be negative")
      */
     private $probePower = 0;
@@ -91,7 +85,6 @@ class Resource extends BaseEntity
      * @var int
      *
      * @ORM\Column(name="capacity", type="integer")
-     * @Jms\Expose()
      * @Assert\Range(min=0, minMessage="Capacity cannot be negative")
      */
     private $capacity = 0;
@@ -100,7 +93,6 @@ class Resource extends BaseEntity
      * @var int
      *
      * @ORM\Column(name="attack", type="integer")
-     * @Jms\Expose()
      * @Assert\Range(min=0, minMessage="Attack Power cannot be negative")
      */
     private $attack = 0;
@@ -109,7 +101,6 @@ class Resource extends BaseEntity
      * @var int
      *
      * @ORM\Column(name="defense", type="integer")
-     * @Jms\Expose()
      * @Assert\Range(min=0, minMessage="Defense Power cannot be negative")
      */
     private $defense = 0;
@@ -118,7 +109,6 @@ class Resource extends BaseEntity
      * @var int
      *
      * @ORM\Column(name="starting_amount", type="integer")
-     * @Jms\Expose()
      * @Assert\Range(min=0, minMessage="Starting amount cannot be negative")
      */
     private $startingAmount = 0;
@@ -127,8 +117,6 @@ class Resource extends BaseEntity
      * @var boolean
      *
      * @ORM\Column(name="spoil_of_war", type="boolean")
-     *
-     * @Jms\Expose()
      */
     private $spoilOfWar = false;
 
@@ -145,6 +133,8 @@ class Resource extends BaseEntity
      * @var string
      *
      * @ORM\Column(name="icon", type="string", length=100)
+     *
+     * @Jms\Expose()
      */
     private $icon;
 

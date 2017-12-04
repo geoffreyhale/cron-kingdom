@@ -47,6 +47,10 @@ class CronkdExtension extends \Twig_Extension
             if (!empty($resource->getIcon())) {
                 return '<i class="fa fa-fw fa-' . $resource->getIcon() . '"></i> ';
             }
+        } elseif (is_array($resource)) {
+            if (isset($resource['icon']) && !empty($resource['icon'])) {
+                return '<i class="fa fa-fw fa-' . $resource['icon'] . '"></i> ';
+            }
         }
 
         return '<i class="fa fa-fw fa-users"></i> ';

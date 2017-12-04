@@ -107,11 +107,7 @@ class ActionController extends ApiController
             $outputQuantity
         );
 
-        $this->get('cronkd.manager.log')->createLog(
-            $kingdom,
-            Log::TYPE_ACTION,
-            $action->getVerb() . ' ' . $quantity . ' ' . $outputResourceObj->getName()
-        );
+        $this->get('cronkd.manager.log')->logQueueResource($kingdom, $kingdomOutputResource->getResource(), $outputQuantity);
 
         return new JsonResponse([
             'data' => [

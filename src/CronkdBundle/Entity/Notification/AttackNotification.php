@@ -1,16 +1,16 @@
 <?php
-namespace CronkdBundle\Entity;
+namespace CronkdBundle\Entity\Notification;
 
+use CronkdBundle\Entity\Kingdom;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Jms;
 
 /**
- * @ORM\Table(name="attack_log")
- * @ORM\Entity(repositoryClass="CronkdBundle\Repository\AttackLogRepository")
+ * @ORM\Entity()
  *
  * @Jms\ExclusionPolicy("all")
  */
-class AttackLog extends BaseEntity
+class AttackNotification extends Notification
 {
     /**
      * @var int
@@ -24,13 +24,6 @@ class AttackLog extends BaseEntity
     /**
      * @var int
      *
-     * @ORM\Column(name="tick", type="integer")
-     */
-    private $tick;
-
-    /**
-     * @var int
-     *
      * @ORM\Column(name="success", type="boolean")
      */
     private $success;
@@ -38,18 +31,10 @@ class AttackLog extends BaseEntity
     /**
      * @var Kingdom
      *
-     * @ORM\ManyToOne(targetEntity="Kingdom")
+     * @ORM\ManyToOne(targetEntity="CronkdBundle\Entity\Kingdom")
      * @ORM\JoinColumn(name="attacker_id", referencedColumnName="id")
      */
     private $attacker;
-
-    /**
-     * @var Kingdom
-     *
-     * @ORM\ManyToOne(targetEntity="Kingdom")
-     * @ORM\JoinColumn(name="defender_id", referencedColumnName="id")
-     */
-    private $defender;
 
     /**
      * Get id
@@ -62,35 +47,11 @@ class AttackLog extends BaseEntity
     }
 
     /**
-     * Set tick
-     *
-     * @param integer $tick
-     *
-     * @return Queue
-     */
-    public function setTick($tick)
-    {
-        $this->tick = $tick;
-
-        return $this;
-    }
-
-    /**
-     * Get tick
-     *
-     * @return int
-     */
-    public function getTick()
-    {
-        return $this->tick;
-    }
-
-    /**
      * Set success
      *
      * @param boolean $success
      *
-     * @return AttackLog
+     * @return AttackNotification
      */
     public function setSuccess($success)
     {
@@ -114,7 +75,7 @@ class AttackLog extends BaseEntity
      *
      * @param Kingdom $attacker
      *
-     * @return AttackLog
+     * @return AttackNotification
      */
     public function setAttacker(Kingdom $attacker = null)
     {
@@ -131,29 +92,5 @@ class AttackLog extends BaseEntity
     public function getAttacker()
     {
         return $this->attacker;
-    }
-
-    /**
-     * Set defender
-     *
-     * @param Kingdom $defender
-     *
-     * @return AttackLog
-     */
-    public function setDefender(Kingdom $defender = null)
-    {
-        $this->defender = $defender;
-
-        return $this;
-    }
-
-    /**
-     * Get defender
-     *
-     * @return Kingdom
-     */
-    public function getDefender()
-    {
-        return $this->defender;
     }
 }

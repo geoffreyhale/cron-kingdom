@@ -1,9 +1,7 @@
 <?php
 namespace CronkdBundle\Service;
 
-use CronkdBundle\Entity\Log;
 use CronkdBundle\Entity\Queue;
-use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Entity\World;
 use CronkdBundle\Event\WorldTickEvent;
 use CronkdBundle\Exceptions\InvalidWorldSettingsException;
@@ -52,8 +50,8 @@ class TickService
      */
     public function attemptTick(World $world)
     {
-        $civilianResource = $this->resourceManager->getCivilianResources();
-        if (null === $civilianResource) {
+        $populationResource = $this->resourceManager->getBasePopulationResource();
+        if (null === $populationResource) {
             throw new InvalidWorldSettingsException("No base population resource is configured!");
         }
         
@@ -72,17 +70,13 @@ class TickService
         foreach ($queues as $queue) {
             $this->logger->info('Queue is for Kingdom ' . $queue->getKingdom()->getName() . ' for ' . $queue->getResource()->getName());
 
-            $kingdomResource = $this->kingdomManager->findOrCreateResource($queue->getKingdom(), $queue->getResource());
+            $kingdomResource = $this->kingdomManager->findOrCreateKingdomResource($queue->getKingdom(), $queue->getResource());
             $quantity = $queue->getQuantity();
             $kingdomResource->addQuantity($quantity);
             $this->em->persist($kingdomResource);
-
+            
             if (0 < $quantity) {
-                $this->logManager->createLog(
-                    $queue->getKingdom(),
-                    Log::TYPE_TICK,
-                    $quantity . ' ' . $queue->getResource()->getName() . ' are now available'
-                );
+                $this->logManager->logDequeueResource($queue);
             }
             $this->logger->info('Adding ' . $quantity . ' ' . $queue->getResource()->getName() . '; New balance is ' . $kingdomResource->getQuantity());
         }
@@ -91,11 +85,7 @@ class TickService
             $this->kingdomManager->syncResources($kingdom);
             if (!$this->kingdomManager->isAtMaxPopulation($kingdom)) {
                 $addition = $this->kingdomManager->incrementPopulation($kingdom);
-                $this->logManager->createLog(
-                    $kingdom,
-                    Log::TYPE_TICK,
-                    'Gave birth to ' . $addition . ' ' . $civilianResource->getName()
-                );
+                $this->logManager->logBirthEvent($kingdom, $populationResource, $addition);
                 $this->logger->info($kingdom->getName() . ' kingdom is not at capacity, adding ' . $addition . ' to population');
             } else {
                 $this->logger->info($kingdom->getName() . ' is at capacity');

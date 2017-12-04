@@ -36,7 +36,8 @@
                             <a href="{{ path('attack') }}" class="btn btn-danger">Attack</a>
                         </li>
                     {% endif %}
-                    <li><a href="{{ path('log_index', {id: kingdom.id}) }}" class="btn btn-default">Event Log{% if kingdomState.notificationCount > 0 %} <span class="badge">{{ kingdomState.notificationCount }}</span>{% endif %}</a></li>
+                    <li><a href="{{ path('log_index', {id: kingdom.id}) }}" class="btn btn-default">Logs</a></li>
+                    <li><a href="{{ path('notification_index', {id: kingdom.id}) }}" class="btn btn-default">Notifications{% if kingdomState.notificationCount > 0 %} <span class="badge">{{ kingdomState.notificationCount }}</span>{% endif %}</a></li>
                 </ul>
             </div>
 

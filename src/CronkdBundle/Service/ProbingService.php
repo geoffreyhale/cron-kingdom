@@ -44,8 +44,8 @@ class ProbingService
     public function probe(Kingdom $kingdom, Kingdom $target, $quantity)
     {
         $report = new ProbeReport();
-
-        if ($this->calculateProbeAttemptOutcome($quantity)) {
+        $outcome = $this->calculateProbeAttemptOutcome($quantity);
+        if ($outcome) {
             $probedResources = $this->em->getRepository(KingdomResource::class)
                 ->findResourcesThatMayBeProbed($target);
 
@@ -58,17 +58,7 @@ class ProbingService
             ]);
         }
 
-        $this->logManager->createLog(
-            $kingdom,
-            Log::TYPE_PROBE,
-            ($report->getResult() ? 'Successful' : 'Failed') . ' hacking attempt against ' . $target->getName()
-        );
-        $this->logManager->createLog(
-            $target,
-            Log::TYPE_PROBE,
-            ($report->getResult() ? 'Successful hacking attempt from another kingdom' : 'Failed hacking attempt from ' . $kingdom->getName()),
-            true
-        );
+        $this->logManager->logProbeResult($kingdom, $target, $report);
 
         $event = new ProbeEvent($kingdom);
         $this->eventDispatcher->dispatch('event.probe', $event);

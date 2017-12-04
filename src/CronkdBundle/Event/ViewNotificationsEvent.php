@@ -4,7 +4,7 @@ namespace CronkdBundle\Event;
 use CronkdBundle\Entity\Kingdom;
 use Symfony\Component\EventDispatcher\Event;
 
-class ViewLogEvent extends Event
+class ViewNotificationsEvent extends Event
 {
     /** @var Kingdom  */
     public $kingdom;

@@ -12,7 +12,7 @@
     {% for kingdomResource in results.data.report.data.Resources %}
         <tr>
             <td>
-                {{ resourceIcon(kingdomResource.resource.name)|raw }}
+                {{ resourceIcon(kingdomResource.resource)|raw }}
                 {{ kingdomResource.resource.name }}: <strong>{{ kingdomResource.quantity|number_format }}</strong>
             </td>
         </tr>

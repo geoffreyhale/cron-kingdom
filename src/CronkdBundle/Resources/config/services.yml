@@ -71,11 +71,8 @@ services:
         class: CronkdBundle\Manager\LogManager
         arguments:
             - "@doctrine.orm.default_entity_manager"
-
-    cronkd.manager.net_worth:
-        class: CronkdBundle\Manager\NetWorthLogManager
-        arguments:
-            - "@doctrine.orm.default_entity_manager"
+            - "@cronkd.manager.kingdom"
+            - "@jms_serializer"
 
     cronkd.manager.policy:
         class: CronkdBundle\Manager\PolicyManager
@@ -95,7 +92,7 @@ services:
         arguments:
             - "@doctrine.orm.default_entity_manager"
             - "@cronkd.manager.kingdom"
-            - "@cronkd.manager.net_worth"
+            - "@cronkd.manager.log"
         tags:
             - {name: kernel.event_listener, event: event.world_tick, method: onTick}
             - {name: kernel.event_listener, event: event.create_kingdom, method: onCreateKingdom}
@@ -103,11 +100,11 @@ services:
             - {name: kernel.event_listener, event: event.attack, method: onAttack}
 
     cronkd.listener.notification:
-        class: CronkdBundle\Listener\NotificationListener
+        class: CronkdBundle\Listener\NotificationsListener
         arguments:
             - "@doctrine.orm.default_entity_manager"
         tags:
-            - {name: kernel.event_listener, event: event.view_log, method: onViewLogPage}
+            - {name: kernel.event_listener, event: event.view_notifications, method: onViewNotificationsPage}
 
     cronkd.listener.resource:
         class: CronkdBundle\Listener\ResourceListener

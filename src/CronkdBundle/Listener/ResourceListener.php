@@ -45,7 +45,7 @@ class ResourceListener
 
         /** @var Resource $resource */
         foreach ($resources as $resource) {
-            $kingdomResource = $this->kingdomManager->findOrCreateResource($kingdom, $resource);
+            $kingdomResource = $this->kingdomManager->findOrCreateKingdomResource($kingdom, $resource);
             $kingdomResource->setQuantity($resource->getStartingAmount());
             $kingdom->addResource($kingdomResource);
         }

@@ -1,0 +1,58 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+    <div class="row-fluid">
+        <div class="col-sm-12">
+            <ol class="breadcrumb">
+                <li><a href="{{ path('homepage') }}">Dashboard</a></li>
+                <li class="active">Your Notifications</li>
+            </ol>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-search"></i> Notifications</h3>
+                </div>
+                <div class="panel-body">
+                    <table class="datatable table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Status</th>
+                            <th>Tick</th>
+                            <th>Message</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for notification in notifications %}
+                        <tr class="{{ notification.success ? 'danger' : 'success' }}">
+                            <td>{{ notification.createdAt|date('Y-m-d h:i:s A') }}</td>
+                            <td>{{ notification.readAt is null ? 'Unread' : 'Read at '~notification.readAt|date('Y-m-d h:i:s A') }}</td>
+                            <td>{{ notification.tick }}</td>
+                            <td>
+                                {% if notification.type == 'probe' %}
+                                    {% if notification.success %}
+                                        Successful spy attempt by unknown kingdom
+                                    {% else %}
+                                        Failed spy attempt by {{ notification.prober.name }}
+                                    {% endif %}
+                                {% elseif notificaiotn.type == 'attack' %}
+                                    Attack
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    {{ parent() }}
+    <script type="text/javascript">
+        $('.datatable').DataTable({
+            'order': [ 0, 'DESC' ]
+        });
+    </script>
+{% endblock %}

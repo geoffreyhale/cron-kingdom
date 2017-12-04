@@ -15,30 +15,48 @@
                 <div class="panel-body">
                     <p class="text-center">
                         <a href="#" class="btn btn-primary btn-lg logFilterBtn" data-filter="">All</a>
-                        <a href="#" class="btn btn-primary btn-lg logFilterBtn" data-filter="important">Notification</a>
-                        <a href="#" class="btn btn-primary btn-lg logFilterBtn" data-filter="action">Action</a>
-                        <a href="#" class="btn btn-primary btn-lg logFilterBtn" data-filter="attack">Attack</a>
-                        <a href="#" class="btn btn-primary btn-lg logFilterBtn" data-filter="hack">Hack</a>
-                        <a href="#" class="btn btn-primary btn-lg logFilterBtn" data-filter="tick">Tick</a>
+                        <a href="#" class="btn btn-primary btn-lg logFilterBtn" data-filter="queued">Queue</a>
+                        <a href="#" class="btn btn-primary btn-lg logFilterBtn" data-filter="received">Dequeue</a>
+                        <a href="#" class="btn btn-primary btn-lg logFilterBtn" data-filter="birthed">Birth</a>
+                        <a href="#" class="btn btn-primary btn-lg logFilterBtn" data-filter="net worth">Net Worth</a>
+                        <a href="#" class="btn btn-primary btn-lg logFilterBtn" data-filter="spied">Spy</a>
                     </p>
                     <table class="datatable table table-bordered table-striped">
                         <thead>
                         <tr>
+                            <th>Id</th>
                             <th>Time</th>
                             <th>Tick</th>
-                            <th>Type</th>
                             <th>Message</th>
-                            <th>Notification</th>
                         </tr>
                         </thead>
                         <tbody>
                         {% for log in logs %}
-                        <tr class="{{ log.readAt is null ? 'info' }} {{ log.important ? 'danger' }}">
+                        <tr class="{{ log.eventType == 'attack' ? 'danger' : '' }}">
+                            <td>{{ log.id }}</td>
                             <td>{{ log.createdAt|date('Y-m-d h:i:s A') }}</td>
                             <td>{{ log.tick }}</td>
-                            <td>{{ log.type }}</td>
-                            <td>{{ log.log }}</td>
-                            <td>{{ log.important ? 'important' : null }}</td>
+                            <td>
+                                {% if log.eventType == 'attack' %}
+                                    {{ log.attacker.name }} attacked {{ log.defender.name }} {{ log.success ? 'successfully' : 'unsuccessfully' }}
+                                {% elseif log.eventType == 'queue' %}
+                                    Queued {{ log.quantity }} {{ log.kingdomResource.resource.name }}
+                                {% elseif log.eventType == 'dequeue' %}
+                                    Received {{ log.quantity }} {{ log.kingdomResource.resource.name }}
+                                {% elseif log.eventType == 'birth' %}
+                                    Birthed {{ log.quantity }} {{ log.kingdomResource.resource.name }}
+                                {% elseif log.eventType == 'net_worth' %}
+                                    Net worth updated to {{ log.netWorth }}
+                                {% elseif log.eventType == 'probe' %}
+                                    {% if kingdom == log.prober %}
+                                        Successfully spied on {{ log.probee.name }}
+                                    {% elseif log.success %}
+                                        Successfuly spied on by unknown kingdom
+                                    {% else %}
+                                        Failed to be spied on by {{ log.probee.name }}
+                                    {% endif %}
+                                {% endif %}
+                            </td>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -52,13 +70,7 @@
     {{ parent() }}
     <script type="text/javascript">
         var table = $('.datatable').DataTable({
-            'order': [ 1, 'DESC' ],
-            'columnDefs': [
-                {
-                    'targets': [ 4 ],
-                    'visible': false
-                }
-            ]
+            'order': [ 0, 'DESC' ],
         });
 
         $('.logFilterBtn').click(function () {
