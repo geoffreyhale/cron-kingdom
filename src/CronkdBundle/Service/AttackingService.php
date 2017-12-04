@@ -198,7 +198,7 @@ class AttackingService
 
             $attackerPercentage = $this->policyManager->calculateAttackerSpoilOfWarPercentageMultiplier($kingdom, $resource);
             $defenderPercentage = $this->policyManager->calculateDefenderSpoilOfWarPercentageMultiplier($targetKingdom, $resource);
-            $percentage = $percentage + $attackerPercentage - $defenderPercentage;
+            $percentage = $percentage + $attackerPercentage + $defenderPercentage;
 
             if ($percentage > 0) {
                 $this->awardResource($report, $kingdom, $targetKingdom, $resource->getName(), $percentage);

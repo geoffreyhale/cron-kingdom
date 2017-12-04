@@ -80,6 +80,10 @@ class PolicyManager
             $multiplier = ($policyResource->getOutputMultiplier() / 100);
         }
 
+        if ($multiplier < 0) {
+            $multiplier = 0;
+        }
+
         return $multiplier;
     }
 

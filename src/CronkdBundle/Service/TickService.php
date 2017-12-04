@@ -9,6 +9,7 @@ use CronkdBundle\Event\WorldTickEvent;
 use CronkdBundle\Exceptions\InvalidWorldSettingsException;
 use CronkdBundle\Manager\KingdomManager;
 use CronkdBundle\Manager\LogManager;
+use CronkdBundle\Manager\PolicyManager;
 use CronkdBundle\Manager\ResourceManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -24,6 +25,8 @@ class TickService
     private $resourceManager;
     /** @var LogManager  */
     private $logManager;
+    /** @var PolicyManager */
+    private $policyManager;
     /** @var EventDispatcherInterface  */
     private $eventDispatcher;
     /** @var LoggerInterface  */
@@ -34,6 +37,7 @@ class TickService
         KingdomManager $kingdomManager,
         ResourceManager $resourceManager,
         LogManager $logManager,
+        PolicyManager $policyManager,
         EventDispatcherInterface $eventDispatcher,
         LoggerInterface $logger
     ) {
@@ -41,6 +45,7 @@ class TickService
         $this->kingdomManager  = $kingdomManager;
         $this->resourceManager = $resourceManager;
         $this->logManager      = $logManager;
+        $this->policyManager   = $policyManager;
         $this->eventDispatcher = $eventDispatcher;
         $this->logger          = $logger;
     }
@@ -72,17 +77,19 @@ class TickService
             $this->logger->info('Queue is for Kingdom ' . $queue->getKingdom()->getName() . ' for ' . $queue->getResource()->getName());
 
             $kingdomResource = $this->kingdomManager->findOrCreateResource($queue->getKingdom(), $queue->getResource());
-            $kingdomResource->addQuantity($queue->getQuantity());
+            $outputMultiplier = $this->policyManager->calculateOutputMultiplier($queue->getKingdom(), $queue->getResource());
+            $quantity = $outputMultiplier * $queue->getQuantity();
+            $kingdomResource->addQuantity($quantity);
             $this->em->persist($kingdomResource);
 
-            if (0 < $queue->getQuantity()) {
+            if (0 < $quantity) {
                 $this->logManager->createLog(
                     $queue->getKingdom(),
                     Log::TYPE_TICK,
-                    $queue->getQuantity() . ' ' . $queue->getResource()->getName() . ' are now available'
+                    $quantity . ' ' . $queue->getResource()->getName() . ' are now available'
                 );
             }
-            $this->logger->info('Adding ' . $queue->getQuantity() . ' ' . $queue->getResource()->getName() . '; New balance is ' . $kingdomResource->getQuantity());
+            $this->logger->info('Adding ' . $quantity . ' ' . $queue->getResource()->getName() . '; New balance is ' . $kingdomResource->getQuantity());
         }
 
         foreach ($world->getKingdoms() as $kingdom) {

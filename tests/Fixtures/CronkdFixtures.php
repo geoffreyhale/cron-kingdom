@@ -2,6 +2,7 @@
 namespace Tests\Fixtures;
 
 use CronkdBundle\Entity\Kingdom;
+use CronkdBundle\Entity\Policy\Policy;
 use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Entity\Resource\ResourceType;
 use CronkdBundle\Entity\World;
@@ -60,6 +61,51 @@ class CronkdFixtures extends Fixture
             'spoil_of_war_percent' => 0,
             'value'                => 1,
         ],
+        'SpoilOfWar' => [
+            'type'                 => 'Population',
+            'attack'               => 0,
+            'defense'              => 0,
+            'starting'             => 0,
+            'can_be_produced'      => true,
+            'can_spoil_of_war'     => true,
+            'can_be_probed'        => true,
+            'capacity'             => 0,
+            'spoil_of_war_percent' => 10,
+            'value'                => 1,
+        ],
+        'Material' => [
+            'type'                 => 'Material',
+            'attack'               => 0,
+            'defense'              => 0,
+            'starting'             => 0,
+            'can_be_produced'      => true,
+            'can_spoil_of_war'     => true,
+            'can_be_probed'        => true,
+            'capacity'             => 0,
+            'spoil_of_war_percent' => 50,
+            'value'                => 1,
+        ],
+    ];
+
+    private $policyAttributes = [
+        'Attacker' => [
+            'attack' => 200,
+        ],
+        'Defender' => [
+            'defense' => 200,
+        ],
+        'Outputter' => [
+            'output' => 200,
+        ],
+        'Warmonger' => [
+            'spoil_of_war_attack' => 10,
+        ],
+        'Safety' => [
+            'spoil_of_war_defense' => -5,
+        ],
+        'Greedy' => [
+            'output' => 200,
+        ],
     ];
 
     public function load(ObjectManager $em)
@@ -69,6 +115,7 @@ class CronkdFixtures extends Fixture
         $world = $this->generateWorld($em);
         $kingdoms = $this->generateKingdoms($em, ['Hero', 'Villain'], $world);
         $resources = $this->generateResources($em, $world);
+        $policies = $this->generatePolicies($em, $world);
     }
 
     private function generateResourceTypes(ObjectManager $em)
@@ -93,7 +140,6 @@ class CronkdFixtures extends Fixture
         $world->setTick(1);
         $world->setStartTime((new \DateTime())->sub(new \DateInterval('P1M')));
         $world->setEndTime((new \DateTime())->add(new \DateInterval('P1M')));
-        $world->setTickInterval(1);
         $world->setBirthRate(1);
 
         $em->persist($world);
@@ -143,5 +189,37 @@ class CronkdFixtures extends Fixture
         $em->flush();
 
         return $kingdoms;
+    }
+
+    private function generatePolicies(ObjectManager $em, World $world)
+    {
+        $policies = [];
+        foreach ($this->policyAttributes as $policyName => $policyAttributes) {
+            $policy = new Policy();
+            $policy->setName($policyName);
+            $policy->setWorld($world);
+            if (isset($policyAttributes['attack'])) {
+                $policy->setAttackMultiplier($policyAttributes['attack']);
+            }
+            if (isset($policyAttributes['defense'])) {
+                $policy->setDefenseMultiplier($policyAttributes['defense']);
+            }
+            if (isset($policyAttributes['spoil_of_war_attack'])) {
+                $policy->setSpoilOfWarAttackCaptureMultiplier($policyAttributes['spoil_of_war_attack']);
+            }
+            if (isset($policyAttributes['spoil_of_war_defense'])) {
+                $policy->setSpoilOfWarDefenseCaptureMultiplier($policyAttributes['spoil_of_war_defense']);
+            }
+            if (isset($policyAttributes['output'])) {
+                $policy->setOutputMultiplier($policyAttributes['output']);
+
+            }
+
+            $em->persist($policy);
+            $policies[] = $policy;
+        }
+        $em->flush();
+
+        return $policies;
     }
 }
