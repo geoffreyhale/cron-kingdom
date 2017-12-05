@@ -116,6 +116,10 @@ class KingdomState
             return false;
         }
 
+        if (!count($kingdomResource->getResource()->getActions())) {
+            return false;
+        }
+
         $action = $kingdomResource->getResource()->getActions()->first();
         if (null === $action) {
             return false;

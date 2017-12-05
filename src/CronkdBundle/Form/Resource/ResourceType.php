@@ -68,6 +68,7 @@ class ResourceType extends AbstractType
                 'required' => false,
             ])
             ->add('description', TextType::class)
+            ->add('icon', TextType::class)
 
             ->add('submit', SubmitType::class)
         ;

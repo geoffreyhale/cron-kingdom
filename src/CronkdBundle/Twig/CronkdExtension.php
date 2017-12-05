@@ -43,42 +43,12 @@ class CronkdExtension extends \Twig_Extension
 
     public function getResourceIcon($resource)
     {
-        $resourceType = '';
         if ($resource instanceof Resource) {
-            $resourceType = $resource->getType()->getName();
-            $resource = $resource->getName();
+            if (!empty($resource->getIcon())) {
+                return '<i class="fa fa-fw fa-' . $resource->getIcon() . '"></i> ';
+            }
         }
 
-        switch (strtolower($resource)) {
-            case 'civilian':
-                return '<i class="fa fa-users fa-fw"></i> ';
-            case 'housing':
-                return '<i class="fa fa-home fa-fw"></i> ';
-            case 'defender';
-            case 'wall';
-                return '<i class="fa fa-shield fa-fw"></i> ';
-            case 'material':
-                return '<i class="fa fa-cubes fa-fw"></i> ';
-            case 'military':
-            case 'soldier':
-            case 'attacker':
-                return '<i class="fa fa-fighter-jet fa-fw"></i> ';
-            case 'hacker';
-            case 'spy';
-                return '<i class="fa fa-user-secret fa-fw"></i> ';
-            case 'trainer':
-                return '<i class="fa fa-male fa-fw"></i> ';
-        }
-
-        switch (strtolower($resourceType)) {
-            case 'material':
-                return '<i class="fa fa-cubes fa-fw"></i> ';
-            case 'building':
-                return '<i class="fa fa-home fa-fw"></i> ';
-            case 'population':
-                return '<i class="fa fa-users fa-fw"></i> ';
-        }
-
-        return '';
+        return '<i class="fa fa-fw fa-users"></i> ';
     }
 }

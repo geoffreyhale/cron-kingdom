@@ -140,6 +140,15 @@ class Resource extends BaseEntity
     private $spoilOfWarCapturePercentage = 0;
 
     /**
+     * Font awesome icon
+     *
+     * @var string
+     *
+     * @ORM\Column(name="icon", type="string", length=100)
+     */
+    private $icon;
+
+    /**
      * @var KingdomResource[]
      *
      * @ORM\OneToMany(targetEntity="CronkdBundle\Entity\KingdomResource", mappedBy="resource")
@@ -543,6 +552,69 @@ class Resource extends BaseEntity
     }
 
     /**
+     * Set spoilOfWarCapturePercentage
+     *
+     * @param integer $spoilOfWarCapturePercentage
+     *
+     * @return Resource
+     */
+    public function setSpoilOfWarCapturePercentage($spoilOfWarCapturePercentage)
+    {
+        $this->spoilOfWarCapturePercentage = $spoilOfWarCapturePercentage;
+
+        return $this;
+    }
+
+    /**
+     * Get spoilOfWarCapturePercentage
+     *
+     * @return integer
+     */
+    public function getSpoilOfWarCapturePercentage()
+    {
+        return $this->spoilOfWarCapturePercentage;
+    }
+
+    /**
+     * Set icon
+     *
+     * @param string $icon
+     *
+     * @return Resource
+     */
+    public function setIcon($icon)
+    {
+        $this->icon = $icon;
+
+        return $this;
+    }
+
+    /**
+     * Get icon
+     *
+     * @return string
+     */
+    public function getIcon()
+    {
+        if (!empty($this->icon)) {
+            return $this->icon;
+        }
+
+        if (null !== $this->getType()) {
+            switch ($this->getType()->getName()) {
+                case 'Population':
+                    return 'users';
+                case 'Material':
+                    return 'cubes';
+                case 'Building':
+                    return 'home';
+            }
+        }
+
+        return '';
+    }
+
+    /**
      * Add action
      *
      * @param ResourceAction $action
@@ -582,29 +654,5 @@ class Resource extends BaseEntity
     public function __toString()
     {
         return $this->getName();
-    }
-
-    /**
-     * Set spoilOfWarCapturePercentage
-     *
-     * @param integer $spoilOfWarCapturePercentage
-     *
-     * @return Resource
-     */
-    public function setSpoilOfWarCapturePercentage($spoilOfWarCapturePercentage)
-    {
-        $this->spoilOfWarCapturePercentage = $spoilOfWarCapturePercentage;
-
-        return $this;
-    }
-
-    /**
-     * Get spoilOfWarCapturePercentage
-     *
-     * @return integer
-     */
-    public function getSpoilOfWarCapturePercentage()
-    {
-        return $this->spoilOfWarCapturePercentage;
     }
 }
