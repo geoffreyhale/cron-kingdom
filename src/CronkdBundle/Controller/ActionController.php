@@ -71,10 +71,9 @@ class ActionController extends CronkdController
         return [
             'form'                => $form->createView(),
             'resource'            => $resourceName,
+            'action'              => $resource->getActions()->first(),
             'maxQuantity'         => $maxQuantityToProduce,
-            'actionDescription'   => $resource->getActions()->first()->getDescription(),
             'resourceDescription' => $resource->getDescription(),
-            'verb'                => $resource->getActions()->first()->getVerb(),
         ];
     }
 

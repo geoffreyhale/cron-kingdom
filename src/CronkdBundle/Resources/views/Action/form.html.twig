@@ -5,10 +5,10 @@
         <div class="col-sm-12">
             <ol class="breadcrumb">
                 <li><a href="{{ path('homepage') }}">Dashboard</a></li>
-                <li class="active">{{ verb|capitalize }} {{ resource|capitalize }}</li>
+                <li class="active">{{ action.verb|capitalize }} {{ resource|capitalize }}</li>
             </ol>
 
-            <h3>{{ verb|capitalize }} {{ resource|capitalize }}</h3>
+            <h3>{{ action.verb|capitalize }} {{ resource|capitalize }}</h3>
             <hr />
         </div>
     </div>
@@ -18,10 +18,17 @@
             <div class="alert alert-info">
                 <p><strong>{{ resource|capitalize }}: </strong><em>{{ resourceDescription }}</em></p>
                 <hr />
-                <p>{{ actionDescription }}</p>
+                <p>{{ action.description }}</p>
                 <p>&nbsp;</p>
+                Cost per {{ action.outputQuantity }} {{ resource|capitalize }}:
+                <ul>
+                {% for input in action.inputs %}
+                    <li><strong>{{ input.inputQuantity }} {{ input.resource.name|capitalize }}</strong> - {{ input.requeue ? 'Comes back after '~input.queueSize~' ticks' : 'Lost forever' }}</li>
+                {% endfor %}
+                </ul>
+                <p><br /></p>
                 <p>
-                    <strong>Max {{ resource|capitalize }} to {{ verb }}: {{ maxQuantity }}</strong>
+                    <strong>Max {{ resource|capitalize }} to {{ action.verb }}: {{ maxQuantity }}</strong>
                 </p>
                 <p>
                     <button id="autoFillBtn" data-max="{{ maxQuantity }}" class="btn btn-info">Auto-Fill Max</button>
