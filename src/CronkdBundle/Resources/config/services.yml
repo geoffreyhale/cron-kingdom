@@ -6,7 +6,6 @@ services:
             - "@cronkd.manager.kingdom"
             - "@cronkd.manager.resource"
             - "@cronkd.manager.log"
-            - "@cronkd.manager.policy"
             - "@event_dispatcher"
             - "@logger"
         tags:

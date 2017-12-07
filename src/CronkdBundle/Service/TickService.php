@@ -25,8 +25,6 @@ class TickService
     private $resourceManager;
     /** @var LogManager  */
     private $logManager;
-    /** @var PolicyManager */
-    private $policyManager;
     /** @var EventDispatcherInterface  */
     private $eventDispatcher;
     /** @var LoggerInterface  */
@@ -37,7 +35,6 @@ class TickService
         KingdomManager $kingdomManager,
         ResourceManager $resourceManager,
         LogManager $logManager,
-        PolicyManager $policyManager,
         EventDispatcherInterface $eventDispatcher,
         LoggerInterface $logger
     ) {
@@ -45,7 +42,6 @@ class TickService
         $this->kingdomManager  = $kingdomManager;
         $this->resourceManager = $resourceManager;
         $this->logManager      = $logManager;
-        $this->policyManager   = $policyManager;
         $this->eventDispatcher = $eventDispatcher;
         $this->logger          = $logger;
     }
@@ -77,8 +73,7 @@ class TickService
             $this->logger->info('Queue is for Kingdom ' . $queue->getKingdom()->getName() . ' for ' . $queue->getResource()->getName());
 
             $kingdomResource = $this->kingdomManager->findOrCreateResource($queue->getKingdom(), $queue->getResource());
-            $outputMultiplier = $this->policyManager->calculateOutputMultiplier($queue->getKingdom(), $queue->getResource());
-            $quantity = $outputMultiplier * $queue->getQuantity();
+            $quantity = $queue->getQuantity();
             $kingdomResource->addQuantity($quantity);
             $this->em->persist($kingdomResource);
 
