@@ -13,15 +13,13 @@
             <hr />
             <div class="alert alert-info">
                 <p>Send military units to attack another Kingdom.  Use caution: you may only attack once per Tick!</p>
-                <p>
-                    <ul>
-                    {% for resourceName,resource in resources %}
-                        {% if resource.attack > 0 and kingdomState.hasAvailableResource(resourceName) %}
-                            <strong>{{ resourceName }}</strong>: {{ resource.attack }} attack each | {{ kingdomState.availableResourceQuantity(resourceName) }} available<br />
+                <ul>
+                    {% for resource in resources %}
+                        {% if resource.attack > 0 and kingdomState.hasAvailableResource(resource.name) %}
+                            <strong>{{ resource.name }}</strong>: {{ resource.attack }} attack each | {{ kingdomState.availableResourceQuantity(resource.name) }} available<br />
                         {% endif %}
                     {% endfor %}
-                    </ul>
-                </p>
+                </ul>
             </div>
 
             <div class="row-fluid">
