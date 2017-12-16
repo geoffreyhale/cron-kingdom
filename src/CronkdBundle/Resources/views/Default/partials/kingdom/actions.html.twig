@@ -4,7 +4,7 @@
         <a href="{{ path('probe_send', {id: kingdom.id}) }}" class="btn btn-warning">Spy</a>
     {% endif %}
     {% if kingdomState.availableAttack %}
-        <a href="{{ path('attack', {id: kingdom.id}) }}" class="btn btn-danger">Plan Attack</a>
+        <a href="{{ path('attack') }}" class="btn btn-danger">Attack</a>
     {% endif %}
 </div>
 <hr />

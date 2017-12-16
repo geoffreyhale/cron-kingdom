@@ -17,18 +17,16 @@ use Symfony\Component\HttpFoundation\Request;
 class AttackController extends CronkdController
 {
     /**
-     * @Route("/{id}", name="attack")
+     * @Route("/", name="attack")
      * @Method({"GET", "POST"})
-     * @ParamConverter(name="id", class="CronkdBundle:Kingdom")
      * @Template("CronkdBundle:Attack:send.html.twig")
      */
-    public function attackAction(Request $request, Kingdom $kingdom)
+    public function attackAction(Request $request)
     {
-        $this->validateWorldIsActive($kingdom);
-        $this->validateUserOwnsKingdom($kingdom);
-
         $resourceManager = $this->get('cronkd.manager.resource');
         $kingdomManager = $this->get('cronkd.manager.kingdom');
+
+        $kingdom = $this->extractKingdomFromCurrentUser();
         $kingdomState = $kingdomManager->generateKingdomState($kingdom);
 
         $previousAttack = $this->get('cronkd.service.attacking')->numAttacksThisTick($kingdom);
