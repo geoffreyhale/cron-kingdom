@@ -31,6 +31,7 @@ class AttackPlanType extends AbstractType
             if ($resource->getAttack() > 0 && $options['kingdomState']->hasAvailableResource($resource->getName())) {
                 $builder->add($resource->getName(), NumberType::class, [
                     'required' => true,
+                    'data' => 0,
                 ]);
             }
         }
