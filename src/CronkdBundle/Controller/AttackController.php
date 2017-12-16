@@ -1,8 +1,6 @@
 <?php
 namespace CronkdBundle\Controller;
 
-use CronkdBundle\Entity\Kingdom;
-use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Form\AttackPlanType;
 use CronkdBundle\Model\AttackPlan;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -36,12 +34,14 @@ class AttackController extends CronkdController
 
         $resources = $resourceManager->getWorldResources($kingdom->getWorld());
         $attackPlan = new AttackPlan();
+
         $form = $this->createForm(AttackPlanType::class, $attackPlan, [
             'kingdomState' => $kingdomState,
             'resources'    => $resources,
         ]);
 
         $form->handleRequest($request);
+
         if ($form->isValid()) {
             $response = $this->forward('CronkdBundle:Api/Attack:attack', [
                 'kingdomId'       => $kingdom->getId(),
@@ -49,8 +49,7 @@ class AttackController extends CronkdController
                 'quantities'      => $attackPlan->getQuantities(),
             ]);
 
-            $results = $response->getContent();
-            $results = json_decode($results, true);
+            $results = json_decode($response->getContent(), true);
 
             return $this->render('@Cronkd/Attack/results.html.twig', [
                 'results' => $results,

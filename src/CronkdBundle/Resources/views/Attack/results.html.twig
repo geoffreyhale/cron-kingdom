@@ -5,8 +5,8 @@
         <div class="col-sm-12">
             <ol class="breadcrumb">
                 <li><a href="{{ path('homepage') }}">Dashboard</a></li>
-                <li><a href="{{ path('attack', {'id': kingdom.id}) }}">Plan Attack</a></li>
-                <li class="active">Attack Results</li>
+                <li><a href="{{ path('attack') }}">Attack</a></li>
+                <li class="active">Results</li>
             </ol>
             <h3>Attack Results</h3>
             {% if results.error is defined and results.error is not null %}
