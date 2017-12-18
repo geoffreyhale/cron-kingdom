@@ -9,7 +9,7 @@
     <tbody>
     {% for kingdomByElo in worldState.kingdomsByElo %}
         <tr>
-            {% if kingdomByElo.id == kingdom.id %}
+            {% if kingdom is not null and kingdomByElo.id == kingdom.id %}
                 <td><strong>{{ loop.index }}</strong></td>
                 <td><strong>{{ kingdomByElo.name }}</strong></td>
                 <td><strong>{{ kingdomByElo.elo }}</strong></td>

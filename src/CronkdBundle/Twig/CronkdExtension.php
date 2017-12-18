@@ -1,6 +1,8 @@
 <?php
 namespace CronkdBundle\Twig;
 
+use CronkdBundle\Entity\Resource\Resource;
+
 class CronkdExtension extends \Twig_Extension
 {
     public function getFilters()
@@ -13,6 +15,10 @@ class CronkdExtension extends \Twig_Extension
     public function filterNumber($number)
     {
         $modifiers = [
+            'S' => 1E24,
+            's' => 1E21,
+            'Q' => 1E18,
+            'q' => 1E15,
             'T' => 1E12,
             'B' => 1E9,
             'M' => 1E6,
@@ -35,29 +41,14 @@ class CronkdExtension extends \Twig_Extension
         ];
     }
 
-    public function getResourceIcon($resourceName)
+    public function getResourceIcon($resource)
     {
-        switch (strtolower($resourceName)) {
-            case 'civilian':
-                return '<i class="fa fa-users fa-fw"></i> ';
-            case 'housing':
-                return '<i class="fa fa-home fa-fw"></i> ';
-            case 'defender';
-            case 'wall';
-                return '<i class="fa fa-shield fa-fw"></i> ';
-            case 'material':
-                return '<i class="fa fa-cubes fa-fw"></i> ';
-            case 'military':
-            case 'soldier':
-            case 'attacker':
-                return '<i class="fa fa-fighter-jet fa-fw"></i> ';
-            case 'hacker';
-            case 'spy';
-                return '<i class="fa fa-user-secret fa-fw"></i> ';
-            case 'trainer':
-                return '<i class="fa fa-male fa-fw"></i> ';
+        if ($resource instanceof Resource) {
+            if (!empty($resource->getIcon())) {
+                return '<i class="fa fa-fw fa-' . $resource->getIcon() . '"></i> ';
+            }
         }
 
-        return '';
+        return '<i class="fa fa-fw fa-users"></i> ';
     }
 }

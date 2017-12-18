@@ -22,3 +22,9 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret: ThisTokenIsNotSoSecretChangeIt
+
+    slack_token: ~
+    slack_error_channel: ~
+    slack_app_channel: ~
+    slack_bot_name: ~
+    slack_bot_emoji: ":computer:"

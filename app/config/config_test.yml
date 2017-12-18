@@ -22,3 +22,16 @@ web_profiler:
 
 swiftmailer:
     disable_delivery: true
+
+monolog:
+    handlers:
+        slack_error:
+            type:       stream
+            path:       '%kernel.logs_dir%/%kernel.environment%.errors.log'
+            level:      error
+            channels:   ['!main']
+        slack_log:
+            type:       stream
+            path:       '%kernel.logs_dir%/%kernel.environment%.important.log'
+            level:      notice
+            channels:   ['!main']

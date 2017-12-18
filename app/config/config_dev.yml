@@ -17,18 +17,27 @@ monolog:
             type: stream
             path: '%kernel.logs_dir%/%kernel.environment%.log'
             level: debug
-            channels: ['!event']
+            channels: ['!event', "!tick"]
         console:
             type: console
             channels: ['!event', '!doctrine']
-        # uncomment to get logging in your browser
-        # you may have to allow bigger header sizes in your Web server configuration
-        #firephp:
-        #    type: firephp
-        #    level: info
-        #chromephp:
-        #    type: chromephp
-        #    level: info
-
-#swiftmailer:
-#    delivery_addresses: ['me@example.com']
+        tick:
+            type:       stream
+            path:       '%kernel.logs_dir%/%kernel.environment%.tick.log'
+            level:      info
+            channels:   ['!main']
+        slack_error:
+            type:       slack
+            token:      "%slack_token%"
+            channel:    "%slack_error_channel%"
+            bot_name:   "%slack_bot_name%"
+            icon_emoji: "%slack_bot_emoji%"
+            level:      error
+            channels:   ['!main']
+        slack_log:
+            type:       slack
+            token:      "%slack_token%"
+            channel:    "%slack_app_channel%"
+            bot_name:   "%slack_bot_name%"
+            icon_emoji: "%slack_bot_emoji%"
+            level:      notice

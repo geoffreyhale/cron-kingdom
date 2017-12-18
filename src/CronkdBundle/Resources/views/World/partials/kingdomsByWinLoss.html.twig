@@ -10,7 +10,7 @@
     <tbody>
     {% for kingdomByWinLoss in worldState.kingdomsByWinLossRecord %}
         <tr>
-            {% if kingdomByWinLoss.kingdom.id == kingdom.id %}
+            {% if kingdom is not null and kingdomByWinLoss.kingdom.id == kingdom.id %}
                 <td><strong>{{ loop.index }}</strong></td>
                 <td><strong>{{ kingdomByWinLoss.kingdom.name }}</strong></td>
                 <td><strong>{{ kingdomByWinLoss.winloss.win|number_format }}</strong></td>

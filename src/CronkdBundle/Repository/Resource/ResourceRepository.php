@@ -1,5 +1,5 @@
 <?php
-namespace CronkdBundle\Repository;
+namespace CronkdBundle\Repository\Resource;
 
 use Doctrine\ORM\EntityRepository;
 

@@ -1,6 +1,8 @@
 <?php
 namespace CronkdBundle\Entity;
 
+use CronkdBundle\Entity\Policy\Policy;
+use CronkdBundle\Entity\Resource\Resource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -26,14 +28,7 @@ class World extends BaseEntity
     /**
      * @ORM\Column(name="initialized", type="boolean", options={"default": 0})
      */
-    private $initialized;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="tick", type="bigint", options={"default": 1})
-     */
-    private $tick;
+    private $initialized = false;
 
     /**
      * @var string
@@ -53,27 +48,40 @@ class World extends BaseEntity
      * @var \DateTime
      *
      * @ORM\Column(name="end_time", type="datetime", nullable=true)
+     *
+     * @Assert\Expression(
+     *     "this.getStartTime() <= this.getEndTime()",
+     *     message="End time must be later than start time!"
+     * )
      */
     private $endTime;
 
     /**
-     * Tick interval in minutes.
-     *
      * @var int
      *
-     * @ORM\Column(name="tick_interval", type="integer")
-     * @Assert\Range(min=1, minMessage="Interval must be greater than zero.")
+     * @ORM\Column(name="tick", type="bigint")
      */
-    private $tickInterval;
+    private $tick = 0;
 
     /**
-     * Countdown till next tick.
+     * Birth rate as a percentage.
      *
      * @var int
      *
-     * @ORM\Column(name="minutes_since_last_tick", type="integer")
+     * @ORM\Column(name="birth_rate", type="integer")
+     * @Assert\Range(min=1, minMessage="Birth rate must be greater than zero.")
      */
-    private $minutesSinceLastTick;
+    private $birthRate = 1;
+
+    /**
+     * Number of ticks a policy lasts.
+     *
+     * @var int
+     *
+     * @ORM\Column(name="policy_duration", type="integer")
+     * @Assert\Range(min=1, minMessage="Policy duration must be greater than zero.")"
+     */
+    private $policyDuration = 24;
 
     /**
      * @var Kingdom[]
@@ -84,11 +92,27 @@ class World extends BaseEntity
     private $kingdoms;
 
     /**
+     * @var Policy[]
+     *
+     * @ORM\OneToMany(targetEntity="CronkdBundle\Entity\Policy\Policy", mappedBy="world")
+     * @ORM\OrderBy({"name" = "ASC"})
+     */
+    private $policies;
+
+    /**
+     * @ORM\OneToMany(targetEntity="CronkdBundle\Entity\Resource\Resource", mappedBy="world")
+     * @ORM\OrderBy({"name" = "ASC"})
+     */
+    private $resources;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
-        $this->kingdoms = new ArrayCollection();
+        $this->kingdoms  = new ArrayCollection();
+        $this->policies  = new ArrayCollection();
+        $this->resources = new ArrayCollection();
     }
 
     /**
@@ -126,20 +150,6 @@ class World extends BaseEntity
     }
 
     /**
-     * @ORM\PrePersist()
-     *
-     * @return World
-     */
-    public function setDefaultInitialized()
-    {
-        if (null === $this->getInitialized()) {
-            return $this->setInitialized(false);
-        }
-
-        return $this;
-    }
-
-    /**
      * Set tick
      *
      * @param integer $tick
@@ -149,37 +159,6 @@ class World extends BaseEntity
     public function setTick($tick)
     {
         $this->tick = $tick;
-
-        return $this;
-    }
-
-    /**
-     * @ORM\PrePersist()
-     */
-    public function setDefaultTick()
-    {
-        if (null === $this->tick) {
-            $this->setTick(0);
-        }
-    }
-
-    /**
-     * Get tick
-     *
-     * @return int
-     */
-    public function getTick()
-    {
-        return $this->tick;
-    }
-
-    /**
-     * @return World
-     */
-    protected function addTick()
-    {
-        $tick = $this->getTick();
-        $this->setTick(++$tick);
 
         return $this;
     }
@@ -215,7 +194,7 @@ class World extends BaseEntity
      *
      * @return World
      */
-    public function setStartTime($startTime)
+    public function setStartTime(\DateTime $startTime)
     {
         $this->startTime = $startTime;
 
@@ -239,7 +218,7 @@ class World extends BaseEntity
      *
      * @return World
      */
-    public function setEndTime($endTime)
+    public function setEndTime(\DateTime $endTime)
     {
         $this->endTime = $endTime;
 
@@ -257,76 +236,72 @@ class World extends BaseEntity
     }
 
     /**
-     * Set tickInterval
+     * Get tick
      *
-     * @param integer $tickInterval
-     *
+     * @return int
+     */
+    public function getTick()
+    {
+        return $this->tick;
+    }
+
+    /**
      * @return World
      */
-    public function setTickInterval($tickInterval)
+    protected function addTick()
     {
-        $this->tickInterval = $tickInterval;
+        $tick = $this->getTick();
+        $this->setTick(++$tick);
 
         return $this;
     }
 
     /**
-     * Get tickInterval
+     * Set birthRate
+     *
+     * @param integer $birthRate
+     *
+     * @return World
+     */
+    public function setBirthRate($birthRate)
+    {
+        $this->birthRate = $birthRate;
+
+        return $this;
+    }
+
+    /**
+     * Get birthRate
      *
      * @return integer
      */
-    public function getTickInterval()
+    public function getBirthRate()
     {
-        return $this->tickInterval;
+        return $this->birthRate;
     }
 
     /**
-     * Set minutesSinceLastTick
+     * Set policyDuration
      *
-     * @param integer $minutesSinceLastTick
+     * @param integer $policyDuration
      *
      * @return World
      */
-    public function setMinutesSinceLastTick($minutesSinceLastTick)
+    public function setPolicyDuration($policyDuration)
     {
-        $this->minutesSinceLastTick = $minutesSinceLastTick;
+        $this->policyDuration = $policyDuration;
 
         return $this;
     }
 
     /**
-     * Get minutesSinceLastTick
+     * Get policyDuration
      *
      * @return integer
      */
-    public function getMinutesSinceLastTick()
+    public function getPolicyDuration()
     {
-        return $this->minutesSinceLastTick;
-    }
-
-    /**
-     * @ORM\PrePersist()
-     *
-     * @return World
-     */
-    public function setDefaultMinutesSinceLastTick()
-    {
-        if (null === $this->getMinutesSinceLastTick()) {
-            return $this->setMinutesSinceLastTick(0);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return World
-     */
-    protected function addMinuteSinceLastTick()
-    {
-        $min = $this->getMinutesSinceLastTick();
-        $this->setMinutesSinceLastTick(++$min);
-
-        return $this;
+        return $this->policyDuration;
     }
 
     /**
@@ -364,13 +339,81 @@ class World extends BaseEntity
     }
 
     /**
+     * Add policy
+     *
+     * @param Policy $policy
+     *
+     * @return World
+     */
+    public function addPolicy(Policy $policy)
+    {
+        $this->policies[] = $policy;
+
+        return $this;
+    }
+
+    /**
+     * Remove policy
+     *
+     * @param Policy $policy
+     */
+    public function removePolicy(Policy $policy)
+    {
+        $this->policies->removeElement($policy);
+    }
+
+    /**
+     * Get policies
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getPolicies()
+    {
+        return $this->policies;
+    }
+
+    /**
+     * Add resource
+     *
+     * @param Resource $resource
+     *
+     * @return World
+     */
+    public function addResource(Resource $resource)
+    {
+        $this->resources[] = $resource;
+
+        return $this;
+    }
+
+    /**
+     * Remove resource
+     *
+     * @param Resource $resource
+     */
+    public function removeResource(Resource $resource)
+    {
+        $this->resources->removeElement($resource);
+    }
+
+    /**
+     * Get resources
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getResources()
+    {
+        return $this->resources;
+    }
+
+    /**
      * @return bool
      */
     public function isUpcoming()
     {
         $now = new \DateTime();
 
-        return $now < $this->getStartTime();
+        return null !== $this->getStartTime() && $now < $this->getStartTime();
     }
 
     /**
@@ -378,9 +421,14 @@ class World extends BaseEntity
      */
     public function isActive()
     {
-        $now = new \DateTime();
+        if (null === $this->getStartTime()) {
+            return false;
+        }
 
-        return $now > $this->getStartTime() && $now < $this->getEndTime();
+        $now = new \DateTime();
+        $isNowBeforeEnd = null === $this->getEndTime() || $now < $this->getEndTime();
+
+        return $now > $this->getStartTime() && $isNowBeforeEnd;
     }
 
     /**
@@ -388,9 +436,13 @@ class World extends BaseEntity
      */
     public function isInactive()
     {
+        if (null === $this->getStartTime()) {
+            return false;
+        }
+
         $now = new \DateTime();
 
-        return $now > $this->getEndTime();
+        return null !== $this->getEndTime() && $now > $this->getEndTime();
     }
 
     /**
@@ -398,11 +450,7 @@ class World extends BaseEntity
      */
     public function shouldBeInitialized()
     {
-        if (!$this->getInitialized() && $this->isActive()) {
-            return true;
-        }
-
-        return false;
+        return !$this->getInitialized() && $this->isActive();
     }
 
     /**
@@ -410,17 +458,13 @@ class World extends BaseEntity
      */
     public function isEndingSoon()
     {
+        if (null === $this->getStartTime()) {
+            return false;
+        }
+
         $soon = (new \DateTime)->add(new \DateInterval('P3D'));
 
         return $this->isActive() && $soon > $this->getEndTime();
-    }
-
-    /**
-     * @return bool
-     */
-    public function readyToPerformTick()
-    {
-        return $this->getMinutesSinceLastTick() >= $this->getTickInterval();
     }
 
     /**
@@ -429,17 +473,6 @@ class World extends BaseEntity
     public function performTick()
     {
         $this->addTick();
-        $this->setMinutesSinceLastTick(0);
-
-        return $this;
-    }
-
-    /**
-     * @return World
-     */
-    public function incrementTimeSinceLastTick()
-    {
-        $this->addMinuteSinceLastTick();
 
         return $this;
     }

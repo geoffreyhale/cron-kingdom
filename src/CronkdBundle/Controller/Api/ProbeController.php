@@ -3,7 +3,7 @@ namespace CronkdBundle\Controller\Api;
 
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
-use CronkdBundle\Entity\Resource;
+use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Service\ProbingService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -49,6 +49,7 @@ class ProbeController extends ApiController
         }
 
         $kingdomManager = $this->get('cronkd.manager.kingdom');
+        $policyManager  = $this->get('cronkd.manager.policy');
 
         $probePower = 0;
         foreach ($quantities as $resourceName => $quantity) {
@@ -65,7 +66,9 @@ class ProbeController extends ApiController
                 return $this->createErrorJsonResponse('Not enough "' . $resourceName . '"');
             }
 
-            $probePower += ($quantity * $kingdomResource->getResource()->getProbePower());
+            $probePowerMultiplier = $policyManager->calculateProbePowerMultiplier($kingdom, $resource);
+            $resourceProbePower = ($quantity * $kingdomResource->getResource()->getProbePower());
+            $probePower += $probePowerMultiplier * $resourceProbePower;
         }
 
         /** @var ProbingService $probingService */

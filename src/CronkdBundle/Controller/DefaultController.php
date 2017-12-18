@@ -1,6 +1,7 @@
 <?php
 namespace CronkdBundle\Controller;
 
+use CronkdBundle\Entity\Resource\ResourceType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
@@ -46,10 +47,19 @@ class DefaultController extends CronkdController
      */
     public function helpAction()
     {
-        $settings = $this->getParameter('cronkd.settings');
+        $world = $this->extractActiveWorld();
+        $resources = $world->getResources();
+
+        $em = $this->getDoctrine()->getManager();
+        $resourceTypes = $em->getRepository(ResourceType::class)->findAll();
+        $resourceTypes = array_map(function(ResourceType $resourceType) {
+            return $resourceType->getName();
+        }, $resourceTypes);
 
         return [
-            'settings' => $settings,
+            'world'         => $world,
+            'resources'     => $resources,
+            'resourceTypes' => $resourceTypes,
         ];
     }
 }

@@ -2,11 +2,12 @@
 namespace CronkdBundle\Service;
 
 use CronkdBundle\Entity\Kingdom;
-use CronkdBundle\Entity\KingdomPolicy;
+use CronkdBundle\Entity\PolicyInstance;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Log;
 use CronkdBundle\Event\ProbeEvent;
 use CronkdBundle\Manager\LogManager;
+use CronkdBundle\Manager\PolicyManager;
 use CronkdBundle\Model\ProbeReport;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -15,6 +16,8 @@ class ProbingService
 {
     /** @var EntityManagerInterface */
     private $em;
+    /** @var PolicyManager  */
+    private $policyManager;
     /** @var EventDispatcherInterface  */
     private $eventDispatcher;
     /** @var LogManager  */
@@ -22,10 +25,12 @@ class ProbingService
 
     public function __construct(
         EntityManagerInterface $em,
+        PolicyManager $policyManager,
         EventDispatcherInterface $dispatcher,
         LogManager $logManager
     ) {
         $this->em              = $em;
+        $this->policyManager   = $policyManager;
         $this->eventDispatcher = $dispatcher;
         $this->logManager      = $logManager;
     }
@@ -44,11 +49,12 @@ class ProbingService
             $probedResources = $this->em->getRepository(KingdomResource::class)
                 ->findResourcesThatMayBeProbed($target);
 
-            $policy = $kingdom->getActivePolicy();
+            $policy = $target->getActivePolicy();
             $report->setResult(true);
             $report->setData([
                 'Resources' => $probedResources,
-                'Policy'    => (null !== $policy ? $policy->getPolicy()->getName() : null)
+                'Policy'    => (null !== $policy ? $policy->getPolicy()->getName() : null),
+                'Kingdom'   => $target->getName(),
             ]);
         }
 

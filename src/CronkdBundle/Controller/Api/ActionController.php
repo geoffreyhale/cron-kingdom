@@ -5,8 +5,9 @@ use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Log;
 use CronkdBundle\Entity\Policy;
-use CronkdBundle\Entity\Resource;
-use CronkdBundle\Entity\ResourceType;
+use CronkdBundle\Entity\Resource\Resource;
+use CronkdBundle\Entity\Resource\ResourceActionInput;
+use CronkdBundle\Entity\Resource\ResourceType;
 use CronkdBundle\Event\ActionEvent;
 use CronkdBundle\Exceptions\InvalidResourceException;
 use CronkdBundle\Repository\LogRepository;
@@ -50,16 +51,17 @@ class ActionController extends ApiController
         }
 
         $kingdomManager = $this->get('cronkd.manager.kingdom');
-        $settings = $this->getParameter('cronkd.settings');
-        $outputResourceSettings = $settings['resources'][$outputResourceObj->getName()];
-        $actionDefinition = $outputResourceSettings['action'];
+        $action = $outputResourceObj->getActions()->first();
+        $inputs = $action->getInputs();
 
         // Validate Kingdom has enough input resources to perform action
-        foreach ($actionDefinition['inputs'] as $resourceName => $inputDefinition) {
-            $kingdomAvailableResource = $kingdomManager->lookupResource($kingdom, $resourceName);
-            $requiredQuantity = $quantity * $inputDefinition['quantity'];
+        /** @var ResourceActionInput $resourceActionInput */
+        foreach ($inputs as $resourceActionInput) {
+            $inputResource = $resourceActionInput->getResource();
+            $kingdomAvailableResource = $kingdomManager->lookupResource($kingdom, $inputResource->getName());
+            $requiredQuantity = $quantity * $resourceActionInput->getInputQuantity();
             if (!$kingdomAvailableResource || $requiredQuantity > $kingdomAvailableResource->getQuantity()) {
-                return $this->createErrorJsonResponse('Not enough ' . $resourceName . ' to complete action');
+                return $this->createErrorJsonResponse('Not enough ' . $inputResource->getName() . ' to complete action');
             }
         }
 
@@ -68,13 +70,14 @@ class ActionController extends ApiController
         $inputQueues = [];
         $resourceManager = $this->get('cronkd.manager.resource');
         $queuePopulator = $this->get('cronkd.queue_populator');
-        foreach ($actionDefinition['inputs'] as $resourceName => $inputDefinition) {
-            $kingdomResource = $kingdomManager->lookupResource($kingdom, $resourceName);
-            $inputQuantity = $quantity * $inputDefinition['quantity'];
+        foreach ($inputs as $resourceActionInput) {
+            $inputResource = $resourceActionInput->getResource();
+            $kingdomResource = $kingdomManager->lookupResource($kingdom, $inputResource->getName());
+            $inputQuantity = $quantity * $resourceActionInput->getInputQuantity();
             $kingdomResource->removeQuantity($inputQuantity);
-            if ($inputDefinition['requeue']) {
-                $resource = $resourceManager->get($resourceName);
-                $queueSize = $inputDefinition['queue_size'] + $this->calculateQueueModifier($kingdomState->getActivePolicyName(), $resource);
+            if ($resourceActionInput->getRequeue()) {
+                $resource = $resourceManager->get($inputResource->getName());
+                $queueSize = $resourceActionInput->getQueueSize() + $this->calculateQueueModifier($kingdomState->getActivePolicyName(), $resource);
 
                 $inputQueues[] = $queuePopulator->build(
                     $kingdom,
@@ -85,11 +88,17 @@ class ActionController extends ApiController
             }
         }
 
-        $outputDefinition = $actionDefinition['output'];
-        $kingdomOutputResource = $kingdomManager->lookupResource($kingdom, $outputResourceObj->getName());
+        $kingdomOutputResource = $kingdomManager->lookupResource($kingdom, $action->getResource()->getName());
         $outputResource = $resourceManager->get($outputResourceObj->getName());
-        $outputQuantity = $quantity * $outputDefinition['quantity'];
-        $queueSize = $outputDefinition['queue_size'] + $this->calculateQueueModifier($kingdomState->getActivePolicyName(), $outputResource);
+        $outputQuantity = $quantity * $action->getOutputQuantity();
+        $queueSize = $action->getQueueSize() + $this->calculateQueueModifier($kingdomState->getActivePolicyName(), $outputResource);
+
+        $policyManager = $this->get('cronkd.manager.policy');
+        $queueSizeModifier = $policyManager->calculateQueueSizeModifier($kingdom, $outputResource);
+        $queueSize += $queueSizeModifier;
+
+        $outputMultiplier = $policyManager->calculateOutputMultiplier($kingdom, $outputResource);
+        $outputQuantity = floor($outputQuantity * $outputMultiplier);
 
         $outputQueue = $queuePopulator->build(
             $kingdom,
@@ -101,13 +110,14 @@ class ActionController extends ApiController
         $this->get('cronkd.manager.log')->createLog(
             $kingdom,
             Log::TYPE_ACTION,
-            $actionDefinition['verb'] . ' ' . $quantity . ' ' . $outputResourceObj->getName()
+            $action->getVerb() . ' ' . $quantity . ' ' . $outputResourceObj->getName()
         );
 
         return new JsonResponse([
             'data' => [
-                'inputs' => $inputQueues,
-                'output' => $outputQueue,
+                'inputs'         => $inputQueues,
+                'output'         => $outputQueue,
+                'outputQuantity' => $outputQuantity,
             ],
         ]);
     }
@@ -119,6 +129,8 @@ class ActionController extends ApiController
      */
     private function calculateQueueModifier(string $policyName, Resource $resource)
     {
+        return 0;
+
         $queueLengthModifier = 0;
         if ($policyName == Policy::ECONOMIST) {
             if ($resource->getType()->getName() == ResourceType::POPULATION &&

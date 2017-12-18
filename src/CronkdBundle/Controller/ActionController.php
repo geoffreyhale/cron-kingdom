@@ -3,12 +3,15 @@ namespace CronkdBundle\Controller;
 
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
+use CronkdBundle\Entity\Resource\Resource;
+use CronkdBundle\Entity\Resource\ResourceActionInput;
 use CronkdBundle\Form\ActionType;
 use CronkdBundle\Model\Action;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 /**
  * @Route("/action")
@@ -26,12 +29,16 @@ class ActionController extends CronkdController
         $this->validateWorldIsActive($kingdom);
         $this->validateUserOwnsKingdom($kingdom);
 
-        $settings = $this->getParameter('cronkd.settings');
-        if (!isset($settings['resources'][$resourceName])) {
+        $resourceManager = $this->get('cronkd.manager.resource');
+        $resource = $resourceManager->get($resourceName);
+        if (null === $resource) {
+            throw new ResourceNotFoundException($resourceName);
+        }
+        if (!count($resource->getActions())) {
             throw $this->createNotFoundException('No actions to perform for ' . $resourceName);
         }
 
-        $maxQuantityToProduce = $this->calculateMaxResourceAllocation($kingdom, $settings, $resourceName);
+        $maxQuantityToProduce = $this->calculateMaxResourceAllocation($kingdom, $resource);
 
         $action = new Action();
         $form = $this->createForm(ActionType::class, $action, [
@@ -55,7 +62,7 @@ class ActionController extends CronkdController
             } elseif (isset($results['error'])) {
                 $flashBag->add('danger' , $results['error']);
             } else {
-                $flashBag->add('success', $action->getQuantity() . ' ' . $resourceName . ' successfully queued');
+                $flashBag->add('success', $results['data']['outputQuantity'] . ' ' . $resourceName . ' successfully queued');
             }
 
             return $this->redirectToRoute('homepage');
@@ -64,27 +71,31 @@ class ActionController extends CronkdController
         return [
             'form'                => $form->createView(),
             'resource'            => $resourceName,
+            'action'              => $resource->getActions()->first(),
             'maxQuantity'         => $maxQuantityToProduce,
-            'actionDescription'   => $settings['resources'][$resourceName]['action']['description'],
-            'resourceDescription' => $settings['resources'][$resourceName]['description'],
-            'verb'                => $settings['resources'][$resourceName]['action']['verb'],
+            'resourceDescription' => $resource->getDescription(),
         ];
     }
 
     /**
      * @param Kingdom $kingdom
-     * @param array $settings
-     * @param string $resourceName
-     * @return int
+     * @param Resource $resource
+     * @return float|int
      */
-    private function calculateMaxResourceAllocation(Kingdom $kingdom, array $settings, string $resourceName)
+    private function calculateMaxResourceAllocation(Kingdom $kingdom, Resource $resource)
     {
         $maxQuantity = 10E99;
 
-        $inputs = $settings['resources'][$resourceName]['action']['inputs'];
+        $action = $resource->getActions()->first();
+        if (null === $action) {
+            return 0;
+        }
+
+        $inputs = $action->getInputs();
         $requiredInputs = [];
-        foreach ($inputs as $inputResourceName => $inputResourceData) {
-            $requiredInputs[$inputResourceName] = $inputResourceData['quantity'];
+        /** @var ResourceActionInput $resourceActionInput */
+        foreach ($inputs as $resourceActionInput) {
+            $requiredInputs[$resourceActionInput->getResource()->getName()] = $resourceActionInput->getInputQuantity();
         }
 
         $em = $this->getDoctrine()->getManager();

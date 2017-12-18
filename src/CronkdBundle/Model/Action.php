@@ -7,7 +7,6 @@ class Action
 {
     /** @var  Kingdom */
     private $kingdom;
-
     /** @var  int */
     private $quantity;
 

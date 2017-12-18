@@ -1,15 +1,16 @@
 <?php
-namespace CronkdBundle\Entity;
+namespace CronkdBundle\Entity\Resource;
 
+use CronkdBundle\Entity\BaseEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Jms;
 
 /**
- * Resource
+ * ResourceType
  *
  * @ORM\Table(name="resource_type")
- * @ORM\Entity(repositoryClass="CronkdBundle\Repository\ResourceRepository")
+ * @ORM\Entity()
  *
  * @Jms\ExclusionPolicy("all")
  */
@@ -40,6 +41,14 @@ class ResourceType extends BaseEntity
      * @ORM\OneToMany(targetEntity="Resource", mappedBy="type")
      */
     private $resources;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->resources = new ArrayCollection();
+    }
 
     /**
      * Get id
@@ -74,22 +83,15 @@ class ResourceType extends BaseEntity
     {
         return $this->name;
     }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->resources = new \Doctrine\Common\Collections\ArrayCollection();
-    }
 
     /**
      * Add resource
      *
-     * @param \CronkdBundle\Entity\Resource $resource
+     * @param Resource $resource
      *
      * @return ResourceType
      */
-    public function addResource(\CronkdBundle\Entity\Resource $resource)
+    public function addResource(Resource $resource)
     {
         $this->resources[] = $resource;
 
@@ -99,9 +101,9 @@ class ResourceType extends BaseEntity
     /**
      * Remove resource
      *
-     * @param \CronkdBundle\Entity\Resource $resource
+     * @param Resource $resource
      */
-    public function removeResource(\CronkdBundle\Entity\Resource $resource)
+    public function removeResource(Resource $resource)
     {
         $this->resources->removeElement($resource);
     }
@@ -114,5 +116,10 @@ class ResourceType extends BaseEntity
     public function getResources()
     {
         return $this->resources;
+    }
+
+    public function __toString()
+    {
+        return $this->getName();
     }
 }

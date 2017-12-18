@@ -2,9 +2,9 @@
 namespace CronkdBundle\Model;
 
 use CronkdBundle\Entity\Kingdom;
-use CronkdBundle\Entity\KingdomPolicy;
+use CronkdBundle\Entity\PolicyInstance;
 use CronkdBundle\Entity\KingdomResource;
-use CronkdBundle\Entity\Resource;
+use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Exceptions\KingdomDoesNotHaveResourceException;
 
 class KingdomState
@@ -22,10 +22,9 @@ class KingdomState
     /** @var bool  */
     private $availableAttack = false;
 
-    public function __construct(Kingdom $kingdom, array $settings)
+    public function __construct(Kingdom $kingdom)
     {
-        $this->kingdom  = $kingdom;
-        $this->settings = $settings;
+        $this->kingdom = $kingdom;
     }
 
     /**
@@ -108,23 +107,30 @@ class KingdomState
      */
     public function canPerformActionOnResource(Resource $resource)
     {
-        $actionSettings = $this->settings['resources'][$resource->getName()]['action'];
-        if (!$actionSettings) {
+        if (!$resource->getCanBeProduced()) {
             return false;
         }
 
-        try {
-            foreach ($actionSettings['inputs'] as $inputResourceName => $inputSetting) {
-                $kingdomResource = $this->getKingdomResource($inputResourceName);
-                if ($kingdomResource->getQuantity() < $inputSetting['quantity']) {
-                    return false;
-                }
+        $kingdomResource = $this->kingdom->getResource($resource);
+        if (null === $kingdomResource) {
+            return false;
+        }
+
+        if (!count($kingdomResource->getResource()->getActions())) {
+            return false;
+        }
+
+        $action = $kingdomResource->getResource()->getActions()->first();
+        if (null === $action) {
+            return false;
+        }
+
+        foreach ($action->getInputs() as $resourceActionInput) {
+            $kingdomResource = $this->getKingdomResource($resourceActionInput->getResource()->getName());
+            if ($kingdomResource->getQuantity() < $resourceActionInput->getInputQuantity()) {
+                return false;
             }
-        } catch (KingdomDoesNotHaveResourceException $e) {
-            return false;
         }
-
-
 
         return true;
     }
@@ -144,6 +150,7 @@ class KingdomState
 
         throw new KingdomDoesNotHaveResourceException($resourceName);
     }
+
 
     /**
      * @param bool $availableAttack
@@ -184,7 +191,7 @@ class KingdomState
     }
 
     /**
-     * @return KingdomPolicy|null
+     * @return PolicyInstance|null
      */
     public function getActivePolicy()
     {
@@ -204,8 +211,18 @@ class KingdomState
      */
     public function getActivePolicyEndDiff()
     {
-        if (null !== $this->kingdom->getActivePolicy()) {
-            return $this->kingdom->getActivePolicy()->getEndTime()->diff(new \DateTime())->format('%h:%I');
+        $activePolicy = $this->kingdom->getActivePolicy();
+        $world = $this->kingdom->getWorld();
+        if (null !== $activePolicy) {
+            $endTick = $activePolicy->getStartTick() + $activePolicy->getTickDuration();
+            $ticksLeft = $endTick - $this->kingdom->getWorld()->getTick();
+            $minutesToEndTick = (60 * $ticksLeft) - (new \DateTime())->format('i');
+
+            return (new \DateTime())
+                ->add(new \DateInterval('PT'.$minutesToEndTick.'M'))
+                ->diff(new \DateTime())
+                ->format('%dd, %hh, %im')
+            ;
         }
 
         return '';
@@ -265,5 +282,37 @@ class KingdomState
     public function getNotificationCount()
     {
         return $this->notificationCount;
+    }
+
+    /**
+     * @return int
+     */
+    public function getModifiedAttackPower()
+    {
+        $attack = $this->kingdom->getAttack();
+
+        $activePolicy = $this->kingdom->getActivePolicy();
+        if ($activePolicy) {
+            $attackMultiplier = ($activePolicy->getPolicy()->getAttackMultiplier() / 100);
+            $attack *= $attackMultiplier;
+        }
+
+        return floor($attack);
+    }
+
+    /**
+     * @return int
+     */
+    public function getModifiedDefensePower()
+    {
+        $defense = $this->kingdom->getDefense();
+
+        $activePolicy = $this->kingdom->getActivePolicy();
+        if ($activePolicy) {
+            $defenseMultiplier = ($activePolicy->getPolicy()->getDefenseMultiplier() / 100);
+            $defense *= $defenseMultiplier;
+        }
+
+        return floor($defense);
     }
 }

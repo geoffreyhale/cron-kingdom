@@ -2,6 +2,7 @@
 namespace CronkdBundle\Form;
 
 use CronkdBundle\Entity\Kingdom;
+use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Exceptions\InvalidKingdomStateException;
 use CronkdBundle\Exceptions\InvalidSettingsToParseException;
 use CronkdBundle\Model\KingdomState;
@@ -22,16 +23,14 @@ class ProbeAttemptType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        if (empty($options['settings'])) {
-            throw new InvalidSettingsToParseException();
-        }
         if (!$options['kingdomState'] instanceof KingdomState) {
             throw new InvalidKingdomStateException();
         }
 
-        foreach ($options['settings']['resources'] as $resourceName => $resourceSetting) {
-            if ($resourceSetting['probe_power'] > 0 && $options['kingdomState']->hasAvailableResource($resourceName)) {
-                $builder->add($resourceName, TextType::class, [
+        /** @var Resource $resource */
+        foreach ($options['resources'] as $resource) {
+            if ($resource->getProbePower() > 0 && $options['kingdomState']->hasAvailableResource($resource->getName())) {
+                $builder->add($resource->getName(), TextType::class, [
                     'required' => true,
                 ]);
             }
@@ -39,9 +38,9 @@ class ProbeAttemptType extends AbstractType
 
         $builder
             ->add('target', EntityType::class, [
-                'required' => true,
-                'class' => Kingdom::class,
-                'placeholder' => '--- Select Kingdom ---',
+                'required'      => true,
+                'class'         => Kingdom::class,
+                'placeholder'   => '--- Select Kingdom ---',
                 'query_builder' => function(EntityRepository $er) use ($options) {
                     $qb = $er->createQueryBuilder('k');
                     $qb->orderBy('k.name', 'ASC');
@@ -58,7 +57,7 @@ class ProbeAttemptType extends AbstractType
                 },
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Hack',
+                'label' => 'Spy',
             ])
         ;
     }
@@ -69,9 +68,9 @@ class ProbeAttemptType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class'    => ProbeAttempt::class,
-            'kingdomState'  => null,
-            'settings'      => [],
+            'data_class'   => ProbeAttempt::class,
+            'kingdomState' => null,
+            'resources'    => [],
         ]);
     }
 

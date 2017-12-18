@@ -1,7 +1,6 @@
 <?php
 namespace CronkdBundle\Controller;
 
-use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Form\AttackPlanType;
 use CronkdBundle\Model\AttackPlan;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -16,17 +15,16 @@ use Symfony\Component\HttpFoundation\Request;
 class AttackController extends CronkdController
 {
     /**
-     * @Route("/{id}", name="attack")
+     * @Route("/", name="attack")
      * @Method({"GET", "POST"})
-     * @ParamConverter(name="id", class="CronkdBundle:Kingdom")
      * @Template("CronkdBundle:Attack:send.html.twig")
      */
-    public function attackAction(Request $request, Kingdom $kingdom)
+    public function attackAction(Request $request)
     {
-        $this->validateWorldIsActive($kingdom);
-        $this->validateUserOwnsKingdom($kingdom);
-
+        $resourceManager = $this->get('cronkd.manager.resource');
         $kingdomManager = $this->get('cronkd.manager.kingdom');
+
+        $kingdom = $this->extractKingdomFromCurrentUser();
         $kingdomState = $kingdomManager->generateKingdomState($kingdom);
 
         $previousAttack = $this->get('cronkd.service.attacking')->numAttacksThisTick($kingdom);
@@ -34,14 +32,16 @@ class AttackController extends CronkdController
             throw $this->createAccessDeniedException("You may only attack once per tick");
         }
 
-        $settings = $this->getParameter('cronkd.settings');
+        $resources = $resourceManager->getWorldResources($kingdom->getWorld());
         $attackPlan = new AttackPlan();
+
         $form = $this->createForm(AttackPlanType::class, $attackPlan, [
-            'kingdomState'  => $kingdomState,
-            'settings'      => $settings,
+            'kingdomState' => $kingdomState,
+            'resources'    => $resources,
         ]);
 
         $form->handleRequest($request);
+
         if ($form->isValid()) {
             $response = $this->forward('CronkdBundle:Api/Attack:attack', [
                 'kingdomId'       => $kingdom->getId(),
@@ -49,8 +49,7 @@ class AttackController extends CronkdController
                 'quantities'      => $attackPlan->getQuantities(),
             ]);
 
-            $results = $response->getContent();
-            $results = json_decode($results, true);
+            $results = json_decode($response->getContent(), true);
 
             return $this->render('@Cronkd/Attack/results.html.twig', [
                 'results' => $results,
@@ -61,7 +60,7 @@ class AttackController extends CronkdController
         return [
             'form'         => $form->createView(),
             'kingdomState' => $kingdomState,
-            'settings'     => $settings,
+            'resources'    => $resources,
         ];
     }
 }

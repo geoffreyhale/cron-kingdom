@@ -10,7 +10,7 @@
     <tbody>
     {% for kingdomByNetworth in worldState.kingdomsByNetworth %}
         <tr>
-            {% if kingdomByNetworth.id == kingdom.id %}
+            {% if kingdom is not null and kingdomByNetworth.id == kingdom.id %}
                 <td><strong>{{ loop.index }}</strong></td>
                 <td><strong>{{ kingdomByNetworth.name }}</strong></td>
                 <td><strong>{{ kingdomByNetworth.liquidity|filterNumber }}</strong></td>

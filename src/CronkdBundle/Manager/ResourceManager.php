@@ -1,8 +1,9 @@
 <?php
 namespace CronkdBundle\Manager;
 
-use CronkdBundle\Entity\Resource;
-use CronkdBundle\Entity\ResourceType;
+use CronkdBundle\Entity\Resource\Resource;
+use CronkdBundle\Entity\Resource\ResourceType;
+use CronkdBundle\Entity\World;
 use CronkdBundle\Exceptions\InvalidResourceException;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -10,26 +11,38 @@ class ResourceManager
 {
     /** @var EntityManagerInterface */
     private $em;
-    /** @var array  */
-    private $settings;
     /** @var  array */
     private $cachedResources;
 
-    public function __construct(EntityManagerInterface $em, array $settings)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->em              = $em;
-        $this->settings        = $settings;
         $this->cachedResources = [];
     }
 
     /**
+     * @param World $world
+     * @return Resource[]
+     */
+    public function getWorldResources(World $world)
+    {
+        $resources = $this->em->getRepository(Resource::class)->findByWorld($world);
+
+        return $resources;
+    }
+
+    /**
+     * @param World $world
      * @return array
      */
-    public function getKingdomStartingResources()
+    public function getKingdomStartingResources(World $world)
     {
+        $resources        = $this->getWorldResources($world);
         $initialResources = [];
-        foreach ($this->settings['resources'] as $resourceName => $resourceData) {
-            $initialResources[$resourceName] = $resourceData['initial'];
+
+        /** @var Resource $resource */
+        foreach ($resources as $resource) {
+            $initialResources[$resource->getName()] = $resource->getStartingAmount();
         }
 
         return $initialResources;
@@ -73,5 +86,24 @@ class ResourceManager
             ->findResourcesByType(ResourceType::BUILDING);
 
         return $resources;
+    }
+
+    /**
+     * Need to get away from hardcoding "Civilian" as the base population resource.
+     * Treat the first population resource that cannot be produced as the base population resource
+     * and return that.
+     *
+     * @return Resource|null
+     */
+    public function getCivilianResources()
+    {
+        $populationResources = $this->getPopulationResources();
+        foreach ($populationResources as $resource) {
+            if (!$resource->getCanBeProduced()) {
+                return $resource;
+            }
+        }
+
+        return null;
     }
 }

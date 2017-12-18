@@ -6,11 +6,12 @@ use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Log;
 use CronkdBundle\Entity\Queue;
-use CronkdBundle\Entity\Resource;
+use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Entity\User;
 use CronkdBundle\Entity\World;
 use CronkdBundle\Event\CreateKingdomEvent;
 use CronkdBundle\Exceptions\InvalidResourceException;
+use CronkdBundle\Exceptions\InvalidWorldSettingsException;
 use CronkdBundle\Model\KingdomState;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -23,23 +24,23 @@ class KingdomManager
     private $em;
     /** @var ResourceManager  */
     private $resourceManager;
+    /** @var PolicyManager  */
+    private $policyManager;
     /** @var EventDispatcherInterface  */
     private $eventDispatcher;
-    /** @var array */
-    private $settings;
     /** @var NullLogger  */
     private $logger;
 
     public function __construct(
         EntityManagerInterface $em,
         ResourceManager $resourceManager,
-        EventDispatcherInterface $eventDispatcher,
-        array $settings
+        PolicyManager $policyManager,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->em              = $em;
         $this->resourceManager = $resourceManager;
         $this->eventDispatcher = $eventDispatcher;
-        $this->settings        = $settings;
+        $this->policyManager   = $policyManager;
         $this->logger          = new NullLogger();
     }
 
@@ -80,7 +81,7 @@ class KingdomManager
      */
     public function generateKingdomState(Kingdom $kingdom)
     {
-        $kingdomState = new KingdomState($kingdom, $this->settings);
+        $kingdomState = new KingdomState($kingdom);
         $winLossRecord = $this->em->getRepository(AttackLog::class)->getWinLossRecord($kingdom);
         $kingdomState
             ->setWinLossRecord($winLossRecord['win'], $winLossRecord['loss'])
@@ -142,7 +143,9 @@ class KingdomManager
         foreach ($housingResources as $resource) {
             $kingdomResourceSum = $this->em->getRepository(KingdomResource::class)
                 ->findSumOfSpecificResources($kingdom, [$resource->getId()]);
-            $capacity += ($kingdomResourceSum * $resource->getCapacity());
+            $resourceCapacity = ($kingdomResourceSum * $resource->getCapacity());
+            $capacityMultiplier = $this->policyManager->calculateCapacityMultiplier($kingdom, $resource);
+            $capacity += floor($resourceCapacity * $capacityMultiplier);
         }
 
         return $capacity;
@@ -195,16 +198,21 @@ class KingdomManager
 
     /**
      * @param Kingdom $kingdom
-     * @return int
+     * @return float|int
+     * @throws InvalidWorldSettingsException
      */
     public function incrementPopulation(Kingdom $kingdom)
     {
-        $civilianResource  = $this->resourceManager->get(Resource::CIVILIAN);
-        $activeCivilians   = $this->lookupResource($kingdom, Resource::CIVILIAN);
+        $civilianResource  = $this->resourceManager->getCivilianResources();
+        if (null === $civilianResource) {
+            throw new InvalidWorldSettingsException("No base population resource is configured!");
+        }
+
+        $activeCivilians   = $kingdom->getResource($civilianResource);
         $inactiveCivilians = $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $civilianResource);
         $totalCivilians    = $activeCivilians->getQuantity() + $inactiveCivilians;
 
-        $birthedCivilians  = floor(log($totalCivilians)); // 10 => 2, 100 => 4, 1000 => 6
+        $birthedCivilians  = floor($kingdom->getWorld()->getBirthRate() / 100 * $totalCivilians);
         if (0 == $birthedCivilians) {
             $birthedCivilians = 1;
         }
@@ -220,6 +228,19 @@ class KingdomManager
         $this->em->flush();
 
         return $birthedCivilians;
+    }
+
+    /**
+     * If a resource is added after the Kingdom has started, add it now.
+     *
+     * @param Kingdom $kingdom
+     */
+    public function syncResources(Kingdom $kingdom)
+    {
+        $resources = $this->resourceManager->getWorldResources($kingdom->getWorld());
+        foreach ($resources as $resource) {
+            $this->findOrCreateResource($kingdom, $resource);
+        }
     }
 
     /**

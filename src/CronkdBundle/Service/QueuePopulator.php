@@ -3,7 +3,7 @@ namespace CronkdBundle\Service;
 
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\Queue;
-use CronkdBundle\Entity\Resource;
+use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Exceptions\InvalidQueueIntervalException;
 use Doctrine\ORM\EntityManagerInterface;
 

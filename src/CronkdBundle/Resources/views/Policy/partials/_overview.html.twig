@@ -1,0 +1,24 @@
+{% if policy.attackMultiplier != 100 %}
+    {{ policy.attackMultiplier }}% Attack multiplier<br />
+{% endif %}
+{% if policy.defenseMultiplier != 100 %}
+    {{ policy.defenseMultiplier }}% Defense multiplier<br />
+{% endif %}
+{% if policy.outputMultiplier != 100 %}
+    {{ policy.outputMultiplier }}% Output multiplier<br />
+{% endif %}
+{% if policy.probePowerMultiplier != 100 %}
+    {{ policy.probePowerMultiplier }}% Probe Power multiplier<br />
+{% endif %}
+{% if policy.capacityMultiplier != 100 %}
+    {{ policy.capacityMultiplier }}% Capacity multiplier<br />
+{% endif %}
+{% if policy.queueSizeModifier != 0 %}
+    {{ policy.queueSizeModifier }} Queue Size modifier<br />
+{% endif %}
+{% if policy.spoilOfWarAttackCaptureMultiplier != 0 %}
+    {{ policy.spoilOfWarAttackCaptureMultiplier }}% Attack Spoil of War multiplier<br />
+{% endif %}
+{% if policy.spoilOfWarDefenseCaptureMultiplier != 0 %}
+    {{ policy.spoilOfWarDefenseCaptureMultiplier }}% Defense Spoil of War multiplier<br />
+{% endif %}

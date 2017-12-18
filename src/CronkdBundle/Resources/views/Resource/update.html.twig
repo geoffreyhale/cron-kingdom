@@ -1,0 +1,55 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+    <div class="row-fluid">
+        <div class="col-md-12">
+
+            <ol class="breadcrumb">
+                <li><a href="{{ path('world_configure', {'world': world.id}) }}">Configure {{ world.name }}</a></li>
+                <li class="active">Update {{ resource.name }} Resource</li>
+            </ol>
+
+            <h1>Update {{ resource.name }} Resource</h1>
+            {% include 'CronkdBundle:Resource/partials:form.html.twig' with {'action': 'Update'} %}
+
+            {% if resource.canBeProduced %}
+            <div class="pull-right">
+                <a href="{{ path('resource_action_create', {'id': resource.id}) }}" class="btn btn-info btn-sm"><i class="fa fa-plus"></i> Add</a>
+            </div>
+            <h2>Actions</h2>
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Quantity</th>
+                    <th>Queue Size</th>
+                    <th>Inputs</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for action in resource.actions %}
+                <tr>
+                    <td>
+                        {{ action.verb }}
+                        <div class="pull-right">
+                            <a href="{{ path('resource_action_update', {'id': action.id}) }}"><i class="fa fa-cogs btn btn-info"></i></a>
+                            <a href="{{ path('resource_action_delete', {'id': action.id}) }}"><i class="fa fa-remove btn btn-danger"></i></a>
+                        </div>
+                    </td>
+                    <td>{{ action.outputQuantity }}</td>
+                    <td>{{ action.queueSize }}</td>
+                    <td>
+                        {% set inputs = [] %}
+                        {% for input in action.inputs %}
+                            {% set inputs = inputs|merge([input.inputQuantity ~ ' ' ~ input.resource.name]) %}
+                        {% endfor %}
+                        {{ inputs|join(', ') }}
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

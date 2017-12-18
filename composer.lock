@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "58a98ade8ee5f20d808f8f1a6c9acdbc",
+    "content-hash": "249ab0dab0802b72b40ba2ecd5adb4d3",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -3162,28 +3162,28 @@
         },
         {
             "name": "doctrine/doctrine-fixtures-bundle",
-            "version": "2.3.0",
+            "version": "v2.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineFixturesBundle.git",
-                "reference": "0f1a2f91b349e10f5c343f75ab71d23aace5b029"
+                "reference": "74b8cc70a4a25b774628ee59f4cdf3623a146273"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineFixturesBundle/zipball/0f1a2f91b349e10f5c343f75ab71d23aace5b029",
-                "reference": "0f1a2f91b349e10f5c343f75ab71d23aace5b029",
+                "url": "https://api.github.com/repos/doctrine/DoctrineFixturesBundle/zipball/74b8cc70a4a25b774628ee59f4cdf3623a146273",
+                "reference": "74b8cc70a4a25b774628ee59f4cdf3623a146273",
                 "shasum": ""
             },
             "require": {
                 "doctrine/data-fixtures": "~1.0",
                 "doctrine/doctrine-bundle": "~1.0",
                 "php": ">=5.3.2",
-                "symfony/doctrine-bridge": "~2.3|~3.0"
+                "symfony/doctrine-bridge": "~2.7|~3.0|~4.0"
             },
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.2.x-dev"
+                    "dev-master": "2.4.x-dev"
                 }
             },
             "autoload": {
@@ -3215,7 +3215,7 @@
                 "Fixture",
                 "persistence"
             ],
-            "time": "2015-11-04T21:23:23+00:00"
+            "time": "2017-10-30T19:26:42+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",
@@ -4349,7 +4349,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.5.9"
+        "php": ">=7.0"
     },
     "platform-dev": []
 }

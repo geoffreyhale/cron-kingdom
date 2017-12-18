@@ -1,0 +1,28 @@
+{% if action is not defined %}
+    {% set action = 'Submit' %}
+{% endif %}
+
+{% form_theme form 'bootstrap_3_layout.html.twig' %}
+
+{{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
+<div class="row-fluid">
+    <div class="col-sm-6">
+        <div class="form-group">
+            {{ form_row(form.resource, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_row(form.inputQuantity, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_row(form.requeue, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_row(form.queueSize, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_widget(form.submit, {'label': action, 'attr': {'class': 'btn btn-primary'}}) }}
+        </div>
+    </div>
+</div>
+<hr />
+{{ form_end(form) }}

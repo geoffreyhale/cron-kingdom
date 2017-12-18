@@ -1,0 +1,18 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+    <div class="row-fluid">
+        <div class="col-md-12">
+
+            <ol class="breadcrumb">
+                <li><a href="{{ path('world_configure', {'world': world.id}) }}">Configure {{ world.name }}</a></li>
+                <li><a href="{{ path('policy_update', {'id': policy.id}) }}">Update {{ policy.name }}</a></li>
+                <li class="active">Create Policy for Resource</li>
+            </ol>
+
+            <h1>Create Policy for Resource</h1>
+            {% include 'CronkdBundle:PolicyResource/partials:form.html.twig' with {'action': 'Create'} %}
+
+        </div>
+    </div>
+{% endblock %}

@@ -43,13 +43,6 @@ class WorldController extends Controller
         $form = $this->createForm(WorldType::class, $world);
         $form->handleRequest($request);
 
-        // Extra validation
-        if ($form->isValid()) {
-            if ($world->getStartTime()->getTimestamp() > $world->getEndTime()->getTimestamp()) {
-                $form->get('startTime')->addError(new FormError('End time must be later than start time!'));
-            }
-        }
-
         if ($form->isValid()) {
             $worldManager = $this->get('cronkd.manager.world');
             $worldManager->create($world);
@@ -65,13 +58,15 @@ class WorldController extends Controller
     }
 
     /**
-     * @Route("/{world}/configure", name="world_configure")
+     * @Route("/{world}/configure/{tab}", name="world_configure")
      * @Security("has_role('ROLE_ADMIN')")
      */
-    public function configureAction(World $world)
+    public function configureAction(Request $request, World $world, string $tab = 'world')
     {
+        $tab = $request->get('tab', 'world');
         return $this->render('CronkdBundle:World:configure.html.twig', [
             'world' => $world,
+            'tab'   => $tab,
         ]);
     }
 
@@ -108,8 +103,6 @@ class WorldController extends Controller
 
     /**
      * @Route("/{id}", name="world_show")
-     * @ParamConverter(name="id", class="CronkdBundle:World")
-     * @Template()
      */
     public function showAction(World $world)
     {
@@ -125,13 +118,13 @@ class WorldController extends Controller
 
         $worldState = $worldManager->generateWorldState($world);
 
-        return [
+        return $this->render('CronkdBundle:World:show.html.twig', [
             'world'              => $world,
             'worldState'         => $worldState,
             'kingdom'            => $kingdom,
             'worldNetworth'      => $worldManager->calculateWorldNetWorth($world),
             'kingdoms'           => $world->getKingdoms(),
             'kingdomsByNetworth' => $kingdomManager->calculateKingdomsByNetWorth($world),
-        ];
+        ]);
     }
 }

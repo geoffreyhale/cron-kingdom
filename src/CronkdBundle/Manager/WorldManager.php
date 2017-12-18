@@ -1,7 +1,7 @@
 <?php
 namespace CronkdBundle\Manager;
 
-use CronkdBundle\Entity\Policy;
+use CronkdBundle\Entity\Policy\Policy;
 use CronkdBundle\Entity\World;
 use CronkdBundle\Event\InitializeWorldEvent;
 use CronkdBundle\Model\WorldState;

@@ -1,0 +1,35 @@
+<div class="row clearfix">
+    <div class="col-md-8">
+        <div class="row clearfix" style="font-size: 24px;">
+            <div class="col-md-12">
+                {% include 'CronkdBundle:Default:partials/kingdom/kingdom_card.html.twig' %}
+            </div>
+        </div>
+
+        <div class="row clearfix">
+            <div class="col-md-12">
+                <div class="row clearfix">
+                    <div class="col-md-6">
+                        {% include 'CronkdBundle:Default:partials/kingdom/compositionChart.html.twig' %}
+                    </div>
+
+                    <div class="col-md-6 clearfix">
+                        {% include 'CronkdBundle:Default:partials/kingdom/populationChart.html.twig' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="row clearfix" style="font-size: 24px;">
+            <div class="col-md-12">
+                {% include 'CronkdBundle:World:partials/world_card.html.twig' %}
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-md-12">
+                {% include 'CronkdBundle:World:partials/kingdomScores.html.twig' %}
+            </div>
+        </div>
+    </div>
+</div>

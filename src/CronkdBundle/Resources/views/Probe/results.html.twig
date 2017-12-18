@@ -5,8 +5,8 @@
         <div class="col-sm-12">
             <ol class="breadcrumb">
                 <li><a href="{{ path('homepage') }}">Dashboard</a></li>
-                <li><a href="{{ path('probe_send', {'id': kingdom.id}) }}">Attempt Hack</a></li>
-                <li class="active">Hack Results</li>
+                <li><a href="{{ path('probe_send', {'id': kingdom.id}) }}">Spy Attempt</a></li>
+                <li class="active">Spy Results</li>
             </ol>
 
             <h3>Hack Results</h3>
@@ -18,10 +18,10 @@
                 <div class="alert alert-{{ results.data.report.result ? 'success' : 'danger' }}">
                     <h3 style="margin-top: 0px;">{{ results.data.report.result ? 'Success!' : 'Failure!' }}</h3>
                     {% if results.data.report.result %}
-                        <p>Hackers uncovered the following information:</p>
+                        <p>Spies uncovered the following information:</p>
                         {% include 'CronkdBundle:Probe:resultsTable.html.twig' %}
                     {% else %}
-                        <p>Hackers were not able to retrieve any information.</p>
+                        <p>Spies were not able to retrieve any information.</p>
                     {% endif %}
                 </div>
             {% endif %}
@@ -31,26 +31,7 @@
         <div class="col-sm-12">
             <div class="pull-left btn-group" role="group" aria-label="...">
             {% if results.error is not defined %}
-                {% if results.data.report.result %}
-                    {#
-                    <div class="alert alert-info">
-                        <strong>{{ militaryToSend|number_format }}</strong> is the minimum number of Military to send for a successful attack.
-                        <strong>{{ defenderBonusMilitaryToSend|number_format }}</strong> is the minimum number of Military to send to guarantee a successful attack <strong>if your opponent has the Defender Policy enabled.</strong>
-                    </div>
-
-                    {{ form_start(formAttack, {'class': 'form-inline', 'action': path('attack', {'id': kingdom.id})}) }}
-                    {{ form_row(formAttack.target) }}
-                    {{ form_row(formAttack.militaryAllocations) }}
-                    {{ form_row(formAttack.submit, {'attr': {'class': 'btn btn-danger'}, 'label': 'Attack with '~militaryToSend|number_format~' Military'}) }}
-                    {{ form_end(formAttack) }}
-                    <br />
-                    {{ form_start(formAttackStrongDefense, {'class': 'form-inline', 'action': path('attack', {'id': kingdom.id})}) }}
-                    {{ form_row(formAttackStrongDefense.target) }}
-                    {{ form_row(formAttackStrongDefense.militaryAllocations) }}
-                    {{ form_row(formAttackStrongDefense.submit, {'attr': {'class': 'btn btn-danger'}, 'label': 'Attack with '~defenderBonusMilitaryToSend|number_format~' Military'}) }}
-                    {{ form_end(formAttackStrongDefense) }}
-                    #}
-                {% else %}
+                {% if results.data.report.result is defined %}
                     {% if rehackForm is not null %}
                         {{ form_start(rehackForm) }}
                         {{ form_row(rehackForm.target) }}

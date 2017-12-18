@@ -31,12 +31,11 @@
             <tr>
                 <td style="white-space: nowrap; background-color: #f5f5f5;">
                     {% set resource = resourceQueues.kingdomResource.resource %}
-                    {% set resourceName = resource.name %}
-                    {{ resourceIcon(resourceName)|raw }}
+                    {{ resourceIcon(resource)|raw }}
                     <strong>{{ resourceQueues.kingdomResource.quantity|filterNumber }}</strong>
-                    {{ resourceName }}
-                    {% if resource.canBeProduced and kingdomState.canPerformActionOnResource(resource) %}
-                        <a href="{{ path('action_perform', {'resourceName': resourceName}) }}" class="btn btn-success btn-xs"><i class="fa fa-plus"></i></a>
+                    {{ resource.name }}
+                    {% if kingdomState.canPerformActionOnResource(resource) %}
+                        <a href="{{ path('action_perform', {'resourceName': resource.name}) }}" class="btn btn-success btn-xs"><i class="fa fa-plus"></i></a>
                     {% endif %}
                 </td>
                 {% for tick in range(minTick, maxTick) %}

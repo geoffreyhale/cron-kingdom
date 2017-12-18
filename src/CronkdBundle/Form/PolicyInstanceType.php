@@ -1,8 +1,8 @@
 <?php
 namespace CronkdBundle\Form;
 
-use CronkdBundle\Entity\KingdomPolicy;
-use CronkdBundle\Entity\Policy;
+use CronkdBundle\Entity\Policy\Policy;
+use CronkdBundle\Entity\Policy\PolicyInstance;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -10,7 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class SelectPolicyType extends AbstractType
+class PolicyInstanceType extends AbstractType
 {
     /**
      * {@inheritdoc}
@@ -39,9 +39,9 @@ class SelectPolicyType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
-            'data_class' => KingdomPolicy::class
-        ));
+        $resolver->setDefaults([
+            'data_class' => PolicyInstance::class,
+        ]);
     }
 
     /**
@@ -49,6 +49,6 @@ class SelectPolicyType extends AbstractType
      */
     public function getBlockPrefix()
     {
-        return 'cronkdbundle_select_policy';
+        return 'cronkdbundle_policy_instance';
     }
 }

@@ -1,0 +1,15 @@
+<div class="panel panel-default">
+    <table class="table">
+        <tbody>
+        <tr>
+            <td title="World"><i class="fa fa-globe"></i> <strong>{{ world.name }}</strong></td>
+            <td title="Net Worth">
+                <a href="{{ path('world_show', {'id': world.id}) }}">
+                    <i class="fa fa-line-chart"></i>
+                </a>
+                {{ worldState.aggregateNetWorth|filterNumber }}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
