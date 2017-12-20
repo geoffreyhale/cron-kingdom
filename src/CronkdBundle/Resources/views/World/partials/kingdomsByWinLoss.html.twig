@@ -1,3 +1,9 @@
+<style media="screen" type="text/css">
+    .myKingdom {
+        font-weight: bold;
+    }
+</style>
+
 <table class="table">
     <thead>
     <tr>
@@ -9,18 +15,11 @@
     </thead>
     <tbody>
     {% for kingdomByWinLoss in worldState.kingdomsByWinLossRecord %}
-        <tr>
-            {% if kingdom is not null and kingdomByWinLoss.kingdom.id == kingdom.id %}
-                <td><strong>{{ loop.index }}</strong></td>
-                <td><strong>{{ kingdomByWinLoss.kingdom.name }}</strong></td>
-                <td><strong>{{ kingdomByWinLoss.winloss.win|number_format }}</strong></td>
-                <td><strong>{{ kingdomByWinLoss.winloss.loss|number_format }}</strong></td>
-            {% else %}
-                <td>{{ loop.index }}</td>
-                <td>{{ kingdomByWinLoss.kingdom.name }}</td>
-                <td>{{ kingdomByWinLoss.winloss.win|number_format }}</td>
-                <td>{{ kingdomByWinLoss.winloss.loss|number_format }}</td>
-            {% endif %}
+        <tr class="{{ kingdom is not null and kingdomByWinLoss.kingdom.id == kingdom.id ? 'myKingdom' }} {{ kingdomByWinLoss.winloss.win > kingdomByWinLoss.winloss.loss ? 'success' }} {{ kingdomByWinLoss.winloss.win == kingdomByWinLoss.winloss.loss ? 'warning' }} {{ kingdomByWinLoss.winloss.win < kingdomByWinLoss.winloss.loss ? 'danger' }}">
+            <td>{{ loop.index }}</td>
+            <td>{{ kingdomByWinLoss.kingdom.name }}</td>
+            <td>{{ kingdomByWinLoss.winloss.win|number_format }}</td>
+            <td>{{ kingdomByWinLoss.winloss.loss|number_format }}</td>
         </tr>
     {% endfor %}
     </tbody>
