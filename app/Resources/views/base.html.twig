@@ -32,7 +32,6 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="cronkd-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li><a href="{{ path('world_index') }}" class="navbar-link">Worlds</a></li>
                     <li><a href="{{ path('blog') }}" class="navbar-link">Blog</a></li>
                     <li><a href="{{ path('help') }}" class="navbar-link">Help</a></li>
                 </ul>
@@ -43,6 +42,7 @@
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
+                                    <li><a href="{{ path('world_index') }}" class="navbar-link">Worlds</a></li>
                                     <li><a href="{{ path('world_create') }}"><i class="fa fa-plus fa-fw"></i> Create New World</a></li>
                                     {% if world is defined %}<li><a href="{{ path('world_configure', {'world': world.id}) }}"><i class="fa fa-cogs fa-fw"></i> Configure Current World</a></li>{% endif %}
                                 </ul>
