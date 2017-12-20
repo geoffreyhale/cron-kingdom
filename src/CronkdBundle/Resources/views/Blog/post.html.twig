@@ -1,0 +1,10 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+    <div style="margin: 0 auto; max-width: 600px;">
+        <h1>{{ post.title }}</h1>
+        <div class="text-muted">{{ post.date|date("M d, Y") }}</div>
+        <br>
+        <div style="font-size: 24px;">{{ post.body|raw }}</div>
+    </div>
+{% endblock %}
