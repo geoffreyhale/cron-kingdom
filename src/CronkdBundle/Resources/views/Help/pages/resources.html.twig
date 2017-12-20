@@ -30,20 +30,25 @@
     <div class="col-md-6">
         <table class="table table-bordered">
             <tbody>
-            {% for resource in resources %}
-                {% if resource.actions[0] is defined %}
-                    {% set action = resource.actions[0] %}
-                    <tr>
-                        <td style="background-color: #f5f5f5;">{{ action.verb }} {{ action.outputQuantity }} {{ resourceIcon(resource)|raw }} {{ resource.name }}</td>
-                        <td>
-                            <ul>
-                                {% for input in action.inputs %}
-                                    <li>{{ input.inputQuantity }} {{ input.resource.name }} {{ input.requeue ? ' (comes back after '~input.queueSize~' ticks)' : ' (lost forever)' }}</li>
-                                {% endfor %}
-                            </ul>
-                        </td>
-                    </tr>
-                {% endif %}
+            {% for resourceType in resourceTypes %}
+                <tr>
+                    <th colspan="2"><strong>{{ resourceType }} Resources</strong></th>
+                </tr>
+                {% for resource in resources %}
+                    {% if resource.type.name == resourceType and resource.actions[0] is defined %}
+                        {% set action = resource.actions[0] %}
+                        <tr>
+                            <td style="background-color: #f5f5f5;">{{ action.verb }} {{ action.outputQuantity }} {{ resourceIcon(resource)|raw }} {{ resource.name }}</td>
+                            <td>
+                                <ul>
+                                    {% for input in action.inputs %}
+                                        <li>{{ input.inputQuantity }} {{ input.resource.name }} {{ input.requeue ? ' (comes back after '~input.queueSize~' ticks)' : ' (lost forever)' }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
             {% endfor %}
             </tbody>
         </table>

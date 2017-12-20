@@ -80,8 +80,11 @@ class ProbeController extends ApiController
         foreach ($quantities as $resourceName => $quantity) {
             $resource = $resourceManager->get($resourceName);
             $kingdomResource = $kingdomManager->lookupResource($kingdom, $resourceName);
-            // @TODO: add probe logic in config in some capacity
-            $hackerQueues = $queuePopulator->build($kingdom, $resource, 8, $quantity);
+
+            // Only requeue probes if success
+            if ($report->getResult()) {
+                $probeQueues = $queuePopulator->build($kingdom, $resource, 8, $quantity);
+            }
             $kingdomResource->removeQuantity($quantity);
             $em->persist($kingdomResource);
         }
@@ -90,7 +93,7 @@ class ProbeController extends ApiController
         return $this->createSerializedJsonResponse([
             'data' => [
                 'report'        => $report,
-                'hacker_queues' => $hackerQueues,
+                'hacker_queues' => $probeQueues,
             ],
         ]);
     }
