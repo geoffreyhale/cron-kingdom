@@ -1,3 +1,9 @@
+<style media="screen" type="text/css">
+    .myKingdom {
+        font-weight: bold;
+    }
+</style>
+
 <table class="table">
     <thead>
     <tr>
@@ -9,18 +15,11 @@
     </thead>
     <tbody>
     {% for kingdomByNetworth in worldState.kingdomsByNetworth %}
-        <tr>
-            {% if kingdom is not null and kingdomByNetworth.id == kingdom.id %}
-                <td><strong>{{ loop.index }}</strong></td>
-                <td><strong>{{ kingdomByNetworth.name }}</strong></td>
-                <td><strong>{{ kingdomByNetworth.liquidity|filterNumber }}</strong></td>
-                <td><strong>{{ kingdomByNetworth.netWorth|filterNumber }}</strong></td>
-            {% else %}
-                <td>{{ loop.index }}</td>
-                <td>{{ kingdomByNetworth.name }}</td>
-                <td>{{ kingdomByNetworth.liquidity|filterNumber }}</td>
-                <td>{{ kingdomByNetworth.netWorth|filterNumber }}</td>
-            {% endif %}
+        <tr class="{{ kingdom is not null and kingdomByNetworth.id == kingdom.id ? 'myKingdom' }} {{ kingdomByNetworth.liquidity != kingdomByNetworth.netWorth ? 'success' : 'danger' }}">
+            <td>{{ loop.index }}</td>
+            <td>{{ kingdomByNetworth.name }}</td>
+            <td>{{ kingdomByNetworth.liquidity|filterNumber }}</td>
+            <td>{{ kingdomByNetworth.netWorth|filterNumber }}</td>
         </tr>
     {% endfor %}
     </tbody>
