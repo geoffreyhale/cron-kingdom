@@ -124,6 +124,13 @@ class Kingdom extends BaseEntity
     private $policies;
 
     /**
+     * @var MapTile
+     *
+     * @ORM\ManyToOne(targetEntity="MapTile", inversedBy="kingdoms")
+     */
+    private $mapTile;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -540,6 +547,24 @@ class Kingdom extends BaseEntity
         }
 
         return null;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMapTile()
+    {
+        return $this->mapTile;
+    }
+
+    /**
+     * @param mixed $mapTile
+     * @return self
+     */
+    public function setMapTile($mapTile)
+    {
+        $this->mapTile = $mapTile;
+        return $this;
     }
 
     public function __toString()

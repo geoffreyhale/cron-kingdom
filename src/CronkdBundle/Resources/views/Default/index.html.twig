@@ -26,6 +26,7 @@
                             {% endif %}
                         {% endif %}
                     </li>
+                    <li><a href="{{ path('map') }}" class="btn btn-success">Map</a></li>
                     {% if kingdomState.hasAvailableProbingResources %}
                         <li>
                             <a href="{{ path('probe_send', {id: kingdom.id}) }}" class="btn btn-warning">Spy</a>
