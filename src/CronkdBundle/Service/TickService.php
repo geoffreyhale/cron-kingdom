@@ -6,7 +6,7 @@ use CronkdBundle\Entity\World;
 use CronkdBundle\Event\WorldTickEvent;
 use CronkdBundle\Exceptions\InvalidWorldSettingsException;
 use CronkdBundle\Manager\KingdomManager;
-use CronkdBundle\Manager\LogManager;
+use CronkdBundle\Manager\LumberMill;
 use CronkdBundle\Manager\PolicyManager;
 use CronkdBundle\Manager\ResourceManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,7 +21,7 @@ class TickService
     private $kingdomManager;
     /** @var ResourceManager  */
     private $resourceManager;
-    /** @var LogManager  */
+    /** @var LumberMill  */
     private $logManager;
     /** @var EventDispatcherInterface  */
     private $eventDispatcher;
@@ -32,7 +32,7 @@ class TickService
         EntityManagerInterface $em,
         KingdomManager $kingdomManager,
         ResourceManager $resourceManager,
-        LogManager $logManager,
+        LumberMill $logManager,
         EventDispatcherInterface $eventDispatcher,
         LoggerInterface $logger
     ) {

@@ -1,5 +1,5 @@
 <?php
-namespace CronkdBundle\Entity\Log;
+namespace CronkdBundle\Entity\Event;
 
 use CronkdBundle\Entity\KingdomResource;
 use Doctrine\ORM\Mapping as ORM;
@@ -10,7 +10,7 @@ use JMS\Serializer\Annotation as Jms;
  *
  * @Jms\ExclusionPolicy("all")
  */
-class KingdomResourceLog extends Log
+class KingdomResourceEvent extends Event
 {
     /**
      * @var string
@@ -32,7 +32,7 @@ class KingdomResourceLog extends Log
      *
      * @param integer $quantity
      *
-     * @return KingdomResourceLog
+     * @return KingdomResourceEvent
      */
     public function setQuantity($quantity)
     {
@@ -56,7 +56,7 @@ class KingdomResourceLog extends Log
      *
      * @param KingdomResource $kingdomResource
      *
-     * @return KingdomResourceLog
+     * @return KingdomResourceEvent
      */
     public function setKingdomResource(KingdomResource $kingdomResource = null)
     {

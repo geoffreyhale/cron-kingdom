@@ -1,6 +1,7 @@
 <?php
 namespace CronkdBundle\Model;
 
+use CronkdBundle\Entity\Event\ProbeEvent;
 use CronkdBundle\Entity\KingdomResource;
 use JMS\Serializer\Annotation as Jms;
 
@@ -22,6 +23,11 @@ class ProbeReport
      * @Jms\Expose()
      */
     private $data = [];
+
+    /**
+     * @var ProbeEvent
+     */
+    private $probeEvent = null;
 
     /**
      * @param bool $result
@@ -59,5 +65,24 @@ class ProbeReport
     public function getData()
     {
         return $this->data;
+    }
+
+    /**
+     * @param ProbeEvent $probeEvent
+     * @return ProbeReport
+     */
+    public function setProbeEvent(ProbeEvent $probeEvent)
+    {
+        $this->probeEvent = $probeEvent;
+
+        return $this;
+    }
+
+    /**
+     * @return ProbeEvent
+     */
+    public function getProbeEvent()
+    {
+        return $this->probeEvent;
     }
 }

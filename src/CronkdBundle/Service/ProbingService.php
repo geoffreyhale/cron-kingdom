@@ -4,9 +4,8 @@ namespace CronkdBundle\Service;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\PolicyInstance;
 use CronkdBundle\Entity\KingdomResource;
-use CronkdBundle\Entity\Log;
 use CronkdBundle\Event\ProbeEvent;
-use CronkdBundle\Manager\LogManager;
+use CronkdBundle\Manager\LumberMill;
 use CronkdBundle\Manager\PolicyManager;
 use CronkdBundle\Model\ProbeReport;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,14 +19,14 @@ class ProbingService
     private $policyManager;
     /** @var EventDispatcherInterface  */
     private $eventDispatcher;
-    /** @var LogManager  */
+    /** @var LumberMill  */
     private $logManager;
 
     public function __construct(
         EntityManagerInterface $em,
         PolicyManager $policyManager,
         EventDispatcherInterface $dispatcher,
-        LogManager $logManager
+        LumberMill $logManager
     ) {
         $this->em              = $em;
         $this->policyManager   = $policyManager;
@@ -58,7 +57,8 @@ class ProbingService
             ]);
         }
 
-        $this->logManager->logProbeResult($kingdom, $target, $report);
+        $probeEventForProber = $this->logManager->logProbeResult($kingdom, $target, $report);
+        $report->setProbeEvent($probeEventForProber);
 
         $event = new ProbeEvent($kingdom);
         $this->eventDispatcher->dispatch('event.probe', $event);

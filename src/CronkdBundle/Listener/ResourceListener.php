@@ -1,7 +1,7 @@
 <?php
 namespace CronkdBundle\Listener;
 
-use CronkdBundle\Entity\Log;
+use CronkdBundle\Entity\Event;
 use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Event\CreateKingdomEvent;
 use CronkdBundle\Event\ViewLogEvent;

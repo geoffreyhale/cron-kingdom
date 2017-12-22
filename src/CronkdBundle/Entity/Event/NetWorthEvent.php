@@ -1,5 +1,5 @@
 <?php
-namespace CronkdBundle\Entity\Log;
+namespace CronkdBundle\Entity\Event;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Jms;
@@ -9,7 +9,7 @@ use JMS\Serializer\Annotation as Jms;
  *
  * @Jms\ExclusionPolicy("all")
  */
-class NetWorthLog extends Log
+class NetWorthEvent extends Event
 {
     /**
      * @var string
@@ -23,7 +23,7 @@ class NetWorthLog extends Log
      *
      * @param int $netWorth
      *
-     * @return NetWorthLog
+     * @return NetWorthEvent
      */
     public function setNetWorth($netWorth)
     {

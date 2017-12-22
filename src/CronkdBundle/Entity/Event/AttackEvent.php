@@ -1,15 +1,16 @@
 <?php
-namespace CronkdBundle\Entity\Log;
+namespace CronkdBundle\Entity\Event;
 
+use CronkdBundle\Entity\Kingdom;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Jms;
 
 /**
- * @ORM\Entity(repositoryClass="CronkdBundle\Repository\Log\AttackLogRepository")
+ * @ORM\Entity(repositoryClass="CronkdBundle\Repository\Event\AttackEventRepository")
  *
  * @Jms\ExclusionPolicy("all")
  */
-class AttackLog extends Log
+class AttackEvent extends Event
 {
     /**
      * @var int
@@ -39,7 +40,7 @@ class AttackLog extends Log
      *
      * @param boolean $success
      *
-     * @return AttackLog
+     * @return AttackEvent
      */
     public function setSuccess($success)
     {
@@ -61,11 +62,11 @@ class AttackLog extends Log
     /**
      * Set attacker
      *
-     * @param \CronkdBundle\Entity\Kingdom $attacker
+     * @param Kingdom $attacker
      *
-     * @return AttackLog
+     * @return AttackEvent
      */
-    public function setAttacker(\CronkdBundle\Entity\Kingdom $attacker = null)
+    public function setAttacker(Kingdom $attacker = null)
     {
         $this->attacker = $attacker;
 
@@ -75,7 +76,7 @@ class AttackLog extends Log
     /**
      * Get attacker
      *
-     * @return \CronkdBundle\Entity\Kingdom
+     * @return Kingdom
      */
     public function getAttacker()
     {
@@ -85,11 +86,11 @@ class AttackLog extends Log
     /**
      * Set defender
      *
-     * @param \CronkdBundle\Entity\Kingdom $defender
+     * @param Kingdom $defender
      *
-     * @return AttackLog
+     * @return AttackEvent
      */
-    public function setDefender(\CronkdBundle\Entity\Kingdom $defender = null)
+    public function setDefender(Kingdom $defender = null)
     {
         $this->defender = $defender;
 
@@ -99,7 +100,7 @@ class AttackLog extends Log
     /**
      * Get defender
      *
-     * @return \CronkdBundle\Entity\Kingdom
+     * @return Kingdom
      */
     public function getDefender()
     {

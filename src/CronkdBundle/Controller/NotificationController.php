@@ -2,7 +2,7 @@
 namespace CronkdBundle\Controller;
 
 use CronkdBundle\Entity\Kingdom;
-use CronkdBundle\Entity\Log\Log;
+use CronkdBundle\Entity\Event\Log;
 use CronkdBundle\Entity\Notification\Notification;
 use CronkdBundle\Event\ViewLogEvent;
 use CronkdBundle\Event\ViewNotificationsEvent;

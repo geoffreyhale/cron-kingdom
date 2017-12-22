@@ -1,10 +1,10 @@
 <?php
-namespace CronkdBundle\Repository\Log;
+namespace CronkdBundle\Repository\Event;
 
 use CronkdBundle\Entity\Kingdom;
 use Doctrine\ORM\EntityRepository;
 
-class AttackLogRepository extends EntityRepository
+class AttackEventRepository extends EntityRepository
 {
     /**
      * @param Kingdom $kingdom

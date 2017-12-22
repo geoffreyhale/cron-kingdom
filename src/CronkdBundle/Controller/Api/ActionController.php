@@ -3,7 +3,7 @@ namespace CronkdBundle\Controller\Api;
 
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
-use CronkdBundle\Entity\Log;
+use CronkdBundle\Entity\Event;
 use CronkdBundle\Entity\Policy;
 use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Entity\Resource\ResourceActionInput;

@@ -4,7 +4,7 @@ namespace CronkdBundle\Service;
 use CronkdBundle\Entity\AttackLog;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
-use CronkdBundle\Entity\Log;
+use CronkdBundle\Entity\Event;
 use CronkdBundle\Entity\Policy;
 use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Entity\Resource\ResourceType;
@@ -12,7 +12,7 @@ use CronkdBundle\Event\AttackEvent;
 use CronkdBundle\Exceptions\InvalidResourceException;
 use CronkdBundle\Exceptions\NotEnoughResourcesException;
 use CronkdBundle\Manager\KingdomManager;
-use CronkdBundle\Manager\LogManager;
+use CronkdBundle\Manager\LumberMill;
 use CronkdBundle\Manager\PolicyManager;
 use CronkdBundle\Manager\ResourceManager;
 use CronkdBundle\Model\Army;
@@ -32,7 +32,7 @@ class AttackingService
     private $kingdomManager;
     /** @var ResourceManager  */
     private $resourceManager;
-    /** @var LogManager */
+    /** @var LumberMill */
     private $logManager;
     /** @var PolicyManager */
     private $policyManager;
@@ -43,7 +43,7 @@ class AttackingService
         QueuePopulator $queuePopulator,
         KingdomManager $kingdomManager,
         ResourceManager $resourceManager,
-        LogManager $logManager,
+        LumberMill $logManager,
         PolicyManager $policyManager
     ) {
         $this->em              = $em;

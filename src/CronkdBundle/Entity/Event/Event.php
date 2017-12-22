@@ -1,5 +1,5 @@
 <?php
-namespace CronkdBundle\Entity\Log;
+namespace CronkdBundle\Entity\Event;
 
 use CronkdBundle\Entity\BaseEntity;
 use CronkdBundle\Entity\Kingdom;
@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Jms;
 
 /**
- * @ORM\Entity(repositoryClass="CronkdBundle\Repository\Log\LogRepository")
+ * @ORM\Entity()
  *
  * @Jms\ExclusionPolicy("all")
  *
@@ -15,14 +15,14 @@ use JMS\Serializer\Annotation as Jms;
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({
- *     "attack"           = "AttackLog",
- *     "birth"            = "BirthLog",
- *     "kingdom_resource" = "KingdomResourceLog",
- *     "net_worth"        = "NetWorthLog",
- *     "probe"            = "ProbeLog",
+ *     "attack"           = "AttackEvent",
+ *     "birth"            = "BirthEvent",
+ *     "kingdom_resource" = "KingdomResourceEvent",
+ *     "net_worth"        = "NetWorthEvent",
+ *     "probe"            = "ProbeEvent",
  * })
  */
-abstract class Log extends BaseEntity
+abstract class Event extends BaseEntity
 {
     const TYPE_BIRTH     = 'birth';
     const TYPE_QUEUE     = 'queue';
@@ -76,7 +76,7 @@ abstract class Log extends BaseEntity
      *
      * @param string $eventType
      *
-     * @return Log
+     * @return Event
      */
     public function setEventType($eventType)
     {
@@ -100,7 +100,7 @@ abstract class Log extends BaseEntity
      *
      * @param integer $tick
      *
-     * @return Log
+     * @return Event
      */
     public function setTick($tick)
     {
@@ -124,7 +124,7 @@ abstract class Log extends BaseEntity
      *
      * @param Kingdom $kingdom
      *
-     * @return Log
+     * @return Event
      */
     public function setKingdom(Kingdom $kingdom = null)
     {

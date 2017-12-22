@@ -1,0 +1,84 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+    <div class="row-fluid">
+        <div class="col-sm-12">
+            <ol class="breadcrumb">
+                <li><a href="{{ path('homepage') }}">Dashboard</a></li>
+                <li class="active">Events</li>
+            </ol>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-search"></i> Events</h3>
+                </div>
+                <div class="panel-body">
+                    <p class="text-center">
+                        <a href="#" class="btn btn-primary btn-lg eventFilterBtn" data-filter="">All</a>
+                        <a href="#" class="btn btn-primary btn-lg eventFilterBtn" data-filter="queued">Queue</a>
+                        <a href="#" class="btn btn-primary btn-lg eventFilterBtn" data-filter="received">Dequeue</a>
+                        <a href="#" class="btn btn-primary btn-lg eventFilterBtn" data-filter="birthed">Birth</a>
+                        <a href="#" class="btn btn-primary btn-lg eventFilterBtn" data-filter="net worth">Net Worth</a>
+                        <a href="#" class="btn btn-primary btn-lg eventFilterBtn" data-filter="spied">Spy</a>
+                    </p>
+                    <table class="datatable table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Time</th>
+                            <th>Tick</th>
+                            <th>Message</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for event in events %}
+                        <tr class="{{ event.eventType == 'attack' ? 'danger' : '' }}">
+                            <td>{{ event.id }}</td>
+                            <td>{{ event.createdAt|date('Y-m-d h:i:s A') }}</td>
+                            <td>{{ event.tick }}</td>
+                            <td>
+                                {% if event.eventType == 'attack' %}
+                                    {{ event.attacker.name }} attacked {{ event.defender.name }} {{ event.success ? 'successfully' : 'unsuccessfully' }}
+                                {% elseif event.eventType == 'queue' %}
+                                    Queued {{ event.quantity }} {{ event.kingdomResource.resource.name }}
+                                {% elseif event.eventType == 'dequeue' %}
+                                    Received {{ event.quantity }} {{ event.kingdomResource.resource.name }}
+                                {% elseif event.eventType == 'birth' %}
+                                    Birthed {{ event.quantity }} {{ event.kingdomResource.resource.name }}
+                                {% elseif event.eventType == 'net_worth' %}
+                                    Net worth updated to {{ event.netWorth }}
+                                {% elseif event.eventType == 'probe' %}
+                                    {% if kingdom == event.prober %}
+                                        <a href="{{ path('event_probe_view', {'id': event.id}) }}">Successfully spied on {{ event.probee.name }}</a>
+                                    {% elseif event.success %}
+                                        Successfully spied on by unknown kingdom
+                                    {% else %}
+                                        Failed to be spied on by {{ event.probee.name }}
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    {{ parent() }}
+    <script type="text/javascript">
+        var table = $('.datatable').DataTable({
+            'order': [ 0, 'DESC' ],
+        });
+
+        $('.eventFilterBtn').click(function () {
+            var filter = $(this).data('filter');
+            table
+                .search(filter)
+                .draw()
+            ;
+        });
+    </script>
+{% endblock %}

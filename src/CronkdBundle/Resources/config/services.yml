@@ -68,7 +68,7 @@ services:
             - "@doctrine.orm.default_entity_manager"
 
     cronkd.manager.log:
-        class: CronkdBundle\Manager\LogManager
+        class: CronkdBundle\Manager\LumberMill
         arguments:
             - "@doctrine.orm.default_entity_manager"
             - "@cronkd.manager.kingdom"

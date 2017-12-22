@@ -1,5 +1,5 @@
 <?php
-namespace CronkdBundle\Entity\Log;
+namespace CronkdBundle\Entity\Event;
 
 use CronkdBundle\Entity\Kingdom;
 use Doctrine\ORM\Mapping as ORM;
@@ -10,7 +10,7 @@ use JMS\Serializer\Annotation as Jms;
  *
  * @Jms\ExclusionPolicy("all")
  */
-class ProbeLog extends Log
+class ProbeEvent extends Event
 {
     /**
      * @var int
@@ -47,7 +47,7 @@ class ProbeLog extends Log
      *
      * @param boolean $success
      *
-     * @return ProbeLog
+     * @return ProbeEvent
      */
     public function setSuccess($success)
     {
@@ -71,7 +71,7 @@ class ProbeLog extends Log
      *
      * @param string $reportData
      *
-     * @return ProbeLog
+     * @return ProbeEvent
      */
     public function setReportData($reportData)
     {
@@ -95,7 +95,7 @@ class ProbeLog extends Log
      *
      * @param Kingdom $prober
      *
-     * @return ProbeLog
+     * @return ProbeEvent
      */
     public function setProber(Kingdom $prober = null)
     {
@@ -119,7 +119,7 @@ class ProbeLog extends Log
      *
      * @param Kingdom $probee
      *
-     * @return ProbeLog
+     * @return ProbeEvent
      */
     public function setProbee(Kingdom $probee = null)
     {

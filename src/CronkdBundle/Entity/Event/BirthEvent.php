@@ -1,5 +1,5 @@
 <?php
-namespace CronkdBundle\Entity\Log;
+namespace CronkdBundle\Entity\Event;
 
 use CronkdBundle\Entity\Resource\Resource;
 use Doctrine\ORM\Mapping as ORM;
@@ -10,7 +10,7 @@ use JMS\Serializer\Annotation as Jms;
  *
  * @Jms\ExclusionPolicy("all")
  */
-class BirthLog extends Log
+class BirthEvent extends Event
 {
     /**
      * @var string
@@ -32,7 +32,7 @@ class BirthLog extends Log
      *
      * @param integer $quantity
      *
-     * @return BirthLog
+     * @return BirthEvent
      */
     public function setQuantity($quantity)
     {
@@ -56,7 +56,7 @@ class BirthLog extends Log
      *
      * @param Resource $resource
      *
-     * @return BirthLog
+     * @return BirthEvent
      */
     public function setResource(Resource $resource = null)
     {

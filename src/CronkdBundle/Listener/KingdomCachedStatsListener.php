@@ -7,7 +7,7 @@ use CronkdBundle\Event\AttackEvent;
 use CronkdBundle\Event\CreateKingdomEvent;
 use CronkdBundle\Event\WorldTickEvent;
 use CronkdBundle\Manager\KingdomManager;
-use CronkdBundle\Manager\LogManager;
+use CronkdBundle\Manager\LumberMill;
 use CronkdBundle\Manager\NetWorthLogManager;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -17,13 +17,13 @@ class KingdomCachedStatsListener
     private $em;
     /** @var KingdomManager */
     private $kingdomManager;
-    /** @var LogManager  */
+    /** @var LumberMill  */
     private $logManager;
 
     public function __construct(
         EntityManagerInterface $em,
         KingdomManager $kingdomManager,
-        LogManager $logManager
+        LumberMill $logManager
     )
     {
         $this->em             = $em;
