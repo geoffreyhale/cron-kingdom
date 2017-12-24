@@ -16,6 +16,8 @@ class ProbeEvent extends Event
      * @var int
      *
      * @ORM\Column(name="success", type="boolean")
+     *
+     * @Jms\Expose()
      */
     private $success;
 
@@ -23,6 +25,8 @@ class ProbeEvent extends Event
      * @var string
      *
      * @ORM\Column(name="report_data", type="text")
+     *
+     * @Jms\Expose()
      */
     private $reportData;
 
@@ -31,6 +35,8 @@ class ProbeEvent extends Event
      *
      * @ORM\ManyToOne(targetEntity="CronkdBundle\Entity\Kingdom")
      * @ORM\JoinColumn(name="attacker_id", referencedColumnName="id")
+     *
+     * @Jms\Expose()
      */
     private $prober;
 
@@ -39,6 +45,8 @@ class ProbeEvent extends Event
      *
      * @ORM\ManyToOne(targetEntity="CronkdBundle\Entity\Kingdom")
      * @ORM\JoinColumn(name="defender_id", referencedColumnName="id")
+     *
+     * @Jms\Expose()
      */
     private $probee;
 
@@ -87,7 +95,7 @@ class ProbeEvent extends Event
      */
     public function getReportData()
     {
-        return $this->reportData;
+        return json_decode($this->reportData, true);
     }
 
     /**

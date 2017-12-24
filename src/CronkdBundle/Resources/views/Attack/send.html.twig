@@ -5,40 +5,83 @@
         <div class="col-sm-12">
             <ol class="breadcrumb">
                 <li><a href="{{ path('homepage') }}">Dashboard</a></li>
-                <li class="active">Attack</li>
+                <li class="active">Attack Another Kingdom</li>
             </ol>
 
-            <h3>Attack</h3>
+            <h3>Attack Another Kingdom</h3>
             <hr/>
-            <div class="alert alert-info">
-                <p>Send military units to attack another Kingdom. Use caution: you may only attack once per Tick!</p>
-                <ul>
-                    {% for resource in resources %}
-                        {% if resource.attack > 0 and kingdomState.hasAvailableResource(resource.name) %}
-                            <strong>{{ resource.name }}</strong>: {{ resource.attack }} attack each | {{ kingdomState.availableResourceQuantity(resource.name) }} available
-                            <br/>
-                        {% endif %}
-                    {% endfor %}
-                </ul>
-            </div>
-
             <div class="row-fluid">
-                {{ form_start(form) }}
-                <div class="form-group">
-                    {{ form_row(form.target, {'attr': {'class': 'form-control'}}) }}
+                <div class="col-sm-12 col-md-8">
+
+                <div class="alert alert-info">
+                    <h4>Attacking Tips</h4>
+                    <ul>
+                        <li>Send military units with attack power to another kingdom.</li>
+                        <li>If the total attack power of your attacking units is greater than the defense power of your opponent, you win!</li>
+                        <li>If you succeed, you will gain ELO, a win for your win-loss record, and precious resources taken from your opponent!</li>
+                        <li>Use caution!  You can only attack once per tick!</li>
+                    </ul>
+                    <br />
+                    Available resources to send:
+                    <ul>
+                        {% for resource in resources %}
+                            {% if resource.attack > 0 and kingdomState.hasAvailableResource(resource.name) %}
+                                <strong>{{ resource.name }}</strong>: {{ resource.attack }} attack power each ({{ kingdomState.availableResourceQuantity(resource.name) }} available)
+                                <br/>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
                 </div>
-                <div class="form-group">
-                    {% for resource in kingdomState.resources %}
-                        {% if kingdomState.hasAvailableResource(resource.resource.name) and attribute(form, resource.resource.name) is defined %}
-                            {{ form_row(attribute(form, resource.resource.name), {'attr': {'class': 'form-control'}}) }}
-                        {% endif %}
-                    {% endfor %}
+
+                <div class="row-fluid">
+                    {{ form_start(form) }}
+                    <div class="form-group">
+                        {{ form_row(form.target, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="form-group">
+                        {% for resource in kingdomState.resources %}
+                            {% if kingdomState.hasAvailableResource(resource.resource.name) and attribute(form, resource.resource.name) is defined %}
+                                {{ form_row(attribute(form, resource.resource.name), {'attr': {'class': 'form-control'}}) }}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ form_row(form.submit, {'attr': {'class': 'btn btn-primary'}}) }}
+                    </div>
+                    {{ form_end(form) }}
                 </div>
-                <div class="form-group">
-                    {{ form_row(form.submit, {'attr': {'class': 'btn btn-primary'}}) }}
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-4">
+            <div class="well">
+                <h4>Latest Spy Report</h4>
+                <hr/>
+                <div id="probeLookupTable">
+                    Select a kingdom to pull up any past spy data you have.  Warning: the data may be out of date!
                 </div>
-                {{ form_end(form) }}
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block js %}
+    {{ parent() }}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#cronkdbundle_attack_plan_target').change(function() {
+                var targetId = $(this).val();
+                $.ajax({
+                    'url': '{{ path('event_probe_last_lookup') }}',
+                    'data': {'target_kingdom': targetId},
+                    'success': function(response) {
+                        if (response.hasData) {
+                            $('#probeLookupTable').html(response.data);
+                        } else {
+                            $('#probeLookupTable').html('No successful past spy reports found.');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 {% endblock %}
