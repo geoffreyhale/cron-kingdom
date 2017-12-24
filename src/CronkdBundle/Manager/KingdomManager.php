@@ -1,7 +1,7 @@
 <?php
 namespace CronkdBundle\Manager;
 
-use CronkdBundle\Entity\Event\AttackEvent;
+use CronkdBundle\Entity\Event\AttackResultEvent;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Notification\Notification;
@@ -82,12 +82,12 @@ class KingdomManager
     public function generateKingdomState(Kingdom $kingdom)
     {
         $kingdomState = new KingdomState($kingdom);
-        $winLossRecord = $this->em->getRepository(AttackEvent::class)->getWinLossRecord($kingdom);
+        $winLossRecord = $this->em->getRepository(AttackResultEvent::class)->getWinLossRecord($kingdom);
         $kingdomState
             ->setWinLossRecord($winLossRecord['win'], $winLossRecord['loss'])
             ->setCurrentQueues($this->getResourceQueues($kingdom))
             ->setNotificationCount($this->em->getRepository(Notification::class)->findNotificationCount($kingdom))
-            ->setAvailableAttack($this->em->getRepository(AttackEvent::class)->hasAvailableAttack($kingdom))
+            ->setAvailableAttack($this->em->getRepository(AttackResultEvent::class)->hasAvailableAttack($kingdom))
         ;
 
         return $kingdomState;
@@ -386,7 +386,7 @@ class KingdomManager
         foreach($kingdoms as $kingdom) {
             $kingdomsByWinLoss[$kingdom->getId()] = [
                 'kingdom' => $kingdom,
-                'winloss' => $this->em->getRepository(AttackEvent::class)->getWinLossRecord($kingdom)
+                'winloss' => $this->em->getRepository(AttackResultEvent::class)->getWinLossRecord($kingdom)
             ];
         }
 

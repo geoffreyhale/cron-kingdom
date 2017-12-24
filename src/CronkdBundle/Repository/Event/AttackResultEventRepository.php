@@ -4,7 +4,7 @@ namespace CronkdBundle\Repository\Event;
 use CronkdBundle\Entity\Kingdom;
 use Doctrine\ORM\EntityRepository;
 
-class AttackEventRepository extends EntityRepository
+class AttackResultEventRepository extends EntityRepository
 {
     /**
      * @param Kingdom $kingdom

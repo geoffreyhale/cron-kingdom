@@ -1,0 +1,31 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+    <div class="row-fluid">
+        <div class="col-sm-12">
+            <ol class="breadcrumb">
+                <li><a href="{{ path('homepage') }}">Dashboard</a></li>
+                <li><a href="{{ path('event_index', {'id': kingdom.id}) }}">Events</a></li>
+                <li class="active">Attack Results</li>
+            </ol>
+
+            <h3>Attack Results</h3>
+            <div class="alert alert-info">
+                Attack occurred at {{ event.createdAt|date('Y-m-d g:i:s A') }}.
+            </div>
+            <div class="alert alert-{{ event.success ? 'success' : 'danger' }}">
+                <h3 style="margin-top: 0px;">{{ event.success ? 'Success!' : 'Failure!' }}</h3>
+                {% if event.success %}
+                    {% if data.modified_resources|length > 0 %}
+                        <p>We won the following resources from <i class="fa fa-fort-awesome fa-fw"></i> {{ data.target_kingdom.name }} in battle:</p>
+                        {% include 'CronkdBundle:Event:attackRewardsTable.html.twig' %}
+                    {% else %}
+                        <p>We were victorious against <i class="fa fa-fort-awesome fa-fw"></i> {{ data.target_kingdom.name }}, but didn't gain any resources during battle.</p>
+                    {% endif %}
+                {% else %}
+                    <p>The attack has failed!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

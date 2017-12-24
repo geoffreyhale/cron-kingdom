@@ -82,6 +82,8 @@ class ProbeController extends ApiController
             // Only requeue probes if success
             if ($report->getResult()) {
                 $probeQueues = $queuePopulator->build($kingdom, $resource, 8, $quantity);
+                $logManager = $this->get('cronkd.manager.log');
+                $logManager->logQueueResource($kingdom, $resource, $quantity, true);
             }
             $kingdomResource->removeQuantity($quantity);
             $em->persist($kingdomResource);

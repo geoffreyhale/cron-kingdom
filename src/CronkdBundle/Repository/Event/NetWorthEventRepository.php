@@ -1,11 +1,10 @@
 <?php
-namespace CronkdBundle\Repository;
+namespace CronkdBundle\Repository\Event;
 
-use CronkdBundle\Entity\NetWorthLog;
 use CronkdBundle\Entity\World;
 use Doctrine\ORM\EntityRepository;
 
-class NetWorthLogRepository extends EntityRepository
+class NetWorthEventRepository extends EntityRepository
 {
     /**
      * @param World $world
@@ -15,16 +14,16 @@ class NetWorthLogRepository extends EntityRepository
      */
     public function findByWorld(World $world, int $minTick, int $maxTick)
     {
-        $qb = $this->createQueryBuilder('nwl');
-        $qb->join('nwl.kingdom', 'k');
+        $qb = $this->createQueryBuilder('nwe');
+        $qb->join('nwe.kingdom', 'k');
         $qb->where('k.world = :world');
-        $qb->andWhere('nwl.tick BETWEEN :minTick AND :maxTick');
+        $qb->andWhere('nwe.tick BETWEEN :minTick AND :maxTick');
         $qb->setParameters([
             'world'   => $world,
             'minTick' => $minTick,
             'maxTick' => $maxTick,
         ]);
-        $qb->orderBy('nwl.tick', 'ASC');
+        $qb->orderBy('nwe.tick', 'ASC');
 
         return $qb->getQuery()->getResult();
     }

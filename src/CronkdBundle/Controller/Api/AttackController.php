@@ -2,6 +2,7 @@
 namespace CronkdBundle\Controller\Api;
 
 use CronkdBundle\Entity\AttackLog;
+use CronkdBundle\Entity\Event\AttackResultEvent;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Service\AttackingService;
@@ -49,11 +50,8 @@ class AttackController extends ApiController
             return $this->createErrorJsonResponse('Invalid Target Kingdom');
         }
 
-        $previousAttack = $em->getRepository(AttackLog::class)->findOneBy([
-            'attacker' => $kingdom,
-            'tick'     => $kingdom->getWorld()->getTick(),
-        ]);
-        if (null !== $previousAttack) {
+        $previousAttack = $attackingService->numAttacksThisTick($kingdom);
+        if (0 < $previousAttack) {
             return $this->createErrorJsonResponse('Kingdom has already attacked this tick');
         }
 
@@ -81,7 +79,8 @@ class AttackController extends ApiController
 
         return $this->createSerializedJsonResponse([
             'data' => [
-                'report' => $attackReport,
+                'event_id' => $attackReport->getAttackResultEvent()->getId(),
+                'report'   => $attackReport,
             ],
         ]);
     }

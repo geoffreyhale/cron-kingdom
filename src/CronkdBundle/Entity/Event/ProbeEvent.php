@@ -20,7 +20,7 @@ class ProbeEvent extends Event
     private $success;
 
     /**
-     * @var array
+     * @var string
      *
      * @ORM\Column(name="report_data", type="text")
      */

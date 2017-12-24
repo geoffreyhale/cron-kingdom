@@ -41,7 +41,7 @@ class CronkdExtension extends \Twig_Extension
         ];
     }
 
-    public function getResourceIcon($resource)
+    public function getResourceIcon($resource, $resources = [])
     {
         if ($resource instanceof Resource) {
             if (!empty($resource->getIcon())) {
@@ -50,6 +50,12 @@ class CronkdExtension extends \Twig_Extension
         } elseif (is_array($resource)) {
             if (isset($resource['icon']) && !empty($resource['icon'])) {
                 return '<i class="fa fa-fw fa-' . $resource['icon'] . '"></i> ';
+            }
+        } elseif (!empty($resources)) {
+            foreach ($resources as $resourceEntity) {
+                if ($resourceEntity->getName() == $resource) {
+                    return '<i class="fa fa-fw fa-' . $resourceEntity->getIcon() . '"></i> ';
+                }
             }
         }
 

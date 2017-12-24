@@ -15,7 +15,7 @@ use JMS\Serializer\Annotation as Jms;
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({
- *     "attack"           = "AttackEvent",
+ *     "attack_result"    = "AttackResultEvent",
  *     "birth"            = "BirthEvent",
  *     "kingdom_resource" = "KingdomResourceEvent",
  *     "net_worth"        = "NetWorthEvent",
@@ -24,11 +24,12 @@ use JMS\Serializer\Annotation as Jms;
  */
 abstract class Event extends BaseEntity
 {
-    const TYPE_BIRTH     = 'birth';
-    const TYPE_QUEUE     = 'queue';
-    const TYPE_DEQUEUE   = 'dequeue';
-    const TYPE_NET_WORTH = 'net_worth';
-    const TYPE_PROBE     = 'probe';
+    const TYPE_ATTACK_RESULT = 'attack_result';
+    const TYPE_BIRTH         = 'birth';
+    const TYPE_QUEUE         = 'queue';
+    const TYPE_DEQUEUE       = 'dequeue';
+    const TYPE_NET_WORTH     = 'net_worth';
+    const TYPE_PROBE         = 'probe';
 
     /**
      * @var int
@@ -42,7 +43,7 @@ abstract class Event extends BaseEntity
     /**
      * @var string
      *
-     * @ORM\Column(name="event_type", type="string", length=9)
+     * @ORM\Column(name="event_type", type="string", length=13)
      */
     private $eventType;
 

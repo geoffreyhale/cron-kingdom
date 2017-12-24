@@ -1,0 +1,14 @@
+<table class="table table-bordered" style="margin-top: 15px;">
+    <tbody>
+    {% for resourceName, quantity in data.modified_resources %}
+        {% if quantity > 0 %}
+        <tr>
+            <td>
+                {{ resourceIcon(resourceName, resources)|raw }}
+                {{ resourceName }}: <strong>{{ quantity|number_format }}</strong>
+            </td>
+        </tr>
+        {% endif %}
+    {% endfor %}
+    </tbody>
+</table>

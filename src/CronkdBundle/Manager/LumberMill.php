@@ -1,19 +1,27 @@
 <?php
 namespace CronkdBundle\Manager;
 
+use CronkdBundle\Entity\Event\AttackResultEvent;
+use CronkdBundle\Entity\Event\AttackRewardEvent;
 use CronkdBundle\Entity\Event\Event;
 use CronkdBundle\Entity\Event\BirthEvent;
 use CronkdBundle\Entity\Event\KingdomResourceEvent;
 use CronkdBundle\Entity\Event\NetWorthEvent;
 use CronkdBundle\Entity\Event\ProbeEvent;
 use CronkdBundle\Entity\Kingdom;
+use CronkdBundle\Entity\Notification\AttackNotification;
 use CronkdBundle\Entity\Notification\ProbeNotification;
 use CronkdBundle\Entity\Queue;
 use CronkdBundle\Entity\Resource\Resource;
+use CronkdBundle\Event\AttackEvent;
+use CronkdBundle\Model\AttackReport;
 use CronkdBundle\Model\ProbeReport;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\Serializer;
 
+/**
+ * Log Manager
+ */
 class LumberMill
 {
     /** @var EntityManagerInterface */
@@ -41,7 +49,7 @@ class LumberMill
         $kingdomResource = $this->kingdomManager->findOrCreateKingdomResource($kingdom, $resource);
 
         $birthLog = new BirthEvent();
-        $birthLog->setEventType(Log::TYPE_BIRTH);
+        $birthLog->setEventType(Event::TYPE_BIRTH);
         $birthLog->setTick($tick);
         $birthLog->setKingdom($kingdom);
         $birthLog->setQuantity($quantity);
@@ -50,7 +58,7 @@ class LumberMill
         $kingdomResourceLog->setKingdom($kingdom);
         $kingdomResourceLog->setTick($tick);
         $kingdomResourceLog->setQuantity($quantity);
-        $kingdomResourceLog->setEventType(Log::TYPE_BIRTH);
+        $kingdomResourceLog->setEventType(Event::TYPE_BIRTH);
         $kingdomResourceLog->setKingdomResource($kingdomResource);
         $this->em->persist($kingdomResourceLog);
 
@@ -81,9 +89,16 @@ class LumberMill
      * @param Kingdom $kingdom
      * @param Resource $resource
      * @param $quantity
+     * @param bool $fromProbe
+     * @param bool $fromAttack
+     * @param bool $reward
      */
-    public function logQueueResource(Kingdom $kingdom, Resource $resource, $quantity)
+    public function logQueueResource(Kingdom $kingdom, Resource $resource, $quantity, $fromProbe = false, $fromAttack = false, $reward = false)
     {
+        if ($quantity == 0) {
+            return;
+        }
+
         $tick = $kingdom->getWorld()->getTick();
         $kingdomResource = $this->kingdomManager->findOrCreateKingdomResource($kingdom, $resource);
 
@@ -93,6 +108,9 @@ class LumberMill
         $kingdomResourceLog->setQuantity($quantity);
         $kingdomResourceLog->setEventType(Event::TYPE_QUEUE);
         $kingdomResourceLog->setKingdomResource($kingdomResource);
+        $kingdomResourceLog->setIsFromProbe($fromProbe);
+        $kingdomResourceLog->setIsFromAttack($fromAttack);
+        $kingdomResourceLog->setIsReward($reward);
         $this->em->persist($kingdomResourceLog);
 
         $this->em->flush();
@@ -135,9 +153,53 @@ class LumberMill
         return $proberEvent;
     }
 
-    public function logAttackResult(Kingdom $attacker, Kingdom $defender)
+    /**
+     * @param Kingdom $attacker
+     * @param Kingdom $defender
+     * @param AttackReport $report
+     * @return AttackReport
+     */
+    public function logAttackResult(Kingdom $attacker, Kingdom $defender, AttackReport $report)
     {
+        $tick = $attacker->getWorld()->getTick();
 
+        $attackerEvent = new AttackResultEvent();
+        $attackerEvent->setTick($tick);
+        $attackerEvent->setEventType(Event::TYPE_ATTACK_RESULT);
+        $attackerEvent->setAttacker($attacker);
+        $attackerEvent->setDefender($defender);
+        $attackerEvent->setSuccess($report->getResult());
+        $attackerEvent->setReportData($this->serializer->serialize($report, 'json'));
+        $attackerEvent->setKingdom($attacker);
+        $this->em->persist($attackerEvent);
+
+        $defenderEvent = clone $attackerEvent;
+        $defenderEvent->setKingdom($defender);
+        $defenderEvent->setReportData(null);
+        $this->em->persist($defenderEvent);
+
+        $defenderNotification = new AttackNotification();
+        $defenderNotification->setKingdom($defender);
+        $defenderNotification->setTick($tick);
+        $defenderNotification->setAttacker($attacker);
+        $defenderNotification->setSuccess($report->getResult());
+        $this->em->persist($defenderNotification);
+
+        $this->em->flush();
+
+        $report->setAttackResultEvent($attackerEvent);
+
+        return $report;
+    }
+
+    /**
+     * @param Kingdom $kingdom
+     * @param Resource $resource
+     * @param $quantity int
+     */
+    public function logAttackReward(Kingdom $kingdom, Resource $resource, $quantity)
+    {
+        $this->logQueueResource($kingdom, $resource, $quantity, false, true, true);
     }
 
     /**

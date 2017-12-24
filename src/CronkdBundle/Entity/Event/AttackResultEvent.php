@@ -2,15 +2,16 @@
 namespace CronkdBundle\Entity\Event;
 
 use CronkdBundle\Entity\Kingdom;
+use CronkdBundle\Model\AttackReport;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Jms;
 
 /**
- * @ORM\Entity(repositoryClass="CronkdBundle\Repository\Event\AttackEventRepository")
+ * @ORM\Entity(repositoryClass="CronkdBundle\Repository\Event\AttackResultEventRepository")
  *
  * @Jms\ExclusionPolicy("all")
  */
-class AttackEvent extends Event
+class AttackResultEvent extends Event
 {
     /**
      * @var int
@@ -18,6 +19,13 @@ class AttackEvent extends Event
      * @ORM\Column(name="success", type="boolean")
      */
     private $success;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="report_data", type="text")
+     */
+    private $reportData;
 
     /**
      * @var Kingdom
@@ -40,7 +48,7 @@ class AttackEvent extends Event
      *
      * @param boolean $success
      *
-     * @return AttackEvent
+     * @return AttackResultEvent
      */
     public function setSuccess($success)
     {
@@ -60,11 +68,35 @@ class AttackEvent extends Event
     }
 
     /**
+     * Set reportData
+     *
+     * @param string $reportData
+     *
+     * @return AttackReport
+     */
+    public function setReportData($reportData)
+    {
+        $this->reportData = $reportData;
+
+        return $this;
+    }
+
+    /**
+     * Get reportData
+     *
+     * @return string
+     */
+    public function getReportData()
+    {
+        return $this->reportData;
+    }
+
+    /**
      * Set attacker
      *
      * @param Kingdom $attacker
      *
-     * @return AttackEvent
+     * @return AttackResultEvent
      */
     public function setAttacker(Kingdom $attacker = null)
     {
@@ -88,7 +120,7 @@ class AttackEvent extends Event
      *
      * @param Kingdom $defender
      *
-     * @return AttackEvent
+     * @return AttackResultEvent
      */
     public function setDefender(Kingdom $defender = null)
     {

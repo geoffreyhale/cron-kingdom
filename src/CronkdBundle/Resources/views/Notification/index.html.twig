@@ -35,8 +35,12 @@
                                     {% else %}
                                         Failed spy attempt by {{ notification.prober.name }}
                                     {% endif %}
-                                {% elseif notificaiotn.type == 'attack' %}
-                                    Attack
+                                {% elseif notification.type == 'attack' %}
+                                    {% if notification.success %}
+                                        Failed defense against {{ notification.attacker.name }}
+                                    {% else %}
+                                        Successful defense against {{ notification.attacker.name }}
+                                    {% endif %}
                                 {% endif %}
                             </td>
                             {% endfor %}

@@ -20,6 +20,7 @@
                         <a href="#" class="btn btn-primary btn-lg eventFilterBtn" data-filter="birthed">Birth</a>
                         <a href="#" class="btn btn-primary btn-lg eventFilterBtn" data-filter="net worth">Net Worth</a>
                         <a href="#" class="btn btn-primary btn-lg eventFilterBtn" data-filter="spied">Spy</a>
+                        <a href="#" class="btn btn-primary btn-lg eventFilterBtn" data-filter="attack">Attack</a>
                     </p>
                     <table class="datatable table table-bordered table-striped">
                         <thead>
@@ -40,7 +41,12 @@
                                 {% if event.eventType == 'attack' %}
                                     {{ event.attacker.name }} attacked {{ event.defender.name }} {{ event.success ? 'successfully' : 'unsuccessfully' }}
                                 {% elseif event.eventType == 'queue' %}
-                                    Queued {{ event.quantity }} {{ event.kingdomResource.resource.name }}
+                                    {% if event.quantity > 0 %}
+                                    Queued
+                                    {% else %}
+                                    Lost
+                                    {% endif %}
+                                    {{ event.quantity|abs }} {{ event.kingdomResource.resource.name }} {{ event.isFromProbe ? 'from spy attempt' }} {{ event.isFromAttack ? 'from attack' }} {{ event.isReward and event.quantity > 0 ? 'as a reward' }}
                                 {% elseif event.eventType == 'dequeue' %}
                                     Received {{ event.quantity }} {{ event.kingdomResource.resource.name }}
                                 {% elseif event.eventType == 'birth' %}
@@ -54,6 +60,22 @@
                                         Successfully spied on by unknown kingdom
                                     {% else %}
                                         Failed to be spied on by {{ event.probee.name }}
+                                    {% endif %}
+                                {% elseif event.eventType == 'attack_result' %}
+                                    {% if event.success %}
+                                        <a href="{{ path('event_attack_view', {'id': event.id}) }}">
+                                        {% if event.kingdom == event.attacker %}
+                                            Successfully attacked {{ event.defender.name }}
+                                        {% else %}
+                                            Failed defense against {{ event.attacker.name }}
+                                        {% endif %}
+                                        </a>
+                                    {% else %}
+                                        {% if event.kingdom == event.attacker %}
+                                            Failed to attack against {{ event.defender.name }}
+                                        {% else %}
+                                            Successful defense against {{ event.attacker.name }}
+                                        {% endif %}
                                     {% endif %}
                                 {% endif %}
                             </td>

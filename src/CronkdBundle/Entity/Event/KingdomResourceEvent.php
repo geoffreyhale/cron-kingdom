@@ -20,6 +20,27 @@ class KingdomResourceEvent extends Event
     private $quantity;
 
     /**
+     * @var bool
+     *
+     * @ORM\Column(name="is_from_probe", type="boolean")
+     */
+    private $isFromProbe = false;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="is_from_attack", type="boolean")
+     */
+    private $isFromAttack = false;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="is_reward", type="boolean")
+     */
+    private $isReward = false;
+
+    /**
      * @var string
      *
      * @ORM\ManyToOne(targetEntity="CronkdBundle\Entity\KingdomResource")
@@ -49,6 +70,78 @@ class KingdomResourceEvent extends Event
     public function getQuantity()
     {
         return $this->quantity;
+    }
+
+    /**
+     * Set isFromProbe
+     *
+     * @param boolean $isFromProbe
+     *
+     * @return KingdomResourceEvent
+     */
+    public function setIsFromProbe($isFromProbe)
+    {
+        $this->isFromProbe = $isFromProbe;
+
+        return $this;
+    }
+
+    /**
+     * Get isFromProbe
+     *
+     * @return boolean
+     */
+    public function getIsFromProbe()
+    {
+        return $this->isFromProbe;
+    }
+
+    /**
+     * Set isFromAttack
+     *
+     * @param boolean $isFromAttack
+     *
+     * @return KingdomResourceEvent
+     */
+    public function setIsFromAttack($isFromAttack)
+    {
+        $this->isFromAttack = $isFromAttack;
+
+        return $this;
+    }
+
+    /**
+     * Get isFromAttack
+     *
+     * @return boolean
+     */
+    public function getIsFromAttack()
+    {
+        return $this->isFromAttack;
+    }
+
+    /**
+     * Set isReward
+     *
+     * @param boolean $isReward
+     *
+     * @return KingdomResourceEvent
+     */
+    public function setIsReward($isReward)
+    {
+        $this->isReward = $isReward;
+
+        return $this;
+    }
+
+    /**
+     * Get isReward
+     *
+     * @return boolean
+     */
+    public function getIsReward()
+    {
+        return $this->isReward;
     }
 
     /**
