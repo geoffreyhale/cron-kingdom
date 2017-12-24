@@ -77,11 +77,11 @@ class ActionController extends ApiController
             $kingdomResource->removeQuantity($inputQuantity);
             if ($resourceActionInput->getRequeue()) {
                 $resource = $resourceManager->get($inputResource->getName());
-                $queueSize = $resourceActionInput->getQueueSize() + $this->calculateQueueModifier($kingdomState->getActivePolicyName(), $resource);
+                $queueSize = $resourceActionInput->getQueueSize();
 
                 $inputQueues[] = $queuePopulator->build(
                     $kingdom,
-                    $kingdomResource->getResource(),
+                    $resource,
                     $queueSize,
                     $inputQuantity
                 );
