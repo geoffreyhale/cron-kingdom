@@ -5,6 +5,7 @@ use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\PolicyInstance;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Resource\Resource;
+use CronkdBundle\Entity\Resource\ResourceAction;
 use CronkdBundle\Exceptions\KingdomDoesNotHaveResourceException;
 
 class KingdomState
@@ -125,6 +126,10 @@ class KingdomState
             return false;
         }
 
+        if (!$action instanceof ResourceAction || 0 == count($action->getInputs())) {
+            return false;
+        }
+
         foreach ($action->getInputs() as $resourceActionInput) {
             $kingdomResource = $this->getKingdomResource($resourceActionInput->getResource()->getName());
             if ($kingdomResource->getQuantity() < $resourceActionInput->getInputQuantity()) {
@@ -212,7 +217,6 @@ class KingdomState
     public function getActivePolicyEndDiff()
     {
         $activePolicy = $this->kingdom->getActivePolicy();
-        $world = $this->kingdom->getWorld();
         if (null !== $activePolicy) {
             $endTick = $activePolicy->getStartTick() + $activePolicy->getTickDuration();
             $ticksLeft = $endTick - $this->kingdom->getWorld()->getTick();

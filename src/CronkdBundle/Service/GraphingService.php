@@ -2,7 +2,7 @@
 namespace CronkdBundle\Service;
 
 use CronkdBundle\Entity\Kingdom;
-use CronkdBundle\Entity\NetWorthLog;
+use CronkdBundle\Entity\Event\NetWorthEvent;
 use CronkdBundle\Entity\Queue;
 use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Entity\Resource\ResourceType;
@@ -38,7 +38,7 @@ class GraphingService
      */
     public function fetchNetWorthGraphData(World $world, $minTick, $maxTick)
     {
-        $data = $this->em->getRepository(NetWorthLog::class)
+        $data = $this->em->getRepository(NetWorthEvent::class)
             ->findByWorld($world, $minTick, $maxTick);
         if (empty($data)) {
             throw new EmptyGraphingDatasetException($world->getName());

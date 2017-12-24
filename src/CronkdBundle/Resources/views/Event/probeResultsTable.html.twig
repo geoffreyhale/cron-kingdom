@@ -1,0 +1,17 @@
+<table class="table table-bordered" style="margin-top: 15px;">
+    <tbody>
+    <tr>
+        <td>
+            <i class="fa fa-flag fa-fw"></i> Policy: <strong>{{ data.Policy is not defined ? 'None' : data.Policy }}</strong>
+        </td>
+    </tr>
+    {% for resourceName, kingdomResource in data.Resources %}
+        <tr>
+            <td>
+                {{ resourceIcon(kingdomResource.resource)|raw }}
+                {{ resourceName }}: <strong>{{ kingdomResource.quantity|number_format }}</strong>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

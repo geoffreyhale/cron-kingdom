@@ -10,5 +10,6 @@
 <hr />
 {% endif %}
 <div class="btn-group-vertical" role="group">
-    <a href="{{ path('log_index', {id: kingdom.id}) }}" class="btn btn-default">Event Log{% if kingdomState.notificationCount > 0 %} <span class="badge">{{ kingdomState.notificationCount }}</span>{% endif %}</a>
+    <a href="{{ path('event_index', {id: kingdom.id}) }}" class="btn btn-default">Logs</a>
+    <a href="{{ path('notification_index', {id: kingdom.id}) }}" class="btn btn-default">Notifications{% if kingdomState.notificationCount > 0 %} <span class="badge">{{ kingdomState.notificationCount }}</span>{% endif %}</a>
 </div>

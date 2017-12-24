@@ -5,9 +5,9 @@ use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Event\ActionEvent;
 use CronkdBundle\Event\AttackEvent;
 use CronkdBundle\Event\CreateKingdomEvent;
-use CronkdBundle\Event\ProbeEvent;
 use CronkdBundle\Event\WorldTickEvent;
 use CronkdBundle\Manager\KingdomManager;
+use CronkdBundle\Manager\LumberMill;
 use CronkdBundle\Manager\NetWorthLogManager;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -17,18 +17,18 @@ class KingdomCachedStatsListener
     private $em;
     /** @var KingdomManager */
     private $kingdomManager;
-    /** @var NetWorthLogManager  */
-    private $netWorthLogManager;
+    /** @var LumberMill  */
+    private $logManager;
 
     public function __construct(
         EntityManagerInterface $em,
         KingdomManager $kingdomManager,
-        NetWorthLogManager $netWorthLogManager
+        LumberMill $logManager
     )
     {
-        $this->em                 = $em;
-        $this->kingdomManager     = $kingdomManager;
-        $this->netWorthLogManager = $netWorthLogManager;
+        $this->em             = $em;
+        $this->kingdomManager = $kingdomManager;
+        $this->logManager     = $logManager;
     }
 
     public function onTick(WorldTickEvent $event)
@@ -37,7 +37,7 @@ class KingdomCachedStatsListener
         foreach ($event->world->getKingdoms() as $kingdom) {
             $this->kingdomManager->calculateNetWorth($kingdom);
             $this->kingdomManager->calculateAttackAndDefense($kingdom);
-            $this->netWorthLogManager->logNetWorth($kingdom);
+            $this->logManager->logNetWorth($kingdom);
         }
     }
 

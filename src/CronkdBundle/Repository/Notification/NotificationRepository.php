@@ -1,10 +1,16 @@
 <?php
-namespace CronkdBundle\Repository;
+namespace CronkdBundle\Repository\Notification;
 
 use CronkdBundle\Entity\Kingdom;
+use Doctrine\ORM\EntityRepository;
 
-class LogRepository extends \Doctrine\ORM\EntityRepository
+class NotificationRepository extends EntityRepository
 {
+    /**
+     * @param Kingdom $kingdom
+     * @param int $limit
+     * @return array
+     */
     public function findByRecent(Kingdom $kingdom, int $limit)
     {
         $qb = $this->createQueryBuilder('l');
@@ -19,13 +25,14 @@ class LogRepository extends \Doctrine\ORM\EntityRepository
     /**
      * @param Kingdom $kingdom
      * @return int
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function findNotificationCount(Kingdom $kingdom)
     {
         $qb = $this->createQueryBuilder('l');
         $qb->select('COUNT(l.id) AS NotificationCount');
-        $qb->where('l.important = 1');
-        $qb->andWhere('l.readAt IS NULL');
+        $qb->where('l.readAt IS NULL');
         $qb->andWhere('l.kingdom = :kingdom');
         $qb->setParameter('kingdom', $kingdom);
 

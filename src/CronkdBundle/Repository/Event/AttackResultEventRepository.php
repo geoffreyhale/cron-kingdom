@@ -1,15 +1,16 @@
 <?php
-namespace CronkdBundle\Repository;
+namespace CronkdBundle\Repository\Event;
 
 use CronkdBundle\Entity\Kingdom;
-use CronkdBundle\Entity\World;
 use Doctrine\ORM\EntityRepository;
 
-class AttackLogRepository extends EntityRepository
+class AttackResultEventRepository extends EntityRepository
 {
     /**
      * @param Kingdom $kingdom
      * @return bool
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function hasAvailableAttack(Kingdom $kingdom)
     {

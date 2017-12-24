@@ -3,9 +3,11 @@ namespace CronkdBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use JMS\Serializer\Annotation as Jms;
 
 /**
  * @ORM\MappedSuperclass()
+ * @Jms\ExclusionPolicy("all")
  */
 abstract class BaseEntity
 {

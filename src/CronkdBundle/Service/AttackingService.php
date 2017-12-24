@@ -1,18 +1,16 @@
 <?php
 namespace CronkdBundle\Service;
 
-use CronkdBundle\Entity\AttackLog;
+use CronkdBundle\Entity\Event\AttackResultEvent;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
-use CronkdBundle\Entity\Log;
-use CronkdBundle\Entity\Policy;
 use CronkdBundle\Entity\Resource\Resource;
-use CronkdBundle\Entity\Resource\ResourceType;
 use CronkdBundle\Event\AttackEvent;
+use CronkdBundle\Exceptions\InvalidQueueIntervalException;
 use CronkdBundle\Exceptions\InvalidResourceException;
 use CronkdBundle\Exceptions\NotEnoughResourcesException;
 use CronkdBundle\Manager\KingdomManager;
-use CronkdBundle\Manager\LogManager;
+use CronkdBundle\Manager\LumberMill;
 use CronkdBundle\Manager\PolicyManager;
 use CronkdBundle\Manager\ResourceManager;
 use CronkdBundle\Model\Army;
@@ -32,7 +30,7 @@ class AttackingService
     private $kingdomManager;
     /** @var ResourceManager  */
     private $resourceManager;
-    /** @var LogManager */
+    /** @var LumberMill */
     private $logManager;
     /** @var PolicyManager */
     private $policyManager;
@@ -43,7 +41,7 @@ class AttackingService
         QueuePopulator $queuePopulator,
         KingdomManager $kingdomManager,
         ResourceManager $resourceManager,
-        LogManager $logManager,
+        LumberMill $logManager,
         PolicyManager $policyManager
     ) {
         $this->em              = $em;
@@ -61,6 +59,8 @@ class AttackingService
      * @param array $attackers
      * @return AttackReport
      * @throws InvalidResourceException
+     * @throws NotEnoughResourcesException
+     * @throws InvalidQueueIntervalException
      */
     public function attack(Kingdom $kingdom, Kingdom $targetKingdom, array $attackers)
     {
@@ -69,22 +69,11 @@ class AttackingService
         $result = $attackPower > $defendingPower;
         $report = new AttackReport($kingdom, $targetKingdom, $result);
 
-        $this->logManager->createLog(
-            $kingdom,
-            Log::TYPE_ATTACK,
-            ($report->getResult() ? 'Successful' : 'Failed') . ' attack against ' . $targetKingdom->getName()
-        );
-        $this->logManager->createLog(
-            $targetKingdom,
-            Log::TYPE_ATTACK,
-            ($report->getResult() ? 'Failed' : 'Successful') . ' defend against ' . $kingdom->getName(),
-            true
-        );
-
-        $this->applyDeath($report, $kingdom, $targetKingdom);
+        // tkelleher: Need to figure world logs to do this I think
+        //$this->applyDeath($report, $kingdom, $targetKingdom);
 
         if ($result) {
-            $this->awardResources($report, $kingdom, $targetKingdom);
+            $report = $this->awardResources($report, $kingdom, $targetKingdom);
         }
 
         foreach ($attackers as $resourceName => $quantity) {
@@ -99,15 +88,13 @@ class AttackingService
             $kingdomResource->removeQuantity($quantity);
             $this->em->persist($kingdomResource);
 
-            $this->logManager->createLog(
-                $kingdom,
-                Log::TYPE_ATTACK,
-                'Attack queued ' . $quantity . ' ' . $resourceName
-            );
-
-            $this->logAttackResult($report, $kingdom, $targetKingdom);
+            if (0 < $quantity) {
+                $this->logManager->logQueueResource($kingdom, $resource, $quantity, false, true);
+            }
         }
         $this->em->flush();
+
+        $report = $this->logManager->logAttackResult($kingdom, $targetKingdom, $report);
 
         $event = new AttackEvent($kingdom, $targetKingdom, $result);
         $this->eventDispatcher->dispatch('event.attack', $event);
@@ -173,7 +160,7 @@ class AttackingService
      */
     public function numAttacksThisTick(Kingdom $kingdom)
     {
-        $previousAttacks = $this->em->getRepository(AttackLog::class)->findOneBy([
+        $previousAttacks = $this->em->getRepository(AttackResultEvent::class)->findOneBy([
             'attacker' => $kingdom,
             'tick'     => $kingdom->getWorld()->getTick(),
         ]);
@@ -185,6 +172,7 @@ class AttackingService
      * @param AttackReport $report
      * @param Kingdom $kingdom
      * @param Kingdom $targetKingdom
+     * @return AttackReport
      */
     private function awardResources(AttackReport $report, Kingdom $kingdom, Kingdom $targetKingdom)
     {
@@ -201,15 +189,21 @@ class AttackingService
             $percentage = $percentage + $attackerPercentage + $defenderPercentage;
 
             if ($percentage > 0) {
-                $this->awardResource($report, $kingdom, $targetKingdom, $resource->getName(), $percentage);
+                $report = $this->awardResource($report, $kingdom, $targetKingdom, $resource->getName(), $percentage);
             }
         }
+
+        return $report;
     }
 
     /**
      * @param AttackReport $report
      * @param Kingdom $kingdom
      * @param Kingdom $targetKingdom
+     * @param string $resourceName
+     * @param int $percent
+     * @return AttackReport
+     * @throws InvalidResourceException
      */
     private function awardResource(AttackReport $report, Kingdom $kingdom, Kingdom $targetKingdom, string $resourceName, int $percent)
     {
@@ -219,18 +213,12 @@ class AttackingService
         $quantity = ceil($targetKingdomResource->getQuantity() * $percent / 100);
         $this->kingdomManager->modifyResources($kingdom, $resource, $quantity);
         $this->kingdomManager->modifyResources($targetKingdom, $resource, -1 * $quantity);
-        $report->addModifiedResource($kingdom, $resource, $quantity);
+        $report->addModifiedResource($resource, $quantity);
 
-        $this->logManager->createLog(
-            $kingdom,
-            Log::TYPE_ATTACK,
-            "Attack awarded $quantity $resourceName"
-        );
-        $this->logManager->createLog(
-            $targetKingdom,
-            Log::TYPE_ATTACK,
-            "Attack lost $quantity $resourceName"
-        );
+        $this->logManager->logAttackReward($kingdom, $resource, $quantity);
+        $this->logManager->logAttackReward($targetKingdom, $resource, -$quantity);
+
+        return $report;
     }
 
     /**
@@ -265,23 +253,5 @@ class AttackingService
                 -floor($kingdomResource->getQuantity() * 20 / 100)
             );
         }
-    }
-
-    /**
-     * @param AttackReport $report
-     * @param Kingdom $kingdom
-     * @param Kingdom $targetKingdom
-     * @return AttackLog
-     */
-    private function logAttackResult(AttackReport $report, Kingdom $kingdom, Kingdom $targetKingdom)
-    {
-        $attackLog = new AttackLog();
-        $attackLog->setAttacker($kingdom);
-        $attackLog->setDefender($targetKingdom);
-        $attackLog->setTick($kingdom->getWorld()->getTick());
-        $attackLog->setSuccess($report->getResult());
-        $this->em->persist($attackLog);
-
-        return $attackLog;
     }
 }

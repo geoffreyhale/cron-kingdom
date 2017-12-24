@@ -95,7 +95,7 @@ class ResourceManager
      *
      * @return Resource|null
      */
-    public function getCivilianResources()
+    public function getBasePopulationResource()
     {
         $populationResources = $this->getPopulationResources();
         foreach ($populationResources as $resource) {

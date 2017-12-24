@@ -1,7 +1,7 @@
 <?php
 namespace CronkdBundle\Listener;
 
-use CronkdBundle\Entity\Log;
+use CronkdBundle\Entity\Event;
 use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Event\CreateKingdomEvent;
 use CronkdBundle\Event\ViewLogEvent;
@@ -45,7 +45,7 @@ class ResourceListener
 
         /** @var Resource $resource */
         foreach ($resources as $resource) {
-            $kingdomResource = $this->kingdomManager->findOrCreateResource($kingdom, $resource);
+            $kingdomResource = $this->kingdomManager->findOrCreateKingdomResource($kingdom, $resource);
             $kingdomResource->setQuantity($resource->getStartingAmount());
             $kingdom->addResource($kingdomResource);
         }

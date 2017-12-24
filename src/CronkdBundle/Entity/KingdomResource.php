@@ -3,12 +3,15 @@ namespace CronkdBundle\Entity;
 
 use CronkdBundle\Entity\Resource\Resource;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Jms;
 
 /**
  * KingdomResource
  *
  * @ORM\Table(name="kingdom_resource")
  * @ORM\Entity(repositoryClass="CronkdBundle\Repository\KingdomResourceRepository")
+ *
+ * @Jms\ExclusionPolicy("all")
  */
 class KingdomResource extends BaseEntity
 {
@@ -25,6 +28,7 @@ class KingdomResource extends BaseEntity
      * @var int
      *
      * @ORM\Column(name="quantity", type="bigint")
+     * @Jms\Expose()
      */
     private $quantity;
 
@@ -39,6 +43,7 @@ class KingdomResource extends BaseEntity
      * @var Resource
      *
      * @ORM\ManyToOne(targetEntity="CronkdBundle\Entity\Resource\Resource", inversedBy="kingdoms", fetch="EAGER")
+     * @Jms\Expose()
      */
     private $resource;
 

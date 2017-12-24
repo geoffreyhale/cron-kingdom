@@ -23,7 +23,7 @@
             </li>
             <li>
                 {% if kingdomState.notificationCount %}
-                    <a href="{{ path('log_index', {'id': kingdom.id}) }}"><span class="label label-danger">{{ kingdomState.notificationCount }}</span></a>
+                    <a href="{{ path('notification_index', {'id': kingdom.id}) }}"><span class="label label-danger">{{ kingdomState.notificationCount }}</span></a>
                 {% endif %}
             </li>
         </ul>

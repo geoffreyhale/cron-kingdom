@@ -2,12 +2,10 @@
 namespace CronkdBundle\Controller\Api;
 
 use CronkdBundle\Entity\Kingdom;
-use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Service\ProbingService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -84,6 +82,8 @@ class ProbeController extends ApiController
             // Only requeue probes if success
             if ($report->getResult()) {
                 $probeQueues = $queuePopulator->build($kingdom, $resource, 8, $quantity);
+                $logManager = $this->get('cronkd.manager.log');
+                $logManager->logQueueResource($kingdom, $resource, $quantity, true);
             }
             $kingdomResource->removeQuantity($quantity);
             $em->persist($kingdomResource);
@@ -92,6 +92,7 @@ class ProbeController extends ApiController
 
         return $this->createSerializedJsonResponse([
             'data' => [
+                'event_id'      => $report->getProbeEvent()->getId(),
                 'report'        => $report,
                 'hacker_queues' => $probeQueues,
             ],

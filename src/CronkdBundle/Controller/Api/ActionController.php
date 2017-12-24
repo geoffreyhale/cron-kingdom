@@ -3,7 +3,7 @@ namespace CronkdBundle\Controller\Api;
 
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
-use CronkdBundle\Entity\Log;
+use CronkdBundle\Entity\Event;
 use CronkdBundle\Entity\Policy;
 use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Entity\Resource\ResourceActionInput;
@@ -77,11 +77,11 @@ class ActionController extends ApiController
             $kingdomResource->removeQuantity($inputQuantity);
             if ($resourceActionInput->getRequeue()) {
                 $resource = $resourceManager->get($inputResource->getName());
-                $queueSize = $resourceActionInput->getQueueSize() + $this->calculateQueueModifier($kingdomState->getActivePolicyName(), $resource);
+                $queueSize = $resourceActionInput->getQueueSize();
 
                 $inputQueues[] = $queuePopulator->build(
                     $kingdom,
-                    $kingdomResource->getResource(),
+                    $resource,
                     $queueSize,
                     $inputQuantity
                 );
@@ -107,11 +107,7 @@ class ActionController extends ApiController
             $outputQuantity
         );
 
-        $this->get('cronkd.manager.log')->createLog(
-            $kingdom,
-            Log::TYPE_ACTION,
-            $action->getVerb() . ' ' . $quantity . ' ' . $outputResourceObj->getName()
-        );
+        $this->get('cronkd.manager.log')->logQueueResource($kingdom, $kingdomOutputResource->getResource(), $outputQuantity);
 
         return new JsonResponse([
             'data' => [

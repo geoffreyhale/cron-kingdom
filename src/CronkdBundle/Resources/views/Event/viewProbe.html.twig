@@ -1,0 +1,27 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+    <div class="row-fluid">
+        <div class="col-sm-12">
+            <ol class="breadcrumb">
+                <li><a href="{{ path('homepage') }}">Dashboard</a></li>
+                <li><a href="{{ path('event_index', {'id': kingdom.id}) }}">Events</a></li>
+                <li class="active">Spy Results</li>
+            </ol>
+
+            <h3>Spy Results</h3>
+                <div class="alert alert-info">
+                    Spy attempt occurred at {{ event.createdAt|date('Y-m-d g:i:s A') }}.
+                </div>
+                <div class="alert alert-{{ event.success ? 'success' : 'danger' }}">
+                    <h3 style="margin-top: 0px;">{{ event.success ? 'Success!' : 'Failure!' }}</h3>
+                    {% if event.success %}
+                        <p>Spies uncovered the following information for <i class="fa fa-fort-awesome fa-fw"></i> {{ data.Kingdom }}:</p>
+                        {% include 'CronkdBundle:Event:probeResultsTable.html.twig' %}
+                    {% else %}
+                        <p>Spies were not able to retrieve any information.</p>
+                    {% endif %}
+                </div>
+        </div>
+    </div>
+{% endblock %}

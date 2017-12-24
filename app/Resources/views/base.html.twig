@@ -48,9 +48,9 @@
                                 </ul>
                             </li>
                         {% endif %}
-                        <li><a href="{{ path('fos_user_security_logout') }}" class="navbar-link">{{ 'layout.logout'|trans({}, 'FOSUserBundle') }}</a></li>
+                        <li><a href="{{ path('fos_user_security_logout') }}" class="navbar-link">Logout</a></li>
                     {% else %}
-                        <li><a href="{{ path('fos_user_security_login') }}" class="navbar-link">{{ 'layout.login'|trans({}, 'FOSUserBundle') }}</a></li>
+                        <li><a href="{{ path('fos_user_security_login') }}" class="navbar-link">Login</a></li>
                         <li><a href="{{ path('fos_user_registration_register') }}" class="navbar-link">Register</a></li>
                     {% endif %}
                 </ul>

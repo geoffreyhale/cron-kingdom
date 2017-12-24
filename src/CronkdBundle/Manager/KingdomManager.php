@@ -1,10 +1,10 @@
 <?php
 namespace CronkdBundle\Manager;
 
-use CronkdBundle\Entity\AttackLog;
+use CronkdBundle\Entity\Event\AttackResultEvent;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
-use CronkdBundle\Entity\Log;
+use CronkdBundle\Entity\Notification\Notification;
 use CronkdBundle\Entity\Queue;
 use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Entity\User;
@@ -39,8 +39,8 @@ class KingdomManager
     ) {
         $this->em              = $em;
         $this->resourceManager = $resourceManager;
-        $this->eventDispatcher = $eventDispatcher;
         $this->policyManager   = $policyManager;
+        $this->eventDispatcher = $eventDispatcher;
         $this->logger          = new NullLogger();
     }
 
@@ -82,12 +82,12 @@ class KingdomManager
     public function generateKingdomState(Kingdom $kingdom)
     {
         $kingdomState = new KingdomState($kingdom);
-        $winLossRecord = $this->em->getRepository(AttackLog::class)->getWinLossRecord($kingdom);
+        $winLossRecord = $this->em->getRepository(AttackResultEvent::class)->getWinLossRecord($kingdom);
         $kingdomState
             ->setWinLossRecord($winLossRecord['win'], $winLossRecord['loss'])
             ->setCurrentQueues($this->getResourceQueues($kingdom))
-            ->setNotificationCount($this->em->getRepository(Log::class)->findNotificationCount($kingdom))
-            ->setAvailableAttack($this->em->getRepository(AttackLog::class)->hasAvailableAttack($kingdom))
+            ->setNotificationCount($this->em->getRepository(Notification::class)->findNotificationCount($kingdom))
+            ->setAvailableAttack($this->em->getRepository(AttackResultEvent::class)->hasAvailableAttack($kingdom))
         ;
 
         return $kingdomState;
@@ -98,7 +98,7 @@ class KingdomManager
      * @param Resource $resource
      * @return KingdomResource
      */
-    public function findOrCreateResource(Kingdom $kingdom, Resource $resource)
+    public function findOrCreateKingdomResource(Kingdom $kingdom, Resource $resource)
     {
         $kingdomResource = $this->em->getRepository(KingdomResource::class)->findOneBy([
             'kingdom'  => $kingdom,
@@ -129,7 +129,7 @@ class KingdomManager
             throw new InvalidResourceException($resourceName);
         }
 
-        return $this->findOrCreateResource($kingdom, $resource);
+        return $this->findOrCreateKingdomResource($kingdom, $resource);
     }
 
     /**
@@ -203,7 +203,7 @@ class KingdomManager
      */
     public function incrementPopulation(Kingdom $kingdom)
     {
-        $civilianResource  = $this->resourceManager->getCivilianResources();
+        $civilianResource  = $this->resourceManager->getBasePopulationResource();
         if (null === $civilianResource) {
             throw new InvalidWorldSettingsException("No base population resource is configured!");
         }
@@ -239,7 +239,7 @@ class KingdomManager
     {
         $resources = $this->resourceManager->getWorldResources($kingdom->getWorld());
         foreach ($resources as $resource) {
-            $this->findOrCreateResource($kingdom, $resource);
+            $this->findOrCreateKingdomResource($kingdom, $resource);
         }
     }
 
@@ -254,9 +254,10 @@ class KingdomManager
 
         foreach ($kingdom->getResources() as $kingdomResource) {
             $totalQueued = $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $kingdomResource->getResource());
-            $this->logger->info($kingdom->getName() . ' net worth ' . $kingdomResource->getResource()->getName() . ' = ' . $totalQueued);
             $netWorth += $totalQueued * $kingdomResource->getResource()->getValue();
         }
+
+        $this->logger->info($kingdom->getName() . ' net worth = ' . $netWorth);
 
         $kingdom->setNetWorth($netWorth);
         $this->em->persist($kingdom);
@@ -337,7 +338,7 @@ class KingdomManager
     {
         $this->logger->info('Modifying resource for Kingdom ' . $kingdom->getName() . '; Resource ' . $resource->getName() . '; Qty: ' . $quantity);
 
-        $kingdomResource = $this->findOrCreateResource($kingdom, $resource);
+        $kingdomResource = $this->findOrCreateKingdomResource($kingdom, $resource);
         $kingdomResource->addQuantity($quantity);
         if (0 > $kingdomResource->getQuantity()) {
             $kingdomResource->setQuantity(0);
@@ -385,7 +386,7 @@ class KingdomManager
         foreach($kingdoms as $kingdom) {
             $kingdomsByWinLoss[$kingdom->getId()] = [
                 'kingdom' => $kingdom,
-                'winloss' => $this->em->getRepository(AttackLog::class)->getWinLossRecord($kingdom)
+                'winloss' => $this->em->getRepository(AttackResultEvent::class)->getWinLossRecord($kingdom)
             ];
         }
 

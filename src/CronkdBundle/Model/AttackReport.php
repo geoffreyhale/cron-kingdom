@@ -1,6 +1,7 @@
 <?php
 namespace CronkdBundle\Model;
 
+use CronkdBundle\Entity\Event\AttackResultEvent;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\Resource\Resource;
 use JMS\Serializer\Annotation as Jms;
@@ -45,6 +46,11 @@ class AttackReport
      */
     private $modifiedResources = [];
 
+    /**
+     * @var AttackResultEvent
+     */
+    private $attackResultEvent = null;
+
     public function __construct(Kingdom $kingdom, Kingdom $target, int $result)
     {
         $this->kingdom       = $kingdom;
@@ -81,14 +87,13 @@ class AttackReport
     }
 
     /**
-     * @param Kingdom $kingdom
      * @param Resource $resource
      * @param $quantity
      * @return AttackReport
      */
-    public function addModifiedResource(Kingdom $kingdom, Resource $resource, $quantity)
+    public function addModifiedResource(Resource $resource, $quantity)
     {
-        $this->modifiedResources[] = $quantity . ' ' . $resource->getName();
+        $this->modifiedResources[$resource->getName()] = $quantity;
 
         return $this;
     }
@@ -99,5 +104,24 @@ class AttackReport
     public function getModifiedResources()
     {
         return $this->modifiedResources;
+    }
+
+    /**
+     * @return AttackResultEvent
+     */
+    public function getAttackResultEvent(): AttackResultEvent
+    {
+        return $this->attackResultEvent;
+    }
+
+    /**
+     * @param AttackResultEvent $attackResultEvent
+     * @return AttackReport
+     */
+    public function setAttackResultEvent(AttackResultEvent $attackResultEvent)
+    {
+        $this->attackResultEvent = $attackResultEvent;
+
+        return $this;
     }
 }
