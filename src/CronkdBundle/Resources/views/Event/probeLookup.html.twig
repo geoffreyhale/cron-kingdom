@@ -1,0 +1,16 @@
+
+    {% if event is defined and event is not empty %}
+    <div class="alert alert-{{ event.success ? 'success' : 'danger' }}">
+        <h3 style="margin-top: 0px;">{{ event.success ? 'Success!' : 'Failure!' }}</h3>
+        <strong>{{ event.createdAt|date('Y-m-d g:i:s A') }}</strong><br /><br />
+        {% if event.success %}
+            <p>Spies uncovered the following information for <i class="fa fa-fort-awesome fa-fw"></i> {{ event.probee.name }}:</p>
+            {% set vars = {
+                'data': event.reportData
+            } %}
+            {% include 'CronkdBundle:Event:probeResultsTable.html.twig' with vars %}
+        {% else %}
+            <p>Spies were not able to retrieve any information.</p>
+        {% endif %}
+    </div>
+    {% endif %}

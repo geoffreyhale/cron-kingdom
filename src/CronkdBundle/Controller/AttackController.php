@@ -52,7 +52,6 @@ class AttackController extends CronkdController
             $results = json_decode($response->getContent(), true);
 
             return $this->redirect($this->generateUrl('event_attack_view', ['id' => $results['data']['event_id']]));
-
         }
 
         return [
