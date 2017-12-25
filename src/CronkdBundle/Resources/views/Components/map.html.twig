@@ -1,0 +1,23 @@
+<style>
+    table.map tr {
+        height: 60px;
+    }
+    table.map td {
+        width: 60px;
+        background: greenyellow;
+        border: 1px black solid;
+        text-align: center;
+    }
+</style>
+
+<table class="map">
+    {% for y in 0..(yMax - yMin) %}
+        <tr>
+            {% for x in 0..(xMax - xMin) %}
+                <td>({{ x }}, {{ y }}) {{ (kingdom.mapTile.x == xMin + x and kingdom.mapTile.y == yMin + y) ? kingdom.name }}</td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+</table>
+
+{{ dump(mapTiles) }}

@@ -126,7 +126,7 @@ class Kingdom extends BaseEntity
     /**
      * @var MapTile
      *
-     * @ORM\ManyToOne(targetEntity="MapTile", inversedBy="kingdoms")
+     * @ORM\ManyToOne(targetEntity="MapTile", inversedBy="kingdoms", fetch="EAGER")
      */
     private $mapTile;
 

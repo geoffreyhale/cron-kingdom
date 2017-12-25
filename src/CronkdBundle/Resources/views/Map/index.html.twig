@@ -1,8 +1,23 @@
 {% extends '::base.html.twig' %}
 
 {% block content %}
-    <div>
-        <h1>Map</h1>
-        <a href="{{ path('kingdom_map_tile') }}" class="btn btn-default">Move Kingdom / Set New Map Tile (kingdom_map_tile)</a>
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="col-sm-12">
+                <h1><i class="fa fa-map"></i> Map</h1>
+                <div class="panel panel-default" style="max-width: 550px;">
+                    <div class="panel-heading">
+                        <i class="fa fa-fort-awesome"></i> {{ kingdom.name }}
+                    </div>
+                    <div class="panel-body">
+                        {{ dump(kingdom.mapTile) }}
+                    </div>
+                </div>
+
+                {{ render(controller('CronkdBundle:Map:renderMap')) }}
+
+                <a href="{{ path('kingdom_move') }}" class="btn">kingdom_move</a>
+            </div>
+        </div>
     </div>
 {% endblock %}

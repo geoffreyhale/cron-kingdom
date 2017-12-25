@@ -5,8 +5,7 @@
         <div class="row-fluid">
             <div class="col-sm-12">
                 <h3>Kingdom Map Tile</h3>
-                <div class="alert-info">Your kingdom's current map tile coordinates: (x: {{ kingdom.mapTile.x }}, y: {{ kingdom.mapTile.y }}).</div>
-                <div class="alert-success">You can move 1 step North, South, East, or West.</div>
+                <div class="alert-info">You can move 1 step North, South, East, or West.</div>
                 {{ form_start(form, {'attr': {'class': 'form form-horizontal'}}) }}
                 <div class="form-group">
                     {{ form_row(form.x, {'attr': {'class': 'form-control'}}) }}
