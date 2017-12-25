@@ -13,7 +13,7 @@
             <div class="col-md-2">
                 <ul class="nav nav-pills nav-stacked">
                     <li role="presentation" class="active"><a href="#home" data-toggle="tab">Home</a></li>
-                    <li role="presentation"><a href="#kingdom" data-toggle="tab">Kingdom</a></li>
+                    <li role="presentation"><a href="#queues" data-toggle="tab">Queues</a></li>
                     <li role="presentation"><a href="#world" data-toggle="tab">World</a></li>
                     <li class="nav-divider"></li>
                     <li>
@@ -26,6 +26,7 @@
                             {% endif %}
                         {% endif %}
                     </li>
+                    <li><a href="{{ path('kingdom') }}" class="btn btn-primary">Kingdom</a></li>
                     {% if kingdomState.hasAvailableProbingResources %}
                         <li>
                             <a href="{{ path('probe_send', {id: kingdom.id}) }}" class="btn btn-warning">Spy</a>
@@ -47,8 +48,12 @@
                         {% include 'CronkdBundle:Default:partials/home.html.twig' %}
                     </div>
 
-                    <div class="tab-pane" id="kingdom">
-                        {% include 'CronkdBundle:Default:partials/kingdom.html.twig' %}
+                    <div class="tab-pane" id="queues">
+                        <div class="row clearfix">
+                            <div class="col-md-12">
+                                {% include 'CronkdBundle:Default:partials/kingdom/queues.html.twig' %}
+                            </div>
+                        </div>
                     </div>
 
                     <div class="tab-pane" id="world">

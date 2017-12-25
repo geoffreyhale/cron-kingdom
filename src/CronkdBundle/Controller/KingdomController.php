@@ -7,14 +7,22 @@ use CronkdBundle\Form\KingdomType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route("/kingdom")
  */
-class KingdomController extends Controller
+class KingdomController extends CronkdController
 {
+    /**
+     * @Route("", name="kingdom")
+     * @Template()
+     */
+    public function indexAction()
+    {
+        return;
+    }
+
     /**
      * @Route("/create/{id}", name="kingdom_create")
      * @Method({"GET", "POST"})
@@ -55,5 +63,17 @@ class KingdomController extends Controller
         return [
             'form' => $form->createView(),
         ];
+    }
+
+    /**
+     * @Route("/get-kingdom-panel-component", name="get_kingdom_panel_component")
+     */
+    public function getKingdomPanelComponentAction()
+    {
+        return $this->render('CronkdBundle:Components:fullKingdomStatsPanel.html.twig',
+            array(
+                'kingdom' => $this->extractKingdomFromCurrentUser()
+            )
+        );
     }
 }
