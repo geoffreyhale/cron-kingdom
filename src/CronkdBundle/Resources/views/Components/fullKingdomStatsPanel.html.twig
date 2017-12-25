@@ -1,0 +1,43 @@
+<div class="panel panel-primary" style="margin: 0 auto; max-width: 800px;">
+    <div class="panel-heading" style="text-align: center;">
+        <h1>{{ kingdom.name }}</h1>
+    </div>
+    <div class="panel-body">
+        <div class="col-md-8 well" style="text-align: center;">
+            <span style="font-size: 4em;"><i class="fa fa-fort-awesome fa-5x"></i></span>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading" style="text-align: center;">Economy</div>
+                <ul class="list-group">
+                    <li class="list-group-item clearfix">
+                        <span class="pull-left">Networth</span>
+                        <span class="pull-right">{{ kingdom.liquidity }}/{{ kingdom.netWorth }}</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading" style="text-align: center;">Military</div>
+                <ul class="list-group">
+                    <li class="list-group-item clearfix">
+                        <span class="pull-left">Attack</span>
+                        <span class="pull-right">{{ kingdom.attack }}</span>
+                    </li>
+                    <li class="list-group-item clearfix">
+                        <span class="pull-left">Defense</span>
+                        <span class="pull-right">{{ kingdom.defense }}</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading" style="text-align: center;">Score</div>
+                <ul class="list-group">
+                    <li class="list-group-item clearfix">
+                        <span class="pull-left">ELO</span>
+                        <span class="pull-right">{{ kingdom.elo }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
