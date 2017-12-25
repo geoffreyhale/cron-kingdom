@@ -167,11 +167,17 @@ class Resource extends BaseEntity
     private $actions;
 
     /**
+     * @ORM\OneToMany(targetEntity="ResourceHousing", mappedBy="owningResource")
+     */
+    private $housing;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
         $this->actions  = new ArrayCollection();
+        $this->housing  = new ArrayCollection();
         $this->kingdoms = new ArrayCollection();
     }
 
@@ -636,6 +642,58 @@ class Resource extends BaseEntity
     public function getActions()
     {
         return $this->actions;
+    }
+
+    /**
+     * Add housing
+     *
+     * @param ResourceHousing $housing
+     *
+     * @return Resource
+     */
+    public function addHousing(ResourceHousing $housing)
+    {
+        $this->housing[] = $housing;
+
+        return $this;
+    }
+
+    /**
+     * Remove housing
+     *
+     * @param ResourceHousing $housing
+     */
+    public function removeHousing(ResourceHousing $housing)
+    {
+        $this->housing->removeElement($housing);
+    }
+
+    /**
+     * Get housing
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getHousing()
+    {
+        return $this->housing;
+    }
+
+    /**
+     * @return array
+     */
+    public function getUnavailableResourceHousingIds()
+    {
+        $excludedResources = [];
+
+        /** @var ResourceHousing $housing */
+        foreach ($this->getHousing() as $housing) {
+            $resourceId = $housing->getReferencedResource()->getId();
+            if (!in_array($resourceId, $excludedResources)) {
+                $excludedResources[] = $resourceId;
+            }
+        }
+
+        return $excludedResources;
     }
 
     /**

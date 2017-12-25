@@ -153,6 +153,52 @@ class KingdomManager
 
     /**
      * @param Kingdom $kingdom
+     * @return array
+     */
+    public function getPopulationCapacityByResource(Kingdom $kingdom)
+    {
+        $resources = [];
+        foreach ($this->resourceManager->getBuildingResources() as $resource) {
+            if ($resource->getCapacity() > 0) {
+                $resources[$resource->getName()] = 0;
+            }
+        }
+
+        foreach ($kingdom->getResources() as $kingdomResource) {
+            $resourceName = $kingdomResource->getResource()->getName();
+            if (isset($resources[$resourceName])) {
+                $resources[$resourceName] = (int) $kingdomResource->getQuantity();
+            }
+        }
+
+        return $resources;
+    }
+
+    /**
+     * @param Kingdom $kingdom
+     * @return array
+     */
+    public function getPopulationByResource(Kingdom $kingdom)
+    {
+        $resources = [];
+        foreach ($this->resourceManager->getPopulationResources() as $resource) {
+            $resources[$resource->getName()] = 0;
+        }
+
+        foreach ($kingdom->getResources() as $kingdomResource) {
+            $resourceName = $kingdomResource->getResource()->getName();
+            if (isset($resources[$resourceName])) {
+                $resources[$resourceName] = (int) $kingdomResource->getQuantity();
+            }
+            $resources[$resourceName] += $this->em->getRepository(Queue::class)
+                ->findTotalQueued($kingdom, $kingdomResource->getResource());
+        }
+
+        return $resources;
+    }
+
+    /**
+     * @param Kingdom $kingdom
      * @return integer
      */
     public function getPopulation(Kingdom $kingdom)
@@ -190,6 +236,8 @@ class KingdomManager
      */
     public function isAtMaxPopulation(Kingdom $kingdom)
     {
+        $this->resourceManager->getCapacityResources();
+
         $totalPopulation = $this->getPopulation($kingdom);
         $activeHousingResources = $this->getPopulationCapacity($kingdom);
 
@@ -262,6 +310,8 @@ class KingdomManager
         $kingdom->setNetWorth($netWorth);
         $this->em->persist($kingdom);
         $this->em->flush();
+
+        return $kingdom->getNetWorth();
     }
 
     /**

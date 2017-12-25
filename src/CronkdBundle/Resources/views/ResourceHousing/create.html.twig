@@ -1,0 +1,20 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="col-sm-12">
+
+                <ol class="breadcrumb">
+                    <li><a href="{{ path('world_configure', {'world': world.id}) }}">Configure {{ world.name }}</a></li>
+                    <li><a href="{{ path('resource_update', {'id': resource.id}) }}">Update {{ resource.name }}</a></li>
+                    <li class="active">Create Housing</li>
+                </ol>
+
+                <h1>Create Housing</h1>
+                {% include 'CronkdBundle:ResourceHousing/partials:form.html.twig' with {'action': 'Create'} %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

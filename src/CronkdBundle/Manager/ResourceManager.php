@@ -2,6 +2,7 @@
 namespace CronkdBundle\Manager;
 
 use CronkdBundle\Entity\Resource\Resource;
+use CronkdBundle\Entity\Resource\ResourceHousing;
 use CronkdBundle\Entity\Resource\ResourceType;
 use CronkdBundle\Entity\World;
 use CronkdBundle\Exceptions\InvalidResourceException;
@@ -105,5 +106,35 @@ class ResourceManager
         }
 
         return null;
+    }
+
+    /**
+     *
+     * @return array
+     */
+    public function getCapacityResources()
+    {
+        $resourcesByCapacity = [];
+        $buildingResources = $this->getBuildingResources();
+        foreach ($buildingResources as $buildingResource) {
+            if ($buildingResource->getCapacity() > 0) {
+                $resourcesByCapacity[$buildingResource->getName()] = count($buildingResource->getHousing());
+            }
+        }
+
+        /*
+        usort($resourcesByCapacity, function ($item1, $item2) {
+            return count($item2) <=> count($item1);
+        });
+        foreach ($resourcesByCapacity as $v => $thing) {
+            dump($v, $thing);
+        }
+        */
+        dump($resourcesByCapacity);
+        asort($resourcesByCapacity);
+        dump($resourcesByCapacity);
+        die();
+
+        return [];
     }
 }
