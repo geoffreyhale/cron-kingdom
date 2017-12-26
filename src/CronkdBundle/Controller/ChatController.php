@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -20,6 +21,7 @@ class ChatController extends CronkdController
      */
     public function indexAction(Request $request)
     {
+        $em = $this->getDoctrine()->getManager();
         $kingdom = $this->extractKingdomFromCurrentUser();
 
         if (empty($kingdom)) {
@@ -40,7 +42,6 @@ class ChatController extends CronkdController
             $message = $form->getData();
 
             if (!empty($message->getBody())) {
-                $em = $this->getDoctrine()->getManager();
                 $em->persist($message);
                 $em->flush();
             }
@@ -51,9 +52,25 @@ class ChatController extends CronkdController
         $em = $this->getDoctrine()->getManager();
         $messagesByCreatedAt = $em->getRepository(ChatMessage::class)->findBy([], ['createdAt' => 'ASC']);
 
+        $kingdom->setLastReadChatMessage(end($messagesByCreatedAt));
+        $em->flush();
+
         return [
             'form' => $form->createView(),
             'messages' => $messagesByCreatedAt
         ];
+    }
+
+    /**
+     * @Route("/get-unread-message-count", name="get_unread_message_count")
+     */
+    public function getUnreadMessageCountAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+        $kingdom = $this->extractKingdomFromCurrentUser();
+
+        $unreadMessageCount = $em->getRepository(ChatMessage::class)->getUnreadMessageCount($kingdom);
+
+        return JsonResponse::create((int)$unreadMessageCount);
     }
 }

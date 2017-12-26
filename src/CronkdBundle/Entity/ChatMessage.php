@@ -5,7 +5,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="chat_message")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="CronkdBundle\Repository\ChatMessageRepository")
  */
 class ChatMessage extends BaseEntity
 {

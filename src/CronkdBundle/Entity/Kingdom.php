@@ -124,6 +124,13 @@ class Kingdom extends BaseEntity
     private $policies;
 
     /**
+     * @var ChatMessage
+     *
+     * @ORM\ManyToOne(targetEntity="ChatMessage")
+     */
+    private $lastReadChatMessage;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -540,6 +547,24 @@ class Kingdom extends BaseEntity
         }
 
         return null;
+    }
+
+    /**
+     * @return ChatMessage
+     */
+    public function getLastReadChatMessage()
+    {
+        return $this->lastReadChatMessage;
+    }
+
+    /**
+     * @param ChatMessage $lastReadChatMessage
+     * @return Kingdom
+     */
+    public function setLastReadChatMessage(ChatMessage $lastReadChatMessage)
+    {
+        $this->lastReadChatMessage = $lastReadChatMessage;
+        return $this;
     }
 
     public function __toString()
