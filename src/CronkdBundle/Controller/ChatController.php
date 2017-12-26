@@ -52,8 +52,10 @@ class ChatController extends CronkdController
         $em = $this->getDoctrine()->getManager();
         $messagesByCreatedAt = $em->getRepository(ChatMessage::class)->findBy([], ['createdAt' => 'ASC']);
 
-        $kingdom->setLastReadChatMessage(end($messagesByCreatedAt));
-        $em->flush();
+        if (end($messagesByCreatedAt) instanceof ChatMessage) {
+            $kingdom->setLastReadChatMessage(end($messagesByCreatedAt));
+            $em->flush();
+        }
 
         return [
             'form' => $form->createView(),
