@@ -39,6 +39,7 @@
                     {% endif %}
                     <li><a href="{{ path('event_index', {id: kingdom.id}) }}" class="btn btn-default">Logs</a></li>
                     <li><a href="{{ path('notification_index', {id: kingdom.id}) }}" class="btn btn-default">Notifications{% if kingdomState.notificationCount > 0 %} <span class="badge">{{ kingdomState.notificationCount }}</span>{% endif %}</a></li>
+                    <li><a href="{{ path('chat') }}" class="btn btn-info">Chat</a></li>
                 </ul>
             </div>
 
