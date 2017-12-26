@@ -199,20 +199,18 @@ class KingdomManager
     /**
      * @param Kingdom $kingdom
      * @return float|int
-     * @throws InvalidWorldSettingsException
      */
     public function incrementPopulation(Kingdom $kingdom)
     {
-        $civilianResource  = $this->resourceManager->getBasePopulationResource();
-        if (null === $civilianResource) {
-            throw new InvalidWorldSettingsException("No base population resource is configured!");
+        $currentPopulation = 0;
+
+        foreach ($this->resourceManager->getPopulationResources() as $populationResource) {
+            $active = $kingdom->getResource($populationResource)->getQuantity();
+            $inactive = $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $populationResource);
+            $currentPopulation += $active + $inactive;
         }
 
-        $activeCivilians   = $kingdom->getResource($civilianResource);
-        $inactiveCivilians = $this->em->getRepository(Queue::class)->findTotalQueued($kingdom, $civilianResource);
-        $totalCivilians    = $activeCivilians->getQuantity() + $inactiveCivilians;
-
-        $birthedCivilians  = floor($kingdom->getWorld()->getBirthRate() / 100 * $totalCivilians);
+        $birthedCivilians  = floor($kingdom->getWorld()->getBirthRate() / 100 * $currentPopulation);
         if (0 == $birthedCivilians) {
             $birthedCivilians = 1;
         }
@@ -223,6 +221,8 @@ class KingdomManager
             $birthedCivilians = $this->getPopulationCapacityRemaining($kingdom);
         }
 
+        $civilianResource  = $this->resourceManager->getBasePopulationResource();
+        $activeCivilians = $kingdom->getResource($civilianResource);
         $activeCivilians->addQuantity($birthedCivilians);
         $this->em->persist($activeCivilians);
         $this->em->flush();
