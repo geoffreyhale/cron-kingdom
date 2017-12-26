@@ -6,13 +6,38 @@
             <div class="panel panel-default" style="max-width: 800px; margin: 0 auto;">
                 <div class="panel-heading">World Chat</div>
                 <div class="panel-body">
+                    <div class="text-muted">Rules: Have fun. Be nice. Keep it clean. Not kidding. No second chances.</div>
                     <div>
                         <div id="chat_messages" style="max-height: 600px; overflow-y: scroll">
+                            {% set previousMessageKingdomId = -1 %}
+                            {% set previousMessageCreatedAt = null %}
                             {% for message in messages %}
-                                <div style="margin-top: 10px;">
-                                    <strong>{{ message.kingdom.name }}</strong> <span class="text-muted">{{ message.createdAt|date('Ymd H:m') }}</span><br>
-                                    <span>{{ message.body }}</span>
-                                </div>
+                                {% if message.kingdom.id != previousMessageKingdomId %}
+                                    {% if not loop.first %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+
+                                    <div class="clearfix row" style="margin-top: 10px;">
+                                        <div class="col-sm-1 hidden-xs" style="max-width: 57px;">
+                                            <i class="fa fa-fort-awesome fa-3x"></i>
+                                        </div>
+                                        <div class="col-sm-11 col-xs-12">
+                                            <div><strong>{{ message.kingdom.name }}</strong> <span class="text-muted">{{ message.createdAt|date('Ymd H:i') }}</span></div>
+                                {% endif %}
+                                    {% if message.kingdom.id == previousMessageKingdomId and previousMessageCreatedAt and date(previousMessageCreatedAt).diff(date(message.createdAt)).i > 10 %}
+                                            <div style="margin-top: 10px;"><strong>{{ message.kingdom.name }}</strong> <span class="text-muted">{{ message.createdAt|date('Ymd H:i') }}</span></div>
+                                    {% endif %}
+
+                                    <span>{{ message.body }}</span><br>
+
+                                {% if loop.last %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                {% set previousMessageKingdomId = message.kingdom.id %}
+                                {% set previousMessageCreatedAt = message.createdAt %}
                             {% endfor %}
                         </div>
                         <script type="text/javascript">
