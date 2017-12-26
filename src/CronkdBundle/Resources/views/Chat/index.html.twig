@@ -1,17 +1,34 @@
 {% extends '::base.html.twig' %}
 
-{% block css %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('bundles/cronkd/css/chat.css') }}">
-{% endblock %}
-
 {% block content %}
     <div class="row-fluid">
         <div class="col-md-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">Live Chat</div>
+            <div class="panel panel-default" style="max-width: 800px; margin: 0 auto;">
+                <div class="panel-heading">World Chat</div>
                 <div class="panel-body">
-                    {% include 'CronkdBundle:Chat:partials/chat.html.twig' %}
+                    <div>
+                        <div id="chat_messages" style="max-height: 600px; overflow-y: scroll">
+                            {% for message in messages %}
+                                <div style="margin-top: 10px;">
+                                    <strong>{{ message.kingdom.name }}</strong> <span class="text-muted">{{ message.createdAt|date('Ymd H:m') }}</span><br>
+                                    <span>{{ message.body }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <script type="text/javascript">
+                            const chatMessagesDiv = document.getElementById('chat_messages');
+                            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+                        </script>
+
+                        {{ form_start(form) }}
+                        <div class="input-group" style="margin-top: 10px;">
+                            {{ form_widget(form.body, {'attr': {'class': 'form-control', 'placeholder': 'Message #world'}}) }}
+                            <span class="input-group-btn">
+                               {{ form_widget(form.submit, {'attr': {'class': 'btn btn-default'}}) }}
+                            </span>
+                        </div>
+                        {{ form_end(form) }}
+                    </div>
                 </div>
             </div>
         </div>
