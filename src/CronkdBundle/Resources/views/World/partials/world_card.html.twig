@@ -9,6 +9,12 @@
                 </a>
                 {{ worldState.aggregateNetWorth|filterNumber }}
             </td>
+            <td>
+                <a href="{{ path('chat') }}">
+                    <i class="fa fa-comments"></i>
+                    <div class="badge">{{ render(controller('CronkdBundle:Chat:getUnreadMessageCount')) }}</div>
+                </a>
+            </td>
         </tr>
         </tbody>
     </table>
