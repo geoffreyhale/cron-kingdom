@@ -16,7 +16,7 @@ class CronkdController extends Controller
         $em = $this->getDoctrine()->getManager();
         $user = $this->getUser();
         $world = $em->getRepository(World::class)->findActiveWorld();
-        if (!$world) {
+        if (!$user || !$world) {
             return null;
         }
 

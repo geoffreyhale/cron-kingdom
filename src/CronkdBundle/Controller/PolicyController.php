@@ -96,7 +96,7 @@ class PolicyController extends CronkdController
         if (null !== $kingdom->getActivePolicy()) {
             $this->get('session')->getFlashBag()->add('warning', 'Kingdom already has an active policy!');
 
-            return $this->redirectToRoute('homepage');
+            return $this->redirectToRoute('home');
         }
 
         $em = $this->getDoctrine()->getManager();
@@ -109,7 +109,7 @@ class PolicyController extends CronkdController
 
             $this->get('session')->getFlashBag()->add('success', 'Policy is now active!');
 
-            return $this->redirectToRoute('homepage');
+            return $this->redirectToRoute('home');
         }
 
         return [
