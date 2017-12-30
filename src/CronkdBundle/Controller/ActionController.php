@@ -65,7 +65,7 @@ class ActionController extends CronkdController
                 $flashBag->add('success', $results['data']['outputQuantity'] . ' ' . $resourceName . ' successfully queued');
             }
 
-            return $this->redirectToRoute('homepage');
+            return $this->redirectToRoute('home');
         }
 
         return [

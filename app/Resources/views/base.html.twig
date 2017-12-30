@@ -26,37 +26,43 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="{{ path('homepage') }}">CronKD</a>
+                <a class="navbar-brand" href="{{ path('home') }}">CronKD</a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="cronkd-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li><a href="{{ path('blog') }}" class="navbar-link">Blog</a></li>
-                    <li><a href="{{ path('help') }}" class="navbar-link">Help</a></li>
+                    <li><a href="{{ path('home') }}" class="navbar-link"><i class="fa fa-home"></i> Home</a></li>
+                    <li><a href="{{ path('blog') }}" class="navbar-link"><i class="fa fa-book"></i> Blog</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
-                        <li class="navbar-text hidden-sm hidden-xs">{{ app.user.username }}</li>
                         {% if is_granted("ROLE_ADMIN") %}
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-cog"></i> Admin <span class="caret"></span>
+                                </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="{{ path('world_index') }}" class="navbar-link">Worlds</a></li>
-                                    <li><a href="{{ path('world_create') }}"><i class="fa fa-plus fa-fw"></i> Create New World</a></li>
-                                    {% if world is defined %}<li><a href="{{ path('world_configure', {'world': world.id}) }}"><i class="fa fa-cogs fa-fw"></i> Configure Current World</a></li>{% endif %}
+                                    <li><a href="{{ path('worlds') }}" class="navbar-link"><i class="fa fa-globe fa-fw"></i> Worlds</a></li>
+                                    <li><a href="{{ path('world_create') }}" class="navbar-link"><i class="fa fa-plus fa-fw"></i> Create New World</a></li>
+                                    {% if world is defined %}
+                                        <li><a href="{{ path('world_configure', {'world': world.id}) }}" class="navbar-link"><i class="fa fa-cogs fa-fw"></i> Configure Current World</a></li>
+                                    {% endif %}
                                 </ul>
                             </li>
                         {% endif %}
-                        <li><a href="{{ path('fos_user_security_logout') }}" class="navbar-link">Logout</a></li>
+                        <li class="navbar-text hidden-sm hidden-xs"><i class="fa fa-user"></i> {{ app.user.username }}</li>
+                        <li><a href="{{ path('help') }}" class="navbar-link"><i class="fa fa-question"></i> Help</a></li>
+                        <li><a href="{{ path('fos_user_security_logout') }}" class="navbar-link"><i class="fa fa-sign-out"></i> Logout</a></li>
                     {% else %}
-                        <li><a href="{{ path('fos_user_security_login') }}" class="navbar-link">Login</a></li>
-                        <li><a href="{{ path('fos_user_registration_register') }}" class="navbar-link">Register</a></li>
+                        <li><a href="{{ path('fos_user_security_login') }}" class="navbar-link"><i class="fa fa-sign-in"></i> Login</a></li>
+                        <li><a href="{{ path('fos_user_registration_register') }}" class="navbar-link"><i class="fa fa-key"></i> Register</a></li>
                     {% endif %}
                 </ul>
             </div><!-- /.navbar-collapse -->
         </div><!-- /.container-fluid -->
     </nav>
+    {{ render(controller('CronkdBundle:Default:getWorldKingdomTopNavbar')) }}
 {% endblock %}
 
 <div class="container-fluid">

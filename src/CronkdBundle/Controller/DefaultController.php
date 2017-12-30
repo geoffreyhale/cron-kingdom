@@ -8,7 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 class DefaultController extends CronkdController
 {
     /**
-     * @Route("/", name="homepage")
+     * @Route("/", name="home")
      * @Template
      */
     public function indexAction()
@@ -19,7 +19,7 @@ class DefaultController extends CronkdController
         $user = $this->getUser();
         $world = $this->extractActiveWorld();
         if (!$world) {
-            return $this->redirect($this->generateUrl('world_index'));
+            return $this->redirect($this->generateUrl('worlds'));
         }
         $kingdom = $this->extractKingdomFromCurrentUser();
 
@@ -61,5 +61,36 @@ class DefaultController extends CronkdController
             'resources'     => $resources,
             'resourceTypes' => $resourceTypes,
         ];
+    }
+
+    /**
+     * @Route("/get-world-kingdom-top-navbar-component", name="get_world_kingdom_top_navbar_component")
+     */
+    public function getWorldKingdomTopNavbarAction()
+    {
+        $worldManager = $this->get('cronkd.manager.world');
+        $kingdomManager = $this->get('cronkd.manager.kingdom');
+
+        $world = $this->extractActiveWorld();
+        if (!$world) {
+            return $this->redirect($this->generateUrl('worlds'));
+        }
+        $kingdom = $this->extractKingdomFromCurrentUser();
+
+        $kingdomState = null;
+        if ($kingdom) {
+            $kingdomState = $kingdomManager->generateKingdomState($kingdom);
+        }
+
+        $worldState = $worldManager->generateWorldState($world);
+
+        return $this->render('CronkdBundle:Components:worldKingdomTopNavbar.html.twig',
+            [
+                'kingdom' => $kingdom,
+                'kingdomState' => $kingdomState,
+                'world' => $world,
+                'worldState' => $worldState,
+            ]
+        );
     }
 }
