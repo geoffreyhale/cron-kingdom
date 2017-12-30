@@ -15,13 +15,47 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * @Route("/world")
  */
-class WorldController extends Controller
+class WorldController extends CronkdController
 {
     /**
-     * @Route("/", name="world_index")
-     * @Template()
+     * @Route("/", name="world")
+     * @Template
      */
     public function indexAction()
+    {
+        $worldManager = $this->get('cronkd.manager.world');
+        $kingdomManager = $this->get('cronkd.manager.kingdom');
+
+        $user = $this->getUser();
+        $world = $this->extractActiveWorld();
+        if (!$world) {
+            return $this->redirect($this->generateUrl('worlds'));
+        }
+        $kingdom = $this->extractKingdomFromCurrentUser();
+
+        $kingdomState = null;
+        if ($kingdom) {
+            $kingdomState = $kingdomManager->generateKingdomState($kingdom);
+        }
+
+        $worldState = $worldManager->generateWorldState($world);
+
+        return [
+//            'user'                      => $user,
+            'kingdom'                   => $kingdom,
+//            'kingdomState'              => $kingdomState,
+//            'world'                     => $world,
+            'worldState'                => $worldState,
+//            'kingdoms'                  => $world->getKingdoms(),
+            'userHasKingdom'            => null !== $kingdom,
+        ];
+    }
+
+    /**
+     * @Route("/list", name="worlds")
+     * @Template()
+     */
+    public function listAction()
     {
         $em = $this->getDoctrine()->getManager();
 

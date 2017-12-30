@@ -9,24 +9,20 @@
         </div>
     {% else %}
         <div class="row-fluid">
-
             <div class="col-md-2">
                 <ul class="nav nav-pills nav-stacked">
-                    <li role="presentation" class="active"><a href="#home" data-toggle="tab">Home</a></li>
-                    <li role="presentation"><a href="#queues" data-toggle="tab">Queues</a></li>
-                    <li role="presentation"><a href="#world" data-toggle="tab">World</a></li>
-                    <li class="nav-divider"></li>
                     <li>
                         {% if worldState.policies|length > 0 %}
                             {% if kingdomState.activePolicy is null %}
-                                <a href="{{ path('policy_select', {id: kingdom.id}) }}" class="btn btn-info">Select Policy</a>
+                                <a href="{{ path('policy_select', {id: kingdom.id}) }}" class="btn btn-primary">Select Policy</a>
                             {% else %}
-                                <div><strong>{{ kingdomState.activePolicyName }}</strong></div>
-                                <div class="text-muted"><em>time remaining: {{ kingdomState.activePolicyEndDiff }}</em></div>
+                                <a class="btn btn-default disabled">
+                                    <strong><i class="fa fa-gavel"></i> Policy:</strong> {{ kingdomState.activePolicyName }}<br>
+                                    <span class="text-muted"><em>expires: {{ kingdomState.activePolicyEndDiff }}</em></span>
+                                </a>
                             {% endif %}
                         {% endif %}
                     </li>
-                    <li><a href="{{ path('kingdom') }}" class="btn btn-primary">Kingdom</a></li>
                     {% if kingdomState.hasAvailableProbingResources %}
                         <li>
                             <a href="{{ path('probe_send', {id: kingdom.id}) }}" class="btn btn-warning">Spy</a>
@@ -37,37 +33,22 @@
                             <a href="{{ path('attack') }}" class="btn btn-danger">Attack</a>
                         </li>
                     {% endif %}
-                    <li><a href="{{ path('event_index', {id: kingdom.id}) }}" class="btn btn-default">Logs</a></li>
-                    <li><a href="{{ path('notification_index', {id: kingdom.id}) }}" class="btn btn-default">Notifications{% if kingdomState.notificationCount > 0 %} <span class="badge">{{ kingdomState.notificationCount }}</span>{% endif %}</a></li>
+                </ul>
+                <hr>
+                <ul class="nav nav-pills nav-stacked">
                     <li>
-                        <a href="{{ path('chat') }}" class="btn btn-info">
+                        <a href="{{ path('chat') }}" class="btn btn-primary">
                             Chat
                             <div class="badge">{{ render(controller('CronkdBundle:Chat:getUnreadMessageCount')) }}</div>
                         </a>
                     </li>
+                    <li><a href="{{ path('notification_index', {id: kingdom.id}) }}" class="btn btn-danger">Notifications{% if kingdomState.notificationCount > 0 %} <span class="badge">{{ kingdomState.notificationCount }}</span>{% endif %}</a></li>
+                    <li><a href="{{ path('event_index', {id: kingdom.id}) }}" class="btn btn-info">Logs</a></li>
                 </ul>
             </div>
-
             <div class="col-md-10">
-                <div class="tab-content clearfix">
-                    <div class="tab-pane active" id="home">
-                        {% include 'CronkdBundle:Default:partials/home.html.twig' %}
-                    </div>
-
-                    <div class="tab-pane" id="queues">
-                        <div class="row clearfix">
-                            <div class="col-md-12">
-                                {% include 'CronkdBundle:Default:partials/kingdom/queues.html.twig' %}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="tab-pane" id="world">
-                        {% include 'CronkdBundle:Default:partials/world.html.twig' %}
-                    </div>
-                </div>
+                {% include 'CronkdBundle:Default:partials/home.html.twig' %}
             </div>
-
         </div>
     {% endif %}
 {% endblock %}
