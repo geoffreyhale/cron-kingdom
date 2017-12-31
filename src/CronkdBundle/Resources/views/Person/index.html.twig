@@ -1,0 +1,25 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+    <div class="row-fluid">
+        <div class="col-md-12">
+            <div class="panel panel-default" style="max-width: 800px; margin: 0 auto;">
+                <div class="panel-heading">Person Index Page</div>
+                <div class="panel-body">
+                    {% for person in persons %}
+                        <div class="panel panel-primary">
+                            <div class="panel-heading"><i class="fa fa-user"></i> {{ person.name }}</div>
+                            <div class="panel-body">
+                                <ul>
+                                    <li>Attack: {{ person.attack }}</li>
+                                    <li>Defense: {{ person.defense }}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <a href="{{ path("person_create") }}" class="btn btn-primary">Create Person</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

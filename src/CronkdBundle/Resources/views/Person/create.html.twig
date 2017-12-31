@@ -1,0 +1,23 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+    <div class="row-fluid">
+        <div class="col-md-12">
+            <div class="panel panel-default" style="max-width: 800px; margin: 0 auto;">
+                <div class="panel-heading">Create Person Page</div>
+                <div class="panel-body">
+                    {{ form_start(form) }}
+                    {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder': 'Name'}}) }}
+                    {{ form_widget(form.attack, {'attr': {'class': 'form-control', 'placeholder': 'Attack'}}) }}
+                    {{ form_widget(form.defense, {'attr': {'class': 'form-control', 'placeholder': 'Defense'}}) }}
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            {{ form_widget(form.submit, {'attr': {'class': 'btn btn-default'}}) }}
+                        </span>
+                    </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,6 +1,7 @@
 <?php
 namespace CronkdBundle\Entity;
 
+use CronkdBundle\Entity\Person\Person;
 use CronkdBundle\Entity\Policy\PolicyInstance;
 use CronkdBundle\Entity\Resource\Resource;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -107,6 +108,13 @@ class Kingdom extends BaseEntity
      * @ORM\OneToMany(targetEntity="KingdomResource", mappedBy="kingdom", cascade={"persist"})
      */
     private $resources;
+
+    /**
+     * @var Person[]
+     *
+     * @ORM\OneToMany(targetEntity="CronkdBundle\Entity\Person\Person", mappedBy="kingdom", cascade={"persist"})
+     */
+    private $persons;
 
     /**
      * @var Queue[]
@@ -459,6 +467,38 @@ class Kingdom extends BaseEntity
         }
 
         return null;
+    }
+
+    /**
+     * Add person
+     *
+     * @param Person $person
+     *
+     * @return Kingdom
+     */
+    public function addPerson(Person $person)
+    {
+        $this->persons[] = $person;
+
+        return $this;
+    }
+
+    /**
+     * Remove person
+     *
+     * @param Person $person
+     */
+    public function removePerson(Person $person)
+    {
+        $this->persons->removeElement($person);
+    }
+
+    /**
+     * Get persons
+     */
+    public function getPersons()
+    {
+        return $this->persons;
     }
 
     /**
