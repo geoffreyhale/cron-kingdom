@@ -47,6 +47,8 @@ class TickService
     /**
      * @param World $world
      * @throws InvalidWorldSettingsException
+     *
+     * @todo ghale 12/30/2017: the implications of partial execution/failure here are high, we should avoid premature flushing in all function calls, just flush once at the end
      */
     public function attemptTick(World $world)
     {

@@ -6,6 +6,13 @@
             <div class="panel panel-default" style="max-width: 800px; margin: 0 auto;">
                 <div class="panel-heading">Create Person Page</div>
                 <div class="panel-body">
+                    <div class="alert alert-info">
+                        <ul>
+                            <li>Creating a Person requires/costs KD resources:</li>
+                            <li>You will lose 1 Attacker for each Attack point allocated to this new character.</li>
+                            <li>You will lose 1 Defender for each Defense point allocated to this new character.</li>
+                        </ul>
+                    </div>
                     {{ form_start(form) }}
                     {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder': 'Name'}}) }}
                     {{ form_widget(form.attack, {'attr': {'class': 'form-control', 'placeholder': 'Attack'}}) }}

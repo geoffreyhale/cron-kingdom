@@ -334,7 +334,7 @@ class KingdomManager
      * @param int $quantity
      * @return KingdomResource
      */
-    public function modifyResources(Kingdom $kingdom, Resource $resource, int $quantity)
+    public function modifyResources(Kingdom $kingdom, Resource $resource, int $quantity, $flush = true)
     {
         $this->logger->info('Modifying resource for Kingdom ' . $kingdom->getName() . '; Resource ' . $resource->getName() . '; Qty: ' . $quantity);
 
@@ -345,7 +345,9 @@ class KingdomManager
         }
 
         $this->em->persist($kingdomResource);
-        $this->em->flush();
+        if ($flush) {
+            $this->em->flush();
+        }
 
         return $kingdomResource;
     }
