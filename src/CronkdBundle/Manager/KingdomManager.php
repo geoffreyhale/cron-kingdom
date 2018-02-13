@@ -10,6 +10,7 @@ use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Entity\User;
 use CronkdBundle\Entity\World;
 use CronkdBundle\Event\CreateKingdomEvent;
+use CronkdBundle\Event\ResetKingdomEvent;
 use CronkdBundle\Exceptions\InvalidResourceException;
 use CronkdBundle\Exceptions\InvalidWorldSettingsException;
 use CronkdBundle\Model\KingdomState;
@@ -401,5 +402,14 @@ class KingdomManager
         });
 
         return $kingdomsByWinLoss;
+    }
+
+    /**
+     * @param Kingdom $kingdom
+     */
+    public function resetKingdom(Kingdom $kingdom)
+    {
+        $event = new ResetKingdomEvent($kingdom);
+        $this->eventDispatcher->dispatch('event.reset_kingdom', $event);
     }
 }

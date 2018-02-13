@@ -15,18 +15,18 @@ use Symfony\Component\HttpFoundation\Request;
 class KingdomController extends CronkdController
 {
     /**
-     * @Route("", name="kingdom")
-     * @Template()
+     * @Route("", name="kingdom_show")
+     * @Template("CronkdBundle:Kingdom:show.html.twig")
      */
     public function indexAction()
     {
-        return;
+        return [];
     }
 
     /**
      * @Route("/create/{id}", name="kingdom_create")
      * @Method({"GET", "POST"})
-     * @Template()
+     * @Template("CronkdBundle:Kingdom:create.html.twig")
      */
     public function createAction(Request $request, $id = null)
     {
@@ -66,14 +66,28 @@ class KingdomController extends CronkdController
     }
 
     /**
+     * @Route("/reset", name="kingdom_reset")
+     */
+    public function resetAction()
+    {
+        $kingdom = $this->extractKingdomFromCurrentUser();
+        $this->validateUserOwnsKingdom($kingdom);
+
+        $kingdomManager = $this->get('cronkd.manager.kingdom');
+        $kingdomManager->resetKingdom($kingdom);
+
+        $this->get('session')->getFlashBag()->add('success', 'Your kingdom has been successfully reset.');
+
+        return $this->redirectToRoute('world_show', ['id' => $kingdom->getWorld()->getId()]);
+    }
+
+    /**
      * @Route("/get-kingdom-panel-component", name="get_kingdom_panel_component")
      */
     public function getKingdomPanelComponentAction()
     {
-        return $this->render('CronkdBundle:Components:fullKingdomStatsPanel.html.twig',
-            array(
-                'kingdom' => $this->extractKingdomFromCurrentUser()
-            )
-        );
+        return $this->render('CronkdBundle:Components:fullKingdomStatsPanel.html.twig', [
+            'kingdom' => $this->extractKingdomFromCurrentUser()
+        ]);
     }
 }

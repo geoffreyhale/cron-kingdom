@@ -5,6 +5,7 @@ use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Event\ActionEvent;
 use CronkdBundle\Event\AttackEvent;
 use CronkdBundle\Event\CreateKingdomEvent;
+use CronkdBundle\Event\ResetKingdomEvent;
 use CronkdBundle\Event\WorldTickEvent;
 use CronkdBundle\Manager\KingdomManager;
 use CronkdBundle\Manager\LumberMill;
@@ -42,6 +43,14 @@ class KingdomCachedStatsListener
     }
 
     public function onCreateKingdom(CreateKingdomEvent $event)
+    {
+        if ($event->kingdom->getWorld()->isActive()) {
+            $this->kingdomManager->calculateNetWorth($event->kingdom);
+            $this->kingdomManager->calculateAttackAndDefense($event->kingdom);
+        }
+    }
+
+    public function onResetKingdom(ResetKingdomEvent $event)
     {
         if ($event->kingdom->getWorld()->isActive()) {
             $this->kingdomManager->calculateNetWorth($event->kingdom);

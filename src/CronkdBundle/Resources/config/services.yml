@@ -86,6 +86,7 @@ services:
             - "@doctrine.orm.default_entity_manager"
         tags:
             - {name: kernel.event_listener, event: event.attack, method: onAttack}
+            - {name: kernel.event_listener, event: event.reset_kingdom, method: onResetKingdom, priority: 100}
 
     cronkd.listener.kingdom_cached_stats:
         class: CronkdBundle\Listener\KingdomCachedStatsListener
@@ -96,6 +97,7 @@ services:
         tags:
             - {name: kernel.event_listener, event: event.world_tick, method: onTick}
             - {name: kernel.event_listener, event: event.create_kingdom, method: onCreateKingdom}
+            - {name: kernel.event_listener, event: event.reset_kingdom, method: onResetKingdom, priority: 100}
             - {name: kernel.event_listener, event: event.action, method: onAction}
             - {name: kernel.event_listener, event: event.attack, method: onAttack}
 
@@ -114,6 +116,7 @@ services:
             - "@cronkd.manager.resource"
         tags:
             - {name: kernel.event_listener, event: event.create_kingdom, method: onCreateKingdom, priority: 100}
+            - {name: kernel.event_listener, event: event.reset_kingdom, method: onResetKingdom, priority: 100}
 
     cronkd.listener.world:
         class: CronkdBundle\Listener\WorldListener

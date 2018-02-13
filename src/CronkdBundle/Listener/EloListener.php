@@ -1,7 +1,9 @@
 <?php
 namespace CronkdBundle\Listener;
 
+use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Event\AttackEvent;
+use CronkdBundle\Event\ResetKingdomEvent;
 use Doctrine\ORM\EntityManagerInterface;
 
 class EloListener
@@ -42,6 +44,14 @@ class EloListener
 
         $this->em->persist($kd1);
         $this->em->persist($kd2);
+        $this->em->flush();
+    }
+
+    public function onResetKingdom(ResetKingdomEvent $event)
+    {
+        $kingdom = $event->kingdom;
+        $kingdom->setElo(Kingdom::DEFAULT_ELO);
+        $this->em->persist($kingdom);
         $this->em->flush();
     }
 }
