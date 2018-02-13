@@ -2,7 +2,7 @@
 namespace Tests\Fixtures;
 
 use CronkdBundle\Entity\Kingdom;
-use CronkdBundle\Entity\Policy\Policy;
+use CronkdBundle\Entity\Tech\Policy;
 use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Entity\Resource\ResourceType;
 use CronkdBundle\Entity\World;

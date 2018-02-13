@@ -2,8 +2,8 @@
 namespace CronkdBundle\Controller;
 
 use CronkdBundle\Entity\Kingdom;
-use CronkdBundle\Entity\Policy\Policy;
-use CronkdBundle\Entity\Policy\PolicyInstance;
+use CronkdBundle\Entity\Tech\Policy;
+use CronkdBundle\Entity\Tech\PolicyInstance;
 use CronkdBundle\Entity\World;
 use CronkdBundle\Form\Policy\PolicyType;
 use CronkdBundle\Form\PolicyInstanceType;

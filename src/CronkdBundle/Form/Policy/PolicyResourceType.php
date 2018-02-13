@@ -1,8 +1,8 @@
 <?php
 namespace CronkdBundle\Form\Policy;
 
-use CronkdBundle\Entity\Policy\Policy;
-use CronkdBundle\Entity\Policy\PolicyResource;
+use CronkdBundle\Entity\Tech\Policy;
+use CronkdBundle\Entity\Tech\PolicyResource;
 use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Entity\World;
 use Doctrine\ORM\EntityRepository;

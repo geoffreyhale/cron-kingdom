@@ -1,5 +1,5 @@
 <?php
-namespace CronkdBundle\Entity\Policy;
+namespace CronkdBundle\Entity\Tech;
 
 use Symfony\Component\Validator\Constraints as Assert;
 

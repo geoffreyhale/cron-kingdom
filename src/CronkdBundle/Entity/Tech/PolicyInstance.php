@@ -1,5 +1,5 @@
 <?php
-namespace CronkdBundle\Entity\Policy;
+namespace CronkdBundle\Entity\Tech;
 
 use CronkdBundle\Entity\BaseEntity;
 use CronkdBundle\Entity\Kingdom;

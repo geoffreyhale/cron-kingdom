@@ -1,7 +1,7 @@
 <?php
 namespace CronkdBundle\Form\Policy;
 
-use CronkdBundle\Entity\Policy\Policy;
+use CronkdBundle\Entity\Tech\Policy;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;

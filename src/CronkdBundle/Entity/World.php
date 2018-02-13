@@ -1,7 +1,7 @@
 <?php
 namespace CronkdBundle\Entity;
 
-use CronkdBundle\Entity\Policy\Policy;
+use CronkdBundle\Entity\Tech\Policy;
 use CronkdBundle\Entity\Resource\Resource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -94,7 +94,7 @@ class World extends BaseEntity
     /**
      * @var Policy[]
      *
-     * @ORM\OneToMany(targetEntity="CronkdBundle\Entity\Policy\Policy", mappedBy="world")
+     * @ORM\OneToMany(targetEntity="CronkdBundle\Entity\Tech\Policy", mappedBy="world")
      * @ORM\OrderBy({"name" = "ASC"})
      */
     private $policies;

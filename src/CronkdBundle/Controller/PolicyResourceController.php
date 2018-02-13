@@ -1,8 +1,8 @@
 <?php
 namespace CronkdBundle\Controller;
 
-use CronkdBundle\Entity\Policy\Policy;
-use CronkdBundle\Entity\Policy\PolicyResource;
+use CronkdBundle\Entity\Tech\Policy;
+use CronkdBundle\Entity\Tech\PolicyResource;
 use CronkdBundle\Form\Policy\PolicyResourceType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;

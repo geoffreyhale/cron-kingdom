@@ -1,8 +1,8 @@
 <?php
 
 use CronkdBundle\Entity\KingdomResource;
-use CronkdBundle\Entity\Policy\Policy;
-use CronkdBundle\Entity\Policy\PolicyInstance;
+use CronkdBundle\Entity\Tech\Policy;
+use CronkdBundle\Entity\Tech\PolicyInstance;
 use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Service\AttackingService;
 use Tests\Library\CronkdDatabaseAwareTestCase;

@@ -1,8 +1,8 @@
 <?php
 namespace CronkdBundle\Form;
 
-use CronkdBundle\Entity\Policy\Policy;
-use CronkdBundle\Entity\Policy\PolicyInstance;
+use CronkdBundle\Entity\Tech\Policy;
+use CronkdBundle\Entity\Tech\PolicyInstance;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;

@@ -2,9 +2,9 @@
 namespace CronkdBundle\Manager;
 
 use CronkdBundle\Entity\Kingdom;
-use CronkdBundle\Entity\Policy\Policy;
-use CronkdBundle\Entity\Policy\PolicyInstance;
-use CronkdBundle\Entity\Policy\PolicyResource;
+use CronkdBundle\Entity\Tech\Policy;
+use CronkdBundle\Entity\Tech\PolicyInstance;
+use CronkdBundle\Entity\Tech\PolicyResource;
 use CronkdBundle\Entity\Resource\Resource;
 use Doctrine\ORM\EntityManagerInterface;
 

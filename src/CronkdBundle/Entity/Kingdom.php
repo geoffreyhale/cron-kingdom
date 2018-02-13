@@ -1,7 +1,7 @@
 <?php
 namespace CronkdBundle\Entity;
 
-use CronkdBundle\Entity\Policy\PolicyInstance;
+use CronkdBundle\Entity\Tech\PolicyInstance;
 use CronkdBundle\Entity\Resource\Resource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -118,7 +118,7 @@ class Kingdom extends BaseEntity
     /**
      * @var PolicyInstance[]
      *
-     * @ORM\OneToMany(targetEntity="CronkdBundle\Entity\Policy\PolicyInstance", mappedBy="kingdom")
+     * @ORM\OneToMany(targetEntity="CronkdBundle\Entity\Tech\PolicyInstance", mappedBy="kingdom")
      * @ORM\OrderBy({"createdAt": "DESC"})
      */
     private $policies;
