@@ -1,0 +1,35 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="col-md-8 col-md-offset-2">
+                {{ render(controller('CronkdBundle:Kingdom:getKingdomPanelComponent')) }}
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="col-md-8 col-md-offset-2">
+                <a data-toggle="modal" data-target="#resetKingdomModal" class="btn btn-danger">Reset Kingdom</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="resetKingdomModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Really reset Kingdom?</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to do this?  This will restore your kingdom to its initial state.  You will lose all resrouces you have accumulated over time!  This cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <a href="{{ path('kingdom_reset') }}" class="btn btn-danger">Yes, reset!</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

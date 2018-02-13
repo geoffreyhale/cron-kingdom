@@ -2,8 +2,10 @@
 namespace CronkdBundle\Listener;
 
 use CronkdBundle\Entity\Event;
+use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Event\CreateKingdomEvent;
+use CronkdBundle\Event\ResetKingdomEvent;
 use CronkdBundle\Event\ViewLogEvent;
 use CronkdBundle\Exceptions\InvalidResourceException;
 use CronkdBundle\Manager\KingdomManager;
@@ -31,7 +33,6 @@ class ResourceListener
 
     /**
      * @param CreateKingdomEvent $event
-     * @throws InvalidResourceException
      */
     public function onCreateKingdom(CreateKingdomEvent $event)
     {
@@ -39,7 +40,23 @@ class ResourceListener
             return;
         }
 
-        $kingdom   = $event->kingdom;
+        $this->setStartingKingdomResources($event->kingdom);
+    }
+
+    /**
+     * @param ResetKingdomEvent $event
+     */
+    public function onResetKingdom(ResetKingdomEvent $event)
+    {
+        if (!$event->kingdom->getWorld()->isActive()) {
+            return;
+        }
+
+        $this->setStartingKingdomResources($event->kingdom);
+    }
+
+    private function setStartingKingdomResources(Kingdom $kingdom)
+    {
         $world     = $kingdom->getWorld();
         $resources = $this->em->getRepository(Resource::class)->findByWorld($world);
 
@@ -48,6 +65,14 @@ class ResourceListener
             $kingdomResource = $this->kingdomManager->findOrCreateKingdomResource($kingdom, $resource);
             $kingdomResource->setQuantity($resource->getStartingAmount());
             $kingdom->addResource($kingdomResource);
+        }
+
+        $queues = $this->kingdomManager->getResourceQueues($kingdom);
+        foreach ($queues as $queue) {
+            foreach ($queue['queues'] as $queue) {
+                $queue->setQuantity(0);
+                $this->em->persist($queue);
+            }
         }
 
         $this->em->persist($kingdom);
