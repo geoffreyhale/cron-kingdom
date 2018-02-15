@@ -50,15 +50,15 @@ class TickService
      */
     public function attemptTick(World $world)
     {
-        $populationResource = $this->resourceManager->getBasePopulationResource();
-        if (null === $populationResource) {
-            throw new InvalidWorldSettingsException("No base population resource is configured!");
-        }
-        
         if (!$world->isActive()) {
             $this->logger->info($world->getName() . " world is not active");
-
             return;
+        }
+
+        $baseResource = $world->getBaseResource();
+        if (null === $baseResource) {
+            $this->logger->critical('No base population resource is configured!');
+            throw new InvalidWorldSettingsException('No base population resource is configured!');
         }
 
         $this->logger->notice('World ' . $world->getName() . ' starting tick ' . ($world->getTick()+1));
@@ -85,7 +85,7 @@ class TickService
             $this->kingdomManager->syncResources($kingdom);
             if (!$this->kingdomManager->isAtMaxPopulation($kingdom)) {
                 $addition = $this->kingdomManager->incrementPopulation($kingdom);
-                $this->logManager->logBirthEvent($kingdom, $populationResource, $addition);
+                $this->logManager->logBirthEvent($kingdom, $baseResource, $addition);
                 $this->logger->info($kingdom->getName() . ' kingdom is not at capacity, adding ' . $addition . ' to population');
             } else {
                 $this->logger->info($kingdom->getName() . ' is at capacity');

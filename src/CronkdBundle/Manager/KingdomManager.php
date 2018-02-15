@@ -211,24 +211,24 @@ class KingdomManager
             $currentPopulation += $active + $inactive;
         }
 
-        $birthedCivilians  = floor($kingdom->getWorld()->getBirthRate() / 100 * $currentPopulation);
-        if (0 == $birthedCivilians) {
-            $birthedCivilians = 1;
+        $birthedPopulation  = floor($kingdom->getWorld()->getBirthRate() / 100 * $currentPopulation);
+        if (0 == $birthedPopulation) {
+            $birthedPopulation = 1;
         }
 
         $currentPopulation = $this->getPopulation($kingdom);
         $totalCapacity = $this->getPopulationCapacity($kingdom);
-        if (($birthedCivilians + $currentPopulation) > $totalCapacity) {
-            $birthedCivilians = $this->getPopulationCapacityRemaining($kingdom);
+        if (($birthedPopulation + $currentPopulation) > $totalCapacity) {
+            $birthedPopulation = $this->getPopulationCapacityRemaining($kingdom);
         }
 
-        $civilianResource  = $this->resourceManager->getBasePopulationResource();
-        $activeCivilians = $kingdom->getResource($civilianResource);
-        $activeCivilians->addQuantity($birthedCivilians);
-        $this->em->persist($activeCivilians);
+        $baseResource  = $kingdom->getWorld()->getBaseResource();
+        $activeBaseResource = $kingdom->getResource($baseResource);
+        $activeBaseResource->addQuantity($birthedPopulation);
+        $this->em->persist($activeBaseResource);
         $this->em->flush();
 
-        return $birthedCivilians;
+        return $birthedPopulation;
     }
 
     /**

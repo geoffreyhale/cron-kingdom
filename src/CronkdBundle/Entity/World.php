@@ -106,6 +106,11 @@ class World extends BaseEntity
     private $resources;
 
     /**
+     * @ORM\OneToOne(targetEntity="CronkdBundle\Entity\Resource\Resource")
+     */
+    private $baseResource;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -475,5 +480,29 @@ class World extends BaseEntity
         $this->addTick();
 
         return $this;
+    }
+
+    /**
+     * Set baseResource
+     *
+     * @param Resource $baseResource
+     *
+     * @return World
+     */
+    public function setBaseResource(Resource $baseResource = null)
+    {
+        $this->baseResource = $baseResource;
+
+        return $this;
+    }
+
+    /**
+     * Get baseResource
+     *
+     * @return Resource
+     */
+    public function getBaseResource()
+    {
+        return $this->baseResource;
     }
 }

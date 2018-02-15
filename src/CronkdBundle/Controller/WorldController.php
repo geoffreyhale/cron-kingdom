@@ -24,30 +24,19 @@ class WorldController extends CronkdController
     public function indexAction()
     {
         $worldManager = $this->get('cronkd.manager.world');
-        $kingdomManager = $this->get('cronkd.manager.kingdom');
 
-        $user = $this->getUser();
         $world = $this->extractActiveWorld();
         if (!$world) {
             return $this->redirect($this->generateUrl('worlds'));
         }
         $kingdom = $this->extractKingdomFromCurrentUser();
 
-        $kingdomState = null;
-        if ($kingdom) {
-            $kingdomState = $kingdomManager->generateKingdomState($kingdom);
-        }
-
         $worldState = $worldManager->generateWorldState($world);
 
         return [
-//            'user'                      => $user,
-            'kingdom'                   => $kingdom,
-//            'kingdomState'              => $kingdomState,
-//            'world'                     => $world,
-            'worldState'                => $worldState,
-//            'kingdoms'                  => $world->getKingdoms(),
-            'userHasKingdom'            => null !== $kingdom,
+            'kingdom'        => $kingdom,
+            'worldState'     => $worldState,
+            'userHasKingdom' => null !== $kingdom,
         ];
     }
 
@@ -110,7 +99,9 @@ class WorldController extends CronkdController
      */
     public function updateAction(Request $request, World $world)
     {
-        $form = $this->createForm(WorldType::class, $world);
+        $form = $this->createForm(WorldType::class, $world, [
+            'currentWorld' => $world,
+        ]);
         $form->handleRequest($request);
 
         // Extra validation

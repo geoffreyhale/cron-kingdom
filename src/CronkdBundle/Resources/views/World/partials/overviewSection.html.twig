@@ -13,6 +13,10 @@
         <td>{{ world.endTime|date('Y-m-d h:i A') }}</td>
     </tr>
     <tr>
+        <td><strong>Base Population Resource:</strong></td>
+        <td>{{ null == world.baseResource ? 'Not selected' : world.baseResource }}</td>
+    </tr>
+    <tr>
         <td><strong>Birth Rate</strong></td>
         <td>{{ world.birthRate }}%</td>
     </tr>
