@@ -28,9 +28,10 @@
         <tbody>
         {% for resourceQueues in kingdomState.currentQueues %}
             {% if resourceQueues.kingdomResource.resource.type.name == resourceType %}
+                {% set resource = resourceQueues.kingdomResource.resource %}
+                {% if kingdomState.shouldDisplayResourceInQueues(resource) %}
             <tr>
                 <td style="white-space: nowrap; background-color: #f5f5f5;">
-                    {% set resource = resourceQueues.kingdomResource.resource %}
                     {{ resourceIcon(resource)|raw }}
                     <strong>{{ resourceQueues.kingdomResource.quantity|filterNumber }}</strong>
                     {{ resource.name }}
@@ -48,6 +49,7 @@
                     <td>{{ quantity != 0 ? quantity|filterNumber : '' }}</td>
                 {% endfor %}
             </tr>
+                {% endif %}
             {% endif %}
         {% endfor %}
         </tbody>
