@@ -319,4 +319,31 @@ class KingdomState
 
         return floor($defense);
     }
+
+    public function hasQueuedResource(Resource $resource)
+    {
+        foreach ($this->currentQueues as $resourceQueue) {
+            if ($resource == $resourceQueue['kingdomResource']->getResource()) {
+                foreach ($resourceQueue['queues'] as $queue) {
+                    return $queue->getQuantity() > 0;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * If no available resources, no queues, and no ability to make resource
+     * then do not show resource in table!
+     *
+     * @param Resource $resource
+     * @return bool
+     */
+    public function shouldDisplayResourceInQueues(Resource $resource)
+    {
+        return $this->hasAvailableResource($resource) ||
+            $this->hasQueuedResource($resource) ||
+            $this->canPerformActionOnResource($resource);
+    }
 }
