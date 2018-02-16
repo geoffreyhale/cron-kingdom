@@ -12,6 +12,7 @@ use CronkdBundle\Manager\ResourceManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 class TickService
 {
@@ -65,7 +66,7 @@ class TickService
 
         $queues = $this->em->getRepository(Queue::class)->findNextByWorld($world);
         $this->logger->info('Found ' . count($queues) . ' queues to parse');
-
+        
         /** @var Queue $queue */
         foreach ($queues as $queue) {
             $this->logger->info('Queue is for Kingdom ' . $queue->getKingdom()->getName() . ' for ' . $queue->getResource()->getName());

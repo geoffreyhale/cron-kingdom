@@ -248,7 +248,7 @@ class KingdomManager
      * @param Kingdom $kingdom
      * @return int
      */
-    public function calculateNetWorth(Kingdom $kingdom)
+    public function calculateNetWorth(Kingdom $kingdom, bool $performFlush = false)
     {
         $this->calculateLiquidity($kingdom);
         $netWorth = $kingdom->getLiquidity();
@@ -262,7 +262,11 @@ class KingdomManager
 
         $kingdom->setNetWorth($netWorth);
         $this->em->persist($kingdom);
-        $this->em->flush();
+        if ($performFlush) {
+            $this->em->flush();
+        }
+
+        return $netWorth;
     }
 
     /**
@@ -271,25 +275,20 @@ class KingdomManager
      */
     private function calculateLiquidity(Kingdom $kingdom)
     {
-        $liquidity = 0;
-
-        /** @var KingdomResource $resource */
-        foreach ($kingdom->getResources() as $resource) {
-            $liquidity += $resource->getQuantity() * $resource->getResource()->getValue();
-        }
+        $liquidity = $this->em->getRepository(KingdomResource::class)->calculateLiquidity($kingdom);
 
         $kingdom->setLiquidity($liquidity);
         $this->em->persist($kingdom);
-        $this->em->flush();
 
         return $liquidity;
     }
 
     /**
      * @param Kingdom $kingdom
+     * @param bool $performFlush
      * @return Kingdom
      */
-    public function calculateAttackAndDefense(Kingdom $kingdom)
+    public function calculateAttackAndDefense(Kingdom $kingdom, bool $performFlush = false)
     {
         $attack = 0;
         $defense = 0;
@@ -303,7 +302,9 @@ class KingdomManager
         $kingdom->setAttack($attack);
         $kingdom->setDefense($defense);
         $this->em->persist($kingdom);
-        $this->em->flush();
+        if ($performFlush) {
+            $this->em->flush();
+        }
 
         return $kingdom;
     }

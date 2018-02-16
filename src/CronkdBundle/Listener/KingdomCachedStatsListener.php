@@ -40,6 +40,8 @@ class KingdomCachedStatsListener
             $this->kingdomManager->calculateAttackAndDefense($kingdom);
             $this->logManager->logNetWorth($kingdom);
         }
+
+        $this->em->flush();
     }
 
     public function onCreateKingdom(CreateKingdomEvent $event)
@@ -48,6 +50,8 @@ class KingdomCachedStatsListener
             $this->kingdomManager->calculateNetWorth($event->kingdom);
             $this->kingdomManager->calculateAttackAndDefense($event->kingdom);
         }
+
+        $this->em->flush();
     }
 
     public function onResetKingdom(ResetKingdomEvent $event)
@@ -56,12 +60,15 @@ class KingdomCachedStatsListener
             $this->kingdomManager->calculateNetWorth($event->kingdom);
             $this->kingdomManager->calculateAttackAndDefense($event->kingdom);
         }
+
+        $this->em->flush();
     }
 
     public function onAction(ActionEvent $event)
     {
         $this->kingdomManager->calculateNetWorth($event->kingdom);
         $this->kingdomManager->calculateAttackAndDefense($event->kingdom);
+        $this->em->flush();
     }
 
     public function onAttack(AttackEvent $event)
@@ -69,6 +76,6 @@ class KingdomCachedStatsListener
         $this->kingdomManager->calculateNetWorth($event->kingdom);
         $this->kingdomManager->calculateNetWorth($event->target);
         $this->kingdomManager->calculateAttackAndDefense($event->kingdom);
-
+        $this->em->flush();
     }
 }
