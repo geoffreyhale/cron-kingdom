@@ -41,7 +41,7 @@
                     <td>
                         {% set inputs = [] %}
                         {% for input in action.inputs %}
-                            {% set inputs = inputs|merge([input.inputQuantity ~ ' ' ~ input.resource.name]) %}
+                            {% set inputs = inputs|merge([(input.inputStrategy != 'Static' ? input.inputStrategy|capitalize : input.inputQuantity) ~ ' ' ~ input.resource.name]) %}
                         {% endfor %}
                         {{ inputs|join(', ') }}
                     </td>

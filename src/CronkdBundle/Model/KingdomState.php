@@ -6,12 +6,16 @@ use CronkdBundle\Entity\PolicyInstance;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Entity\Resource\ResourceAction;
+use CronkdBundle\Entity\Resource\ResourceActionInput;
 use CronkdBundle\Exceptions\KingdomDoesNotHaveResourceException;
+use CronkdBundle\Service\ResourceActionService;
 
 class KingdomState
 {
     /** @var  Kingdom */
     private $kingdom;
+    /** @var ResourceActionService  */
+    private $resourceActionService;
     /** @var array  */
     private $currentQueues = [];
     /** @var int  */
@@ -23,9 +27,10 @@ class KingdomState
     /** @var bool  */
     private $availableAttack = false;
 
-    public function __construct(Kingdom $kingdom)
+    public function __construct(Kingdom $kingdom, ResourceActionService $resourceActionService)
     {
-        $this->kingdom = $kingdom;
+        $this->kingdom               = $kingdom;
+        $this->resourceActionService = $resourceActionService;
     }
 
     /**
@@ -130,32 +135,8 @@ class KingdomState
             return false;
         }
 
-        foreach ($action->getInputs() as $resourceActionInput) {
-            $kingdomResource = $this->getKingdomResource($resourceActionInput->getResource()->getName());
-            if ($kingdomResource->getQuantity() < $resourceActionInput->getInputQuantity()) {
-                return false;
-            }
-        }
-
-        return true;
+        return $this->resourceActionService->calculateCanProduceResource($this->kingdom, $action);
     }
-
-    /**
-     * @param string $resourceName
-     * @return KingdomResource
-     * @throws KingdomDoesNotHaveResourceException
-     */
-    private function getKingdomResource(string $resourceName)
-    {
-        foreach ($this->kingdom->getResources() as $kingdomResource) {
-            if ($kingdomResource->getResource()->getName() == $resourceName) {
-                return $kingdomResource;
-            }
-        }
-
-        throw new KingdomDoesNotHaveResourceException($resourceName);
-    }
-
 
     /**
      * @param bool $availableAttack
@@ -320,12 +301,18 @@ class KingdomState
         return floor($defense);
     }
 
+    /**
+     * @param Resource $resource
+     * @return bool
+     */
     public function hasQueuedResource(Resource $resource)
     {
         foreach ($this->currentQueues as $resourceQueue) {
             if ($resource == $resourceQueue['kingdomResource']->getResource()) {
                 foreach ($resourceQueue['queues'] as $queue) {
-                    return $queue->getQuantity() > 0;
+                    if ($queue->getQuantity() > 0) {
+                        return true;
+                    }
                 }
             }
         }
@@ -342,6 +329,10 @@ class KingdomState
      */
     public function shouldDisplayResourceInQueues(Resource $resource)
     {
+        if ($resource->getWorld()->getBaseResource() == $resource) {
+            return true;
+        }
+
         return $this->hasAvailableResource($resource) ||
             $this->hasQueuedResource($resource) ||
             $this->canPerformActionOnResource($resource);

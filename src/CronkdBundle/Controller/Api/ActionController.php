@@ -53,29 +53,35 @@ class ActionController extends ApiController
         $kingdomManager = $this->get('cronkd.manager.kingdom');
         $action = $outputResourceObj->getActions()->first();
         $inputs = $action->getInputs();
+        $resourceActionService = $this->get('cronkd.service.resource_action');
 
         // Validate Kingdom has enough input resources to perform action
-        /** @var ResourceActionInput $resourceActionInput */
         foreach ($inputs as $resourceActionInput) {
             $inputResource = $resourceActionInput->getResource();
-            $kingdomAvailableResource = $kingdomManager->lookupResource($kingdom, $inputResource->getName());
-            $requiredQuantity = $quantity * $resourceActionInput->getInputQuantity();
-            if (!$kingdomAvailableResource || $requiredQuantity > $kingdomAvailableResource->getQuantity()) {
+            $inputKingdomResource = $kingdomManager->lookupResource($kingdom, $inputResource->getName());
+            $requiredQuantity = $resourceActionService->calculateCostGivenQuantity(
+                $inputKingdomResource, $resourceActionInput, $quantity
+            );
+
+            if (!$inputKingdomResource || $requiredQuantity > $inputKingdomResource->getQuantity()) {
                 return $this->createErrorJsonResponse('Not enough ' . $inputResource->getName() . ' to complete action');
             }
         }
 
-        $kingdomState = $kingdomManager->generateKingdomState($kingdom);
-
+        // Process action
         $inputQueues = [];
+        $kingdomState = $kingdomManager->generateKingdomState($kingdom);
         $resourceManager = $this->get('cronkd.manager.resource');
         $queuePopulator = $this->get('cronkd.queue_populator');
         foreach ($inputs as $resourceActionInput) {
             $inputResource = $resourceActionInput->getResource();
-            $kingdomResource = $kingdomManager->lookupResource($kingdom, $inputResource->getName());
-            $inputQuantity = $quantity * $resourceActionInput->getInputQuantity();
-            $kingdomResource->removeQuantity($inputQuantity);
-            if ($resourceActionInput->getRequeue()) {
+            $inputKingdomResource = $kingdomManager->lookupResource($kingdom, $inputResource->getName());
+            $inputQuantity = $resourceActionService->calculateCostGivenQuantity(
+                $inputKingdomResource, $resourceActionInput, $quantity
+            );
+
+            $inputKingdomResource->removeQuantity($inputQuantity);
+            if ($resourceActionInput->getRequeue() && $resourceActionInput->getQueueSize() > 0) {
                 $resource = $resourceManager->get($inputResource->getName());
                 $queueSize = $resourceActionInput->getQueueSize();
 
@@ -85,7 +91,11 @@ class ActionController extends ApiController
                     $queueSize,
                     $inputQuantity
                 );
+            } elseif ($resourceActionInput->getRequeue() && $resourceActionInput->getQueueSize() == 0) {
+                // Instantly add back
+                $inputKingdomResource->addQuantity($inputQuantity);
             }
+            $em->persist($inputKingdomResource);
         }
 
         $kingdomOutputResource = $kingdomManager->lookupResource($kingdom, $action->getResource()->getName());

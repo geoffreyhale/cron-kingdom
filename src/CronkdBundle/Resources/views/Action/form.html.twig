@@ -1,5 +1,12 @@
 {% extends '::base.html.twig' %}
 
+{% set displayExponentialTable = false %}
+{% for input in inputsOverview.overview %}
+    {% if input.strategy == 'exponential' %}
+        {% set displayExponentialTable = true %}
+    {% endif %}
+{% endfor %}
+
 {% block content %}
     <div class="row-fluid">
         <div class="col-sm-12">
@@ -14,40 +21,84 @@
     </div>
 
     <div class="row-fluid">
-        <div class="col-sm-12">
-            <div class="alert alert-info">
-                <p><strong>{{ resource|capitalize }}: </strong><em>{{ resourceDescription }}</em></p>
-                <hr />
-                <p>{{ action.description }}</p>
-                <p>&nbsp;</p>
-                Cost per {{ action.outputQuantity }} {{ resource|capitalize }}:
-                <ul>
-                {% for input in action.inputs %}
-                    <li><strong>{{ input.inputQuantity }} {{ input.resource.name|capitalize }}</strong> - {{ input.requeue ? 'Comes back after '~input.queueSize~' ticks' : 'Lost forever' }}</li>
-                {% endfor %}
-                </ul>
-                <p><br /></p>
-                <p>
-                    <strong>Max {{ resource|capitalize }} to {{ action.verb }}: {{ maxQuantity }}</strong>
-                </p>
-                <p>
-                    <button id="autoFillBtn" data-max="{{ maxQuantity }}" class="btn btn-info">Auto-Fill Max</button>
-                </p>
+        <div class="col-sm-{{ displayExponentialTable ? '9' : '12' }}">
+            <div class="row-fluid">
+                <div class="alert alert-info">
+                    <p><strong>{{ resource|capitalize }}: </strong><em>{{ resourceDescription }}</em></p>
+                    <hr />
+                    <p>{{ action.description }}</p>
+                    <p>&nbsp;</p>
+                    <p>You current own <strong>{{ kingdomResource.quantity }}</strong> {{ resource }}.</p>
+                    <p>&nbsp;</p>
+                    Cost for {{ action.outputQuantity }} additional {{ resource|capitalize }}:
+                    <ul>
+                        {% for input in action.inputs %}
+                            {% set requiredQuantity = input.inputQuantity %}
+                            {% if input.inputStrategy == 'additive' %}
+                                {% set requiredQuantity = 'Amount equal to current ' ~ resource|capitalize ~ ' amount' %}
+                            {% elseif input.inputStrategy == 'exponential' %}
+                                {% set requiredQuantity = inputsOverview.overview[input.resource.name].cost %}
+                            {% elseif input.inputStrategy == 'requirement' %}
+                                {% set requiredQuantity = 'At least one available ' %}
+                            {% endif %}
+                            {% if input.requeue %}
+                                {% if input.queueSize > 0 %}
+                                    {% set comesBackTime = '- Comes back after ' ~ input.queueSize ~ ' ticks' %}
+                                {% else %}
+                                    {% set comesBackTime = '' %}
+                                {% endif %}
+                            {% else %}
+                                {% set comesBackTime = ' - Lost forever' %}
+                            {% endif %}
+                            <li><strong>{{ requiredQuantity }} {{ input.resource.name|capitalize }}</strong> {{ comesBackTime }}</li>
+                        {% endfor %}
+                    </ul>
+                    <p><br /></p>
+                    <p>
+                        <strong>Max {{ resource|capitalize }} to {{ action.verb }}: {{ inputsOverview.maxQuantityToProduce }}</strong>
+                    </p>
+                    <p>
+                        <button id="autoFillBtn" data-max="{{ inputsOverview.maxQuantityToProduce }}" class="btn btn-info">Auto-Fill Max</button>
+                    </p>
+                </div>
+            </div>
+            <div class="row-fluid">
+                {{ form_start(form, {'attr': {'class': 'form-inline'}}) }}
+                <div class="form-group">
+                    {{ form_row(form.quantity, {'attr': {'class': 'form-control', 'max': inputsOverview.maxQuantityToProduce}}) }}
+                </div>
+                <div class="form-group">
+                    {{ form_row(form.submit, {'attr': {'class': 'btn btn-primary'}}) }}
+                </div>
+                {{ form_end(form) }}
             </div>
         </div>
-    </div>
-
-    <div class="row-fluid">
-        <div class="col-sm-12">
-            {{ form_start(form, {'attr': {'class': 'form-inline'}}) }}
-            <div class="form-group">
-                {{ form_row(form.quantity, {'attr': {'class': 'form-control', 'max': maxQuantity}}) }}
+        {% if displayExponentialTable %}
+        <div class="col-sm-3">
+            <div class="row-fluid">
+                <h4>Exponential Cost Table</h4>
+                <table class="table table-bordered table-narrow">
+                    <thead>
+                    <tr>
+                        <th>Current Quantity</th>
+                        <th>Cost per Resource</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for row in exponentialTable %}
+                    <tr>
+                        <td>{{ row.quantity }}</td>
+                        <td>{{ row.cost }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="2">...</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
-            <div class="form-group">
-            {{ form_row(form.submit, {'attr': {'class': 'btn btn-primary'}}) }}
-            </div>
-            {{ form_end(form) }}
         </div>
+        {% endif %}
     </div>
 {% endblock %}
 

@@ -42,6 +42,11 @@ services:
             - "@cronkd.manager.kingdom"
             - "@cronkd.manager.resource"
 
+    cronkd.service.resource_action:
+        class: CronkdBundle\Service\ResourceActionService
+        arguments:
+            - "@doctrine.orm.default_entity_manager"
+
     # Managers
     cronkd.manager.world:
         class: CronkdBundle\Manager\WorldManager
@@ -58,6 +63,7 @@ services:
             - "@doctrine.orm.default_entity_manager"
             - "@cronkd.manager.resource"
             - "@cronkd.manager.policy"
+            - "@cronkd.service.resource_action"
             - "@event_dispatcher"
         calls:
             - [setLogger, ["@logger"]]

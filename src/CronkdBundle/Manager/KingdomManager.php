@@ -7,13 +7,14 @@ use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Notification\Notification;
 use CronkdBundle\Entity\Queue;
 use CronkdBundle\Entity\Resource\Resource;
+use CronkdBundle\Entity\Resource\ResourceAction;
 use CronkdBundle\Entity\User;
 use CronkdBundle\Entity\World;
 use CronkdBundle\Event\CreateKingdomEvent;
 use CronkdBundle\Event\ResetKingdomEvent;
 use CronkdBundle\Exceptions\InvalidResourceException;
-use CronkdBundle\Exceptions\InvalidWorldSettingsException;
 use CronkdBundle\Model\KingdomState;
+use CronkdBundle\Service\ResourceActionService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -27,6 +28,8 @@ class KingdomManager
     private $resourceManager;
     /** @var PolicyManager  */
     private $policyManager;
+    /** @var ResourceActionService */
+    private $resourceActionService;
     /** @var EventDispatcherInterface  */
     private $eventDispatcher;
     /** @var NullLogger  */
@@ -36,13 +39,15 @@ class KingdomManager
         EntityManagerInterface $em,
         ResourceManager $resourceManager,
         PolicyManager $policyManager,
+        ResourceActionService $resourceActionService,
         EventDispatcherInterface $eventDispatcher
     ) {
-        $this->em              = $em;
-        $this->resourceManager = $resourceManager;
-        $this->policyManager   = $policyManager;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->logger          = new NullLogger();
+        $this->em                    = $em;
+        $this->resourceManager       = $resourceManager;
+        $this->policyManager         = $policyManager;
+        $this->resourceActionService = $resourceActionService;
+        $this->eventDispatcher       = $eventDispatcher;
+        $this->logger                = new NullLogger();
     }
 
     /**
@@ -82,7 +87,7 @@ class KingdomManager
      */
     public function generateKingdomState(Kingdom $kingdom)
     {
-        $kingdomState = new KingdomState($kingdom);
+        $kingdomState = new KingdomState($kingdom, $this->resourceActionService);
         $winLossRecord = $this->em->getRepository(AttackResultEvent::class)->getWinLossRecord($kingdom);
         $kingdomState
             ->setWinLossRecord($winLossRecord['win'], $winLossRecord['loss'])

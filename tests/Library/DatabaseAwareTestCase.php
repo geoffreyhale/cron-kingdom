@@ -22,6 +22,10 @@ abstract class DatabaseAwareTestCase extends KernelTestCase
         $this->container = self::$kernel->getContainer();
         $this->em = $this->container->get('doctrine.orm.default_entity_manager');
 
+        $conn = $this->em->getConnection();
+        $stmt = $conn->executeQuery('SET foreign_key_checks = 0');
+        $stmt->execute();
+
         $purger = new ORMPurger($this->em);
         $executor = new ORMExecutor($this->em, $purger);
 

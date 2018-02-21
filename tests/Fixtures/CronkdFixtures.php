@@ -85,6 +85,30 @@ class CronkdFixtures extends Fixture
             'spoil_of_war_percent' => 50,
             'value'                => 1,
         ],
+        'Land' => [
+            'type'                 => 'Land',
+            'attack'               => 0,
+            'defense'              => 0,
+            'starting'             => 0,
+            'can_be_produced'      => true,
+            'can_spoil_of_war'     => true,
+            'can_be_probed'        => true,
+            'capacity'             => 0,
+            'spoil_of_war_percent' => 0,
+            'value'                => 1,
+        ],
+        'House' => [
+            'type'                 => 'Building',
+            'attack'               => 0,
+            'defense'              => 0,
+            'starting'             => 0,
+            'can_be_produced'      => true,
+            'can_spoil_of_war'     => true,
+            'can_be_probed'        => true,
+            'capacity'             => 1,
+            'spoil_of_war_percent' => 0,
+            'value'                => 1,
+        ],
     ];
 
     private $policyAttributes = [
@@ -116,15 +140,20 @@ class CronkdFixtures extends Fixture
         $kingdoms = $this->generateKingdoms($em, ['Hero', 'Villain'], $world);
         $resources = $this->generateResources($em, $world);
         $policies = $this->generatePolicies($em, $world);
+
+        $world->setBaseResource($resources['Civilian']);
+        $em->persist($world);
+        $em->flush();
     }
 
     private function generateResourceTypes(ObjectManager $em)
     {
         $resourceTypes = [];
-        $resourceTypeNames = ['Population', 'Material', 'Building'];
+        $resourceTypeNames = ['Population', 'Material', 'Building', 'Land',];
         foreach ($resourceTypeNames as $resourceTypeName) {
             $resourceType = new ResourceType();
             $resourceType->setName($resourceTypeName);
+            $resourceType->setDisplayOrder(1);
             $em->persist($resourceType);
             $resourceTypes[] = $resourceType;
         }
@@ -166,8 +195,9 @@ class CronkdFixtures extends Fixture
             $resource->setCapacity($resourceData['capacity']);
             $resource->setSpoilOfWarCapturePercentage($resourceData['spoil_of_war_percent']);
             $resource->setValue($resourceData['value']);
+            $resource->setIcon('icon');
             $em->persist($resource);
-            $resources[] = $resource;
+            $resources[$resource->getName()] = $resource;
         }
         $em->flush();
 
@@ -183,6 +213,7 @@ class CronkdFixtures extends Fixture
             $kingdom->setWorld($world);
             $kingdom->setNetWorth(0);
             $kingdom->setLiquidity(0);
+            $kingdom->setTechPoints(0);
             $em->persist($kingdom);
             $kingdoms[] = $kingdom;
         }

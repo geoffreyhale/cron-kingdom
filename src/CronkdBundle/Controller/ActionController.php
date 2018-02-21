@@ -38,8 +38,6 @@ class ActionController extends CronkdController
             throw $this->createNotFoundException('No actions to perform for ' . $resourceName);
         }
 
-        $maxQuantityToProduce = $this->calculateMaxResourceAllocation($kingdom, $resource);
-
         $action = new Action();
         $form = $this->createForm(ActionType::class, $action, [
             'sourceKingdom' => $kingdom,
@@ -68,12 +66,24 @@ class ActionController extends CronkdController
             return $this->redirectToRoute('home');
         }
 
+        $resourceActionService = $this->get('cronkd.service.resource_action');
+        $exponentialTable = $resourceActionService->getExponentialTable();
+        $inputsOverview = $resourceActionService->getCostsForResource($kingdom, $resource->getActions()->first());
+
+        $em = $this->getDoctrine()->getManager();
+        $kingdomResource = $em->getRepository(KingdomResource::class)->findOneBy([
+            'kingdom' => $kingdom,
+            'resource' => $resource,
+        ]);
+
         return [
             'form'                => $form->createView(),
             'resource'            => $resourceName,
             'action'              => $resource->getActions()->first(),
-            'maxQuantity'         => $maxQuantityToProduce,
             'resourceDescription' => $resource->getDescription(),
+            'exponentialTable'    => $exponentialTable,
+            'inputsOverview'      => $inputsOverview,
+            'kingdomResource'     => $kingdomResource,
         ];
     }
 
@@ -91,29 +101,86 @@ class ActionController extends CronkdController
             return 0;
         }
 
+        $em = $this->getDoctrine()->getManager();
+        /*
+        $outputKingdomResource = $em->getRepository(KingdomResource::class)->findOneBy([
+            'kingdom'  => $kingdom,
+            'resource' => $resource,
+        ]);
+        */
+
+        $resourceActionService = $this->get('cronkd.service.resource_action');
         $inputs = $action->getInputs();
         $requiredInputs = [];
         /** @var ResourceActionInput $resourceActionInput */
         foreach ($inputs as $resourceActionInput) {
-            $requiredInputs[$resourceActionInput->getResource()->getName()] = $resourceActionInput->getInputQuantity();
+            $inputKingdomResource = $em->getRepository(KingdomResource::class)->findOneBy([
+                'kingdom'  => $kingdom,
+                'resource' => $resourceActionInput->getResource(),
+            ]);
+            $quantity = $resourceActionService->calculateMaxProduceableQuantity($inputKingdomResource, $resourceActionInput);
+            $requiredInputs[$inputKingdomResource->getResource()->getName()] = [
+                'quantity' => $quantity,
+                'strategy' => $resourceActionInput->getInputStrategy(),
+            ];
+
+            if ($quantity < $maxQuantity) {
+                $maxQuantity = $quantity;
+            }
+            if ($maxQuantity < 0) {
+                $maxQuantity = 0;
+            }
+
+            /*
+            $quantity = $resourceActionInput->getInputQuantity();
+
+
+            if ($resourceActionInput->isMultiplicativeQuantity()) {
+                $quantity = 0 >= $outputKingdomResource->getQuantity() ? 1 : $outputKingdomResource->getQuantity();
+            }
+            $requiredInputs[$resourceActionInput->getResource()->getName()] = [
+                'variable' => $resourceActionInput->isMultiplicativeQuantity(),
+                'quantity' => $quantity,
+            ];
+            */
         }
 
-        $em = $this->getDoctrine()->getManager();
+        /*
         $kingdomResources = $em->getRepository(KingdomResource::class)->findSpecificResources(
             $kingdom,
             array_keys($requiredInputs)
         );
-
         if (!count($kingdomResources)) {
             $maxQuantity = 0;
         }
 
         foreach ($kingdomResources as $kingdomResource) {
-            $quantity = floor($kingdomResource->getQuantity() / $requiredInputs[$kingdomResource->getResource()->getName()]);
+            $inputCost = $requiredInputs[$kingdomResource->getResource()->getName()]['quantity'];
+            $inputQuantity = $kingdomResource->getQuantity();
+            $quantity = 0;
+            if ($requiredInputs[$kingdomResource->getResource()->getName()]['variable']) {
+                $inputCost += $outputKingdomResource->getQuantity();
+                if ($inputCost == 0) {
+                    $inputCost = 1;
+                }
+                while (true) {
+                    if ($inputQuantity <= 0) {
+                        break;
+                    }
+
+                    $inputCost++;
+                    $quantity++;
+                    $inputQuantity -= $inputCost;
+                }
+            } else {
+                $quantity = $inputQuantity == 0 ? 0 : floor($kingdomResource->getQuantity() / $inputCost);
+            }
+
             if ($quantity < $maxQuantity) {
                 $maxQuantity = $quantity;
             }
         }
+        */
 
         return $maxQuantity;
     }

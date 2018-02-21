@@ -1,5 +1,3 @@
-{% set resourceTypes = ['Population', 'Material', 'Building'] %}
-
 {% set minTick = world.tick + 1 %}
 {% set maxTick = world.tick + 8 %}
 
@@ -13,8 +11,8 @@
     <table class="table table-bordered">
         <thead>
         <tr style="background-color: #f5f5f5;">
-            <th>Current {{ resourceType }}</th>
-            <th colspan="{{ maxTick - minTick + 1 }}">Incoming {{ resourceType }}</th>
+            <th>Current {{ resourceType.name }}</th>
+            <th colspan="{{ maxTick - minTick + 1 }}">Incoming {{ resourceType.name }}</th>
         </tr>
         <tr style="background-color: #f5f5f5;">
             <th>
@@ -27,7 +25,7 @@
         </thead>
         <tbody>
         {% for resourceQueues in kingdomState.currentQueues %}
-            {% if resourceQueues.kingdomResource.resource.type.name == resourceType %}
+            {% if resourceQueues.kingdomResource.resource.type.name == resourceType.name %}
                 {% set resource = resourceQueues.kingdomResource.resource %}
                 {% if kingdomState.shouldDisplayResourceInQueues(resource) %}
             <tr>

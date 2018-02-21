@@ -72,6 +72,15 @@ class Kingdom extends BaseEntity
     /**
      * @var int
      *
+     * @ORM\Column(name="tech_points", type="bigint", options={"default": 0})
+     *
+     * @Jms\Expose()
+     */
+    private $techPoints;
+
+    /**
+     * @var int
+     *
      * @ORM\Column(name="attack", type="bigint", options={"default": 0})
      *
      * @Jms\Expose()
@@ -286,6 +295,30 @@ class Kingdom extends BaseEntity
     public function getLiquidity()
     {
         return $this->liquidity;
+    }
+
+    /**
+     * Set techPoints
+     *
+     * @param integer $techPoints
+     *
+     * @return Kingdom
+     */
+    public function setTechPoints($techPoints)
+    {
+        $this->techPoints = $techPoints;
+
+        return $this;
+    }
+
+    /**
+     * Get techPoints
+     *
+     * @return integer
+     */
+    public function getTechPoints()
+    {
+        return $this->techPoints;
     }
 
     /**

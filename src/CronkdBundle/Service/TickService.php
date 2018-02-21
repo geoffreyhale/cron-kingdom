@@ -84,6 +84,10 @@ class TickService
 
         foreach ($world->getKingdoms() as $kingdom) {
             $this->kingdomManager->syncResources($kingdom);
+        }
+        $this->em->flush();
+
+        foreach ($world->getKingdoms() as $kingdom) {
             if (!$this->kingdomManager->isAtMaxPopulation($kingdom)) {
                 $addition = $this->kingdomManager->incrementPopulation($kingdom);
                 $this->logManager->logBirthEvent($kingdom, $baseResource, $addition);

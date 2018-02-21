@@ -30,14 +30,18 @@ class DefaultController extends CronkdController
 
         $worldState = $worldManager->generateWorldState($world);
 
+        $em = $this->getDoctrine()->getManager();
+        $resourceTypes = $em->getRepository(ResourceType::class)->findBy([], ['displayOrder' => 'ASC']);
+
         return [
-            'user'                      => $user,
-            'kingdom'                   => $kingdom,
-            'kingdomState'              => $kingdomState,
-            'world'                     => $world,
-            'worldState'                => $worldState,
-            'kingdoms'                  => $world->getKingdoms(),
-            'userHasKingdom'            => null !== $kingdom,
+            'user'             => $user,
+            'kingdom'          => $kingdom,
+            'kingdomState'     => $kingdomState,
+            'world'            => $world,
+            'worldState'       => $worldState,
+            'kingdoms'         => $world->getKingdoms(),
+            'userHasKingdom'   => null !== $kingdom,
+            'resourceTypes'    => $resourceTypes,
         ];
     }
 

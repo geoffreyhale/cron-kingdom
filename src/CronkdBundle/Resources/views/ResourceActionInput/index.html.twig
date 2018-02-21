@@ -38,7 +38,7 @@
 
                             </div>
                         </td>
-                        <td>{{ input.inputQuantity }}</td>
+                        <td>{{ input.inputStrategy|capitalize }} {{ input.inputStrategy == 'static' ? '('~input.inputQuantity~')' }}</td>
                         <td>{{ input.requeue ? 'Yes' : 'No' }}</td>
                         <td>{{ input.queueSize }}</td>
                     </tr>

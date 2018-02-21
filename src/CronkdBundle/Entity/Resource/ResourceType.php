@@ -38,6 +38,13 @@ class ResourceType extends BaseEntity
     private $name;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="display_order", type="integer")
+     */
+    private $displayOrder;
+
+    /**
      * @ORM\OneToMany(targetEntity="Resource", mappedBy="type")
      */
     private $resources;
@@ -65,7 +72,7 @@ class ResourceType extends BaseEntity
      *
      * @param string $name
      *
-     * @return Resource
+     * @return ResourceType
      */
     public function setName($name)
     {
@@ -82,6 +89,30 @@ class ResourceType extends BaseEntity
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Set displayOrder
+     *
+     * @param integer $displayOrder
+     *
+     * @return ResourceType
+     */
+    public function setDisplayOrder($displayOrder)
+    {
+        $this->displayOrder = $displayOrder;
+
+        return $this;
+    }
+
+    /**
+     * Get displayOrder
+     *
+     * @return integer
+     */
+    public function getDisplayOrder()
+    {
+        return $this->displayOrder;
     }
 
     /**

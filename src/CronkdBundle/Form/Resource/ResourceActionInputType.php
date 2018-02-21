@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -46,6 +47,16 @@ class ResourceActionInputType extends AbstractType
             ->add('inputQuantity', IntegerType::class, [
                 'required' => true,
                 'label'    => 'Quantity',
+            ])
+            ->add('inputStrategy', ChoiceType::class, [
+                'required' => true,
+                'choices'  => [
+                    'Static'      => ResourceActionInput::INPUT_STATIC_STRATEGY,
+                    'Additive'    => ResourceActionInput::INPUT_ADDITIVE_STRATEGY,
+                    'Exponential' => ResourceActionInput::INPUT_EXPONENTIAL_STRATEGY,
+                    'Requirement' => ResourceActionInput::INPUT_REQUIREMENT_STRATEGY,
+                ],
+                'label'    => 'Input Strategy',
             ])
             ->add('queueSize', IntegerType::class, [
                 'required' => false,

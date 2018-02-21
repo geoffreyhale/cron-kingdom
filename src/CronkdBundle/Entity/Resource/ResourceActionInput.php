@@ -18,6 +18,11 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class ResourceActionInput extends BaseEntity
 {
+    const INPUT_STATIC_STRATEGY      = 'static';
+    const INPUT_ADDITIVE_STRATEGY    = 'additive';
+    const INPUT_EXPONENTIAL_STRATEGY = 'exponential';
+    const INPUT_REQUIREMENT_STRATEGY = 'requirement';
+
     /**
      * @var int
      *
@@ -35,6 +40,15 @@ class ResourceActionInput extends BaseEntity
      * @Assert\Range(min=0, minMessage="Quantity cannot be negative")
      */
     private $inputQuantity;
+
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="input_strategy", type="string")
+     * @Jms\Expose()
+     */
+    private $inputStrategy;
 
     /**
      * @var boolean
@@ -97,6 +111,30 @@ class ResourceActionInput extends BaseEntity
     public function getInputQuantity()
     {
         return $this->inputQuantity;
+    }
+
+    /**
+     * Set inputStrategy
+     *
+     * @param string $inputStrategy
+     *
+     * @return ResourceActionInput
+     */
+    public function setInputStrategy($inputStrategy)
+    {
+        $this->inputStrategy = $inputStrategy;
+
+        return $this;
+    }
+
+    /**
+     * Get inputStrategy
+     *
+     * @return string
+     */
+    public function getInputStrategy()
+    {
+        return $this->inputStrategy;
     }
 
     /**
