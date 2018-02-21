@@ -12,6 +12,7 @@ use CronkdBundle\Manager\ResourceManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 class TickService
 {
@@ -50,22 +51,22 @@ class TickService
      */
     public function attemptTick(World $world)
     {
-        $populationResource = $this->resourceManager->getBasePopulationResource();
-        if (null === $populationResource) {
-            throw new InvalidWorldSettingsException("No base population resource is configured!");
-        }
-        
         if (!$world->isActive()) {
             $this->logger->info($world->getName() . " world is not active");
-
             return;
+        }
+
+        $baseResource = $world->getBaseResource();
+        if (null === $baseResource) {
+            $this->logger->critical('No base population resource is configured!');
+            throw new InvalidWorldSettingsException('No base population resource is configured!');
         }
 
         $this->logger->notice('World ' . $world->getName() . ' starting tick ' . ($world->getTick()+1));
 
         $queues = $this->em->getRepository(Queue::class)->findNextByWorld($world);
         $this->logger->info('Found ' . count($queues) . ' queues to parse');
-
+        
         /** @var Queue $queue */
         foreach ($queues as $queue) {
             $this->logger->info('Queue is for Kingdom ' . $queue->getKingdom()->getName() . ' for ' . $queue->getResource()->getName());
@@ -85,7 +86,7 @@ class TickService
             $this->kingdomManager->syncResources($kingdom);
             if (!$this->kingdomManager->isAtMaxPopulation($kingdom)) {
                 $addition = $this->kingdomManager->incrementPopulation($kingdom);
-                $this->logManager->logBirthEvent($kingdom, $populationResource, $addition);
+                $this->logManager->logBirthEvent($kingdom, $baseResource, $addition);
                 $this->logger->info($kingdom->getName() . ' kingdom is not at capacity, adding ' . $addition . ' to population');
             } else {
                 $this->logger->info($kingdom->getName() . ' is at capacity');

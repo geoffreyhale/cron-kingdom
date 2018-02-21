@@ -3,8 +3,9 @@ namespace CronkdBundle\Repository;
 
 use CronkdBundle\Entity\User;
 use CronkdBundle\Entity\World;
+use Doctrine\ORM\EntityRepository;
 
-class KingdomRepository extends \Doctrine\ORM\EntityRepository
+class KingdomRepository extends EntityRepository
 {
     /**
      * Returns user's single kingdom from a world
@@ -22,6 +23,13 @@ class KingdomRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getOneOrNullResult();
     }
 
+    /**
+     * @param User $user
+     * @param World|null $world
+     * @return bool
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     public function userHasKingdom(User $user, World $world = null)
     {
         $qb = $this->createQueryBuilder('k');

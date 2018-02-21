@@ -24,6 +24,17 @@
                         <span class="badge" title="Unread Messages">{{ render(controller('CronkdBundle:Chat:getUnreadMessageCount')) }}</span>
                     </a>
                 </li>
+                {% if app.environment != 'prod' and is_granted('ROLE_ADMIN') %}
+                <li title="Perform Tick">
+                    <div class="navbar-form">
+                        <div class="form-group">
+                            <a class="btn btn-primary" href="{{ path('tick_perform') }}" title="Perform Tick">
+                                <i class="fa fa-cogs"></i> Perform Tick
+                            </a>
+                        </div>
+                    </div>
+                </li>
+                {% endif %}
             </ul>
             <ul class="nav navbar-nav navbar-left">
                 <li class="dropdown">

@@ -7,6 +7,10 @@ use Doctrine\ORM\NoResultException;
 
 class KingdomResourceRepository extends EntityRepository
 {
+    /**
+     * @param Kingdom $kingdom
+     * @return array
+     */
     public function findResourcesThatMayBeProbed(Kingdom $kingdom)
     {
         $qb = $this->createQueryBuilder('kr');
@@ -74,5 +78,26 @@ class KingdomResourceRepository extends EntityRepository
         } catch (NoResultException $e) {
             return 0;
         }
+    }
+
+    /**
+     * @param Kingdom $kingdom
+     * @return int
+     */
+    public function calculateLiquidity(Kingdom $kingdom)
+    {
+        $liquidity = 0;
+
+        $qb = $this->createQueryBuilder('kr');
+        $qb->join('kr.resource', 'r');
+        $qb->where('kr.kingdom = :kingdom');
+        $qb->setParameter('kingdom', $kingdom);
+
+        $result = $qb->getQuery()->getResult();
+        foreach ($result as $kingdomResource) {
+            $liquidity += ($kingdomResource->getQuantity() * $kingdomResource->getResource()->getValue());
+        }
+
+        return $liquidity;
     }
 }

@@ -1,7 +1,10 @@
 <?php
 namespace CronkdBundle\Form;
 
+use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Entity\World;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -26,10 +29,6 @@ class WorldType extends AbstractType
             ])
             ->add('endTime', TextType::class, [
                 'required' => true,
-            ])
-            ->add('tickInterval', IntegerType::class, [
-                'required' => true,
-                'label'    => 'Tick Interval (in minutes)',
             ])
             ->add('birthRate', IntegerType::class, [
                 'required' => true,
@@ -71,6 +70,21 @@ class WorldType extends AbstractType
                 }
             ))
         ;
+
+        if (!empty($options['currentWorld'])) {
+            $builder->add('baseResource', EntityType::class, [
+                'required'      => true,
+                'class'         => Resource::class,
+                'query_builder' => function(EntityRepository $er) use ($options) {
+                    $qb = $er->createQueryBuilder('r');
+                    $qb->orderBy('r.name', 'ASC');
+                    $qb->where('r.world = :world');
+                    $qb->setParameter('world', $options['currentWorld']);
+
+                    return $qb;
+                },
+            ]);
+        }
     }
 
     /**
@@ -79,7 +93,8 @@ class WorldType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class'    => World::class,
+            'data_class'   => World::class,
+            'currentWorld' => null,
         ]);
     }
 
