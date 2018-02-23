@@ -18,9 +18,15 @@ class KingdomController extends CronkdController
      * @Route("", name="kingdom_show")
      * @Template("CronkdBundle:Kingdom:show.html.twig")
      */
-    public function indexAction()
+    public function showAction()
     {
-        return [];
+        $kingdom = $this->extractKingdomFromCurrentUser();
+        $kingdomManager = $this->get('cronkd.manager.kingdom');
+        $techPointsEarned = $kingdomManager->calculateTechPoints($kingdom);
+
+        return [
+            'techPointsEarned' => $techPointsEarned,
+        ];
     }
 
     /**

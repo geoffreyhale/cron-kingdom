@@ -50,6 +50,9 @@
                         <li><a href="" class="navbar-link">Quick Links (coming soon!)</a></li>
                     </ul>
                 </li>
+                <li class="navbar-text" title="Technology Points">
+                    <i class="fa fa-book"></i> {{ kingdom.techPoints|filterNumber }}
+                </li>
                 <li class="navbar-text" title="Attack (available)"><i class="fa fa-fighter-jet"></i> {{ kingdom.attack|filterNumber }}
                     {# / totalAttack (including unavailable) #}
                     {% if kingdom.attack != kingdomState.modifiedAttackPower  %}

@@ -415,7 +415,28 @@ class KingdomManager
      */
     public function resetKingdom(Kingdom $kingdom)
     {
+        $currentTechPoints = $kingdom->getTechPoints();
+        $currentTechPoints += $this->calculateTechPoints($kingdom);
+        $kingdom->setTechPoints($currentTechPoints);
+        $this->em->persist($kingdom);
+        $this->em->flush();
+
         $event = new ResetKingdomEvent($kingdom);
         $this->eventDispatcher->dispatch('event.reset_kingdom', $event);
+    }
+
+    /**
+     * @param Kingdom $kingdom
+     * @return int
+     */
+    public function calculateTechPoints(Kingdom $kingdom)
+    {
+        $netWorth = $kingdom->getNetWorth();
+
+        $techPoints = (int) ($netWorth/1000 * log($netWorth/10000));
+        if ($techPoints < 0) {
+            $techPoints = 0;
+        }
+        return $techPoints;
     }
 }
