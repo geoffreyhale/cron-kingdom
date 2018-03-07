@@ -1,0 +1,58 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+
+    <div class="row-fluid">
+        <div class="col-sm-12">
+            <ol class="breadcrumb">
+                <li><a href="{{ path('home') }}">Dashboard</a></li>
+                <li class="active">Select Policy</li>
+            </ol>
+            <h3>Select Policy</h3>
+            <hr />
+            <div class="alert alert-info">
+                <p>
+                    Policies provide a 24 hour bonus to your kingdom.  You may have only one policy active.  After 24 hours, you can select another policy.
+                    <br />
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="row-fluid">
+        {% for policy in policies %}
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <div class="pull-right"><button data-id="{{ policy.id }}" class="btn btn-primary btn-xs selectBtn">Select</button></div>
+                        {{ policy.name }}
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    {{ policy.description }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {{ form_start(form, {'attr': {'id': 'selectPolicyForm', 'class': 'form-inline'}}) }}
+    {{ form_row(form.policy) }}
+    {{ form_end(form) }}
+
+{% endblock %}
+
+{% block js %}
+    {{ parent() }}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.selectBtn').click(function() {
+                console.log('huh');
+                var $id = $(this).data('id');
+                $('#cronkdbundle_policy_instance_policy').val($id);
+                console.log($('#cronkdbundle_policy_instance_policy').val());
+                $('#selectPolicyForm').submit();
+            })
+        });
+    </script>
+{% endblock %}

@@ -1,8 +1,8 @@
 <?php
 namespace CronkdBundle\Form\Policy;
 
-use CronkdBundle\Entity\Policy\Policy;
-use CronkdBundle\Entity\Policy\PolicyResource;
+use CronkdBundle\Entity\Policy\KingdomPolicy;
+use CronkdBundle\Entity\Policy\KingdomPolicyResource;
 use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Entity\World;
 use Doctrine\ORM\EntityRepository;
@@ -60,7 +60,7 @@ class PolicyResourceType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => PolicyResource::class,
+            'data_class' => KingdomPolicyResource::class,
             'world'      => null,
         ]);
     }

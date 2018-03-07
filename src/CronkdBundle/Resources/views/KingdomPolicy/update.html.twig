@@ -10,7 +10,7 @@
             </ol>
 
             <h1>Update {{ policy.name }} Policy</h1>
-            {% include 'CronkdBundle:Policy/partials:form.html.twig' with {'action': 'Update'} %}
+            {% include 'CronkdBundle:KingdomPolicy/partials:form.html.twig' with {'action': 'Update'} %}
 
             <div class="pull-right">
                 <a href="{{ path('policy_resource_create', {'id': policy.id}) }}" class="btn btn-info btn-sm"><i class="fa fa-plus"></i> Add</a>
@@ -34,7 +34,7 @@
                             </div>
                         </td>
                         <td>
-                            {% include '@Cronkd/Policy/partials/_overview.html.twig' with {'policy': policyResource} %}
+                            {% include '@Cronkd/KingdomPolicy/partials/_overview.html.twig' with {'policy': policyResource} %}
                         </td>
                     </tr>
                 {% endfor %}

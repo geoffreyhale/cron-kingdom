@@ -91,7 +91,7 @@ trait PolicyTrait
      *
      * @param float $outputMultiplier
      *
-     * @return Policy
+     * @return KingdomPolicy
      */
     public function setOutputMultiplier($outputMultiplier)
     {
@@ -115,7 +115,7 @@ trait PolicyTrait
      *
      * @param float $attackMultiplier
      *
-     * @return Policy
+     * @return KingdomPolicy
      */
     public function setAttackMultiplier($attackMultiplier)
     {
@@ -139,7 +139,7 @@ trait PolicyTrait
      *
      * @param float $defenseMultiplier
      *
-     * @return Policy
+     * @return KingdomPolicy
      */
     public function setDefenseMultiplier($defenseMultiplier)
     {
@@ -163,7 +163,7 @@ trait PolicyTrait
      *
      * @param float $probePowerMultiplier
      *
-     * @return Policy
+     * @return KingdomPolicy
      */
     public function setProbePowerMultiplier($probePowerMultiplier)
     {
@@ -187,7 +187,7 @@ trait PolicyTrait
      *
      * @param float $capacityMultiplier
      *
-     * @return Policy
+     * @return KingdomPolicy
      */
     public function setCapacityMultiplier($capacityMultiplier)
     {
@@ -211,7 +211,7 @@ trait PolicyTrait
      *
      * @param integer $queueSizeModifier
      *
-     * @return Policy
+     * @return KingdomPolicy
      */
     public function setQueueSizeModifier($queueSizeModifier)
     {
@@ -235,7 +235,7 @@ trait PolicyTrait
      *
      * @param float $spoilOfWarAttackCaptureMultiplier
      *
-     * @return Policy
+     * @return KingdomPolicy
      */
     public function setSpoilOfWarAttackCaptureMultiplier($spoilOfWarAttackCaptureMultiplier)
     {
@@ -259,7 +259,7 @@ trait PolicyTrait
      *
      * @param float $spoilOfWarDefenseCaptureMultiplier
      *
-     * @return Policy
+     * @return KingdomPolicy
      */
     public function setSpoilOfWarDefenseCaptureMultiplier($spoilOfWarDefenseCaptureMultiplier)
     {
@@ -276,6 +276,30 @@ trait PolicyTrait
     public function getSpoilOfWarDefenseCaptureMultiplier()
     {
         return $this->spoilOfWarDefenseCaptureMultiplier;
+    }
+
+    /**
+     * Set netWorthMultiplier
+     *
+     * @param float $netWorthMultiplier
+     *
+     * @return WorldPolicy
+     */
+    public function setNetWorthMultiplier($netWorthMultiplier)
+    {
+        $this->netWorthMultiplier = $netWorthMultiplier;
+
+        return $this;
+    }
+
+    /**
+     * Get netWorthMultiplier
+     *
+     * @return float
+     */
+    public function getNetWorthMultiplier()
+    {
+        return $this->netWorthMultiplier;
     }
 
     /**

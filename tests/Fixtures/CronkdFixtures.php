@@ -2,7 +2,7 @@
 namespace Tests\Fixtures;
 
 use CronkdBundle\Entity\Kingdom;
-use CronkdBundle\Entity\Policy\Policy;
+use CronkdBundle\Entity\Policy\KingdomPolicy;
 use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Entity\Resource\ResourceType;
 use CronkdBundle\Entity\World;
@@ -226,7 +226,7 @@ class CronkdFixtures extends Fixture
     {
         $policies = [];
         foreach ($this->policyAttributes as $policyName => $policyAttributes) {
-            $policy = new Policy();
+            $policy = new KingdomPolicy();
             $policy->setName($policyName);
             $policy->setWorld($world);
             if (isset($policyAttributes['attack'])) {

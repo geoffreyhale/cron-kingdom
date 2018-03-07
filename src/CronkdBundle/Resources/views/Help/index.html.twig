@@ -8,6 +8,8 @@
                 <li role="presentation" class="active"><a href="#introduction" data-toggle="tab">Introduction</a></li>
                 <li role="presentation"><a href="#world" data-toggle="tab">{{ world.name }}</a></li>
                 <li role="presentation"><a href="#resources" data-toggle="tab">Resources</a></li>
+                <li role="presentation"><a href="#policies" data-toggle="tab">Policies</a></li>
+                <li role="presentation"><a href="#buffs" data-toggle="tab">Buffs</a></li>
                 <li role="presentation"><a href="#spying-and-attacking" data-toggle="tab">Spying and Attacking</a></li>
             </ul>
         </div>
@@ -24,6 +26,14 @@
 
                 <div class="tab-pane" id="resources">
                     {% include 'CronkdBundle:Help:pages/resources.html.twig' %}
+                </div>
+
+                <div class="tab-pane" id="policies">
+                    {% include 'CronkdBundle:Help:pages/policies.html.twig' %}
+                </div>
+
+                <div class="tab-pane" id="buffs">
+                    {% include 'CronkdBundle:Help:pages/buffs.html.twig' %}
                 </div>
 
                 <div class="tab-pane" id="spying-and-attacking">

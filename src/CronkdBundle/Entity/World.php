@@ -1,7 +1,8 @@
 <?php
 namespace CronkdBundle\Entity;
 
-use CronkdBundle\Entity\Policy\Policy;
+use CronkdBundle\Entity\Policy\KingdomPolicy;
+use CronkdBundle\Entity\Policy\WorldPolicy;
 use CronkdBundle\Entity\Resource\Resource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -74,7 +75,7 @@ class World extends BaseEntity
     private $birthRate = 1;
 
     /**
-     * Number of ticks a policy lasts.
+     * Number of ticks a kingdom policy lasts.
      *
      * @var int
      *
@@ -82,6 +83,16 @@ class World extends BaseEntity
      * @Assert\Range(min=1, minMessage="Policy duration must be greater than zero.")"
      */
     private $policyDuration = 24;
+
+    /**
+     * Number of ticks a world policy lasts.
+     *
+     * @var int
+     *
+     * @ORM\Column(name="world_policy_duration", type="integer")
+     * @Assert\Range(min=1, minMessage="Policy duration must be greater than zero.")"
+     */
+    private $worldPolicyDuration = 4;
 
     /**
      * @var Kingdom[]
@@ -92,12 +103,20 @@ class World extends BaseEntity
     private $kingdoms;
 
     /**
-     * @var Policy[]
+     * @var KingdomPolicy[]
      *
-     * @ORM\OneToMany(targetEntity="CronkdBundle\Entity\Policy\Policy", mappedBy="world")
+     * @ORM\OneToMany(targetEntity="CronkdBundle\Entity\Policy\KingdomPolicy", mappedBy="world")
      * @ORM\OrderBy({"name" = "ASC"})
      */
-    private $policies;
+    private $kingdomPolicies;
+
+    /**
+     * @var KingdomPolicy[]
+     *
+     * @ORM\OneToMany(targetEntity="CronkdBundle\Entity\Policy\WorldPolicy", mappedBy="world")
+     * @ORM\OrderBy({"name" = "ASC"})
+     */
+    private $worldPolicies;
 
     /**
      * @ORM\OneToMany(targetEntity="CronkdBundle\Entity\Resource\Resource", mappedBy="world")
@@ -310,6 +329,54 @@ class World extends BaseEntity
     }
 
     /**
+     * Set worldPolicyDuration
+     *
+     * @param integer $worldPolicyDuration
+     *
+     * @return World
+     */
+    public function setWorldPolicyDuration($worldPolicyDuration)
+    {
+        $this->worldPolicyDuration = $worldPolicyDuration;
+
+        return $this;
+    }
+
+    /**
+     * Get worldPolicyDuration
+     *
+     * @return integer
+     */
+    public function getWorldPolicyDuration()
+    {
+        return $this->worldPolicyDuration;
+    }
+
+    /**
+     * Set baseResource
+     *
+     * @param Resource $baseResource
+     *
+     * @return World
+     */
+    public function setBaseResource(Resource $baseResource = null)
+    {
+        $this->baseResource = $baseResource;
+
+        return $this;
+    }
+
+    /**
+     * Get baseResource
+     *
+     * @return Resource
+     */
+    public function getBaseResource()
+    {
+        return $this->baseResource;
+    }
+
+    /**
      * Add kingdom
      *
      * @param Kingdom $kingdom
@@ -341,30 +408,6 @@ class World extends BaseEntity
     public function getKingdoms()
     {
         return $this->kingdoms;
-    }
-
-    /**
-     * Add policy
-     *
-     * @param Policy $policy
-     *
-     * @return World
-     */
-    public function addPolicy(Policy $policy)
-    {
-        $this->policies[] = $policy;
-
-        return $this;
-    }
-
-    /**
-     * Remove policy
-     *
-     * @param Policy $policy
-     */
-    public function removePolicy(Policy $policy)
-    {
-        $this->policies->removeElement($policy);
     }
 
     /**
@@ -409,6 +452,74 @@ class World extends BaseEntity
     public function getResources()
     {
         return $this->resources;
+    }
+
+    /**
+     * Add kingdomPolicy
+     *
+     * @param KingdomPolicy $kingdomPolicy
+     *
+     * @return World
+     */
+    public function addKingdomPolicy(KingdomPolicy $kingdomPolicy)
+    {
+        $this->kingdomPolicies[] = $kingdomPolicy;
+
+        return $this;
+    }
+
+    /**
+     * Remove kingdomPolicy
+     *
+     * @param KingdomPolicy $kingdomPolicy
+     */
+    public function removeKingdomPolicy(KingdomPolicy $kingdomPolicy)
+    {
+        $this->kingdomPolicies->removeElement($kingdomPolicy);
+    }
+
+    /**
+     * Get kingdomPolicies
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getKingdomPolicies()
+    {
+        return $this->kingdomPolicies;
+    }
+
+    /**
+     * Add worldPolicy
+     *
+     * @param WorldPolicy $worldPolicy
+     *
+     * @return World
+     */
+    public function addWorldPolicy(WorldPolicy $worldPolicy)
+    {
+        $this->worldPolicies[] = $worldPolicy;
+
+        return $this;
+    }
+
+    /**
+     * Remove worldPolicy
+     *
+     * @param WorldPolicy $worldPolicy
+     */
+    public function removeWorldPolicy(WorldPolicy $worldPolicy)
+    {
+        $this->worldPolicies->removeElement($worldPolicy);
+    }
+
+    /**
+     * Get worldPolicies
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getWorldPolicies()
+    {
+        return $this->worldPolicies;
     }
 
     /**
@@ -480,29 +591,5 @@ class World extends BaseEntity
         $this->addTick();
 
         return $this;
-    }
-
-    /**
-     * Set baseResource
-     *
-     * @param Resource $baseResource
-     *
-     * @return World
-     */
-    public function setBaseResource(Resource $baseResource = null)
-    {
-        $this->baseResource = $baseResource;
-
-        return $this;
-    }
-
-    /**
-     * Get baseResource
-     *
-     * @return Resource
-     */
-    public function getBaseResource()
-    {
-        return $this->baseResource;
     }
 }

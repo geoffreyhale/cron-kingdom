@@ -2,6 +2,8 @@
 namespace CronkdBundle\Model;
 
 use CronkdBundle\Entity\Kingdom;
+use CronkdBundle\Entity\Policy\WorldPolicy;
+use CronkdBundle\Entity\Policy\WorldPolicyInstance;
 use CronkdBundle\Entity\PolicyInstance;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Resource\Resource;
@@ -16,6 +18,8 @@ class KingdomState
     private $kingdom;
     /** @var ResourceActionService  */
     private $resourceActionService;
+    /** @var WorldPolicyInstance[] */
+    private $activeWorldPolicies;
     /** @var array  */
     private $currentQueues = [];
     /** @var int  */
@@ -177,6 +181,25 @@ class KingdomState
     }
 
     /**
+     * @param array $activeWorldPolicies
+     * @return self
+     */
+    public function setActiveWorldPolicies(array $activeWorldPolicies)
+    {
+        $this->activeWorldPolicies = $activeWorldPolicies;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getActiveWorldPolicies()
+    {
+        return $this->activeWorldPolicies;
+    }
+
+    /**
      * @return PolicyInstance|null
      */
     public function getActivePolicy()
@@ -201,16 +224,26 @@ class KingdomState
         if (null !== $activePolicy) {
             $endTick = $activePolicy->getStartTick() + $activePolicy->getTickDuration();
             $ticksLeft = $endTick - $this->kingdom->getWorld()->getTick();
-            $minutesToEndTick = (60 * $ticksLeft) - (new \DateTime())->format('i');
 
-            return (new \DateTime())
-                ->add(new \DateInterval('PT'.$minutesToEndTick.'M'))
-                ->diff(new \DateTime())
-                ->format('%dd, %hh, %im')
-            ;
+            return $this->getDisplayDate($ticksLeft);
         }
 
         return '';
+    }
+
+    /**
+     * @param $ticksLeft
+     * @return string
+     */
+    private function getDisplayDate($ticksLeft)
+    {
+        $minutesToEndTick = (60 * $ticksLeft) - (new \DateTime())->format('i');
+
+        return (new \DateTime())
+            ->add(new \DateInterval('PT'.$minutesToEndTick.'M'))
+            ->diff(new \DateTime())
+            ->format('%dd, %hh, %im')
+            ;
     }
 
     /**
@@ -336,5 +369,42 @@ class KingdomState
         return $this->hasAvailableResource($resource) ||
             $this->hasQueuedResource($resource) ||
             $this->canPerformActionOnResource($resource);
+    }
+
+    /**
+     * @param WorldPolicy $policy
+     * @return bool
+     */
+    public function hasActiveWorldPolicy(WorldPolicy $policy)
+    {
+        foreach ($this->getActiveWorldPolicies() as $worldPolicyInstance) {
+            if ($policy == $worldPolicyInstance->getPolicy()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param WorldPolicy $policy
+     * @return string
+     */
+    public function getWorldPolicyEndDiff(WorldPolicy $policy)
+    {
+        foreach ($this->getActiveWorldPolicies() as $worldPolicyInstance) {
+            if ($policy == $worldPolicyInstance->getPolicy()) {
+                $endTick = $worldPolicyInstance->getStartTick() + $worldPolicyInstance->getTickDuration();
+                $ticksLeft = $endTick - $this->kingdom->getWorld()->getTick();
+
+                return $this->getDisplayDate($ticksLeft);
+            }
+        }
+
+        dump(count($this->getActiveWorldPolicies()));
+        dump('here');
+        die();
+
+        return '';
     }
 }

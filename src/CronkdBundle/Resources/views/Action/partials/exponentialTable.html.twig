@@ -1,0 +1,23 @@
+
+    <div class="row-fluid">
+        <h4>Exponential Cost Table</h4>
+        <table class="table table-bordered table-narrow">
+            <thead>
+            <tr>
+                <th>Current Quantity</th>
+                <th>Cost per Resource</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for row in exponentialTable %}
+                <tr>
+                    <td>{{ row.quantity }}</td>
+                    <td>{{ row.cost }}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="2">...</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>

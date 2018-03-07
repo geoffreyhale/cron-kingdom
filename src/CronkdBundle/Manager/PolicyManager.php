@@ -2,9 +2,12 @@
 namespace CronkdBundle\Manager;
 
 use CronkdBundle\Entity\Kingdom;
-use CronkdBundle\Entity\Policy\Policy;
-use CronkdBundle\Entity\Policy\PolicyInstance;
-use CronkdBundle\Entity\Policy\PolicyResource;
+use CronkdBundle\Entity\Policy\KingdomPolicy;
+use CronkdBundle\Entity\Policy\KingdomPolicyInstance;
+use CronkdBundle\Entity\Policy\KingdomPolicyResource;
+use CronkdBundle\Entity\Policy\WorldPolicy;
+use CronkdBundle\Entity\Policy\WorldPolicyInstance;
+use CronkdBundle\Entity\Policy\WorldPolicyResource;
 use CronkdBundle\Entity\Resource\Resource;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -19,11 +22,11 @@ class PolicyManager
     }
 
     /**
-     * @param PolicyInstance $policyInstance
+     * @param KingdomPolicyInstance $policyInstance
      * @param Kingdom $kingdom
-     * @return PolicyInstance
+     * @return KingdomPolicyInstance
      */
-    public function create(PolicyInstance $policyInstance, Kingdom $kingdom)
+    public function create(KingdomPolicyInstance $policyInstance, Kingdom $kingdom)
     {
         if (null !== $kingdom->getActivePolicy()) {
             return $kingdom->getActivePolicy();
@@ -40,17 +43,29 @@ class PolicyManager
     }
 
     /**
-     * @param Policy $policy
+     * @param KingdomPolicy $policy
      * @param Resource $resource
-     * @return PolicyResource|null
+     * @return KingdomPolicyResource|null
      */
-    private function getResourcePolicy(Policy $policy, Resource $resource)
+    private function getResourcePolicy($policy, Resource $resource)
     {
         if (null === $resource) {
             return null;
         }
 
-        foreach ($policy->getResources() as $policyResource) {
+        // @todo make interface instead
+        if (!$policy instanceof KingdomPolicy && !$policy instanceof WorldPolicy) {
+            return null;
+        }
+
+        $resources = [];
+        if ($policy instanceof KingdomPolicy) {
+            $resources = $policy->getResources();
+        } elseif ($policy instanceof WorldPolicy) {
+            $resources = $policy->getResultingResources();
+        }
+
+        foreach ($resources as $policyResource) {
             if ($policyResource->getResource() == $resource) {
                 return $policyResource;
             }
@@ -67,17 +82,24 @@ class PolicyManager
     public function calculateOutputMultiplier(Kingdom $kingdom, Resource $resource)
     {
         $multiplier = 1;
+        $policies = [];
         $activePolicy = $kingdom->getActivePolicy();
-        if (null === $activePolicy) {
-            return $multiplier;
+        if (null !== $activePolicy) {
+            $policies[] = $activePolicy;
+        }
+        $activePolicies = $this->em->getRepository(WorldPolicyInstance::class)->findActivePolicies($kingdom);
+        foreach ($activePolicies as $activePolicy) {
+            $policies[] = $activePolicy;
         }
 
-        $policy = $activePolicy->getPolicy();
-        $multiplier *= ($policy->getOutputMultiplier() / 100);
+        foreach ($policies as $policy) {
+            $policy = $policy->getPolicy();
+            $multiplier *= ($policy->getOutputMultiplier() / 100);
 
-        $policyResource = $this->getResourcePolicy($policy, $resource);
-        if (null !== $policyResource) {
-            $multiplier = ($policyResource->getOutputMultiplier() / 100);
+            $policyResource = $this->getResourcePolicy($policy, $resource);
+            if (null !== $policyResource) {
+                $multiplier *= ($policyResource->getOutputMultiplier() / 100);
+            }
         }
 
         if ($multiplier < 0) {
@@ -95,17 +117,28 @@ class PolicyManager
     public function calculateAttackMultiplier(Kingdom $kingdom, Resource $resource)
     {
         $multiplier = 1;
+        $policies = [];
         $activePolicy = $kingdom->getActivePolicy();
-        if (null === $activePolicy) {
-            return $multiplier;
+        if (null !== $activePolicy) {
+            $policies[] = $activePolicy;
+        }
+        $activePolicies = $this->em->getRepository(WorldPolicyInstance::class)->findActivePolicies($kingdom);
+        foreach ($activePolicies as $activePolicy) {
+            $policies[] = $activePolicy;
         }
 
-        $policy = $activePolicy->getPolicy();
-        $multiplier *= ($policy->getAttackMultiplier() / 100);
+        foreach ($policies as $policy) {
+            $policy = $policy->getPolicy();
+            $multiplier *= ($policy->getAttackMultiplier() / 100);
 
-        $policyResource = $this->getResourcePolicy($policy, $resource);
-        if (null !== $policyResource) {
-            $multiplier *= ($policyResource->getAttackMultiplier() / 100);
+            $policyResource = $this->getResourcePolicy($policy, $resource);
+            if (null !== $policyResource) {
+                $multiplier *= ($policyResource->getAttackMultiplier() / 100);
+            }
+        }
+
+        if ($multiplier < 0) {
+            $multiplier = 0;
         }
 
         return $multiplier;
@@ -119,17 +152,28 @@ class PolicyManager
     public function calculateDefenseMultiplier(Kingdom $kingdom, Resource $resource)
     {
         $multiplier = 1;
+        $policies = [];
         $activePolicy = $kingdom->getActivePolicy();
-        if (null === $activePolicy) {
-            return $multiplier;
+        if (null !== $activePolicy) {
+            $policies[] = $activePolicy;
+        }
+        $activePolicies = $this->em->getRepository(WorldPolicyInstance::class)->findActivePolicies($kingdom);
+        foreach ($activePolicies as $activePolicy) {
+            $policies[] = $activePolicy;
         }
 
-        $policy = $activePolicy->getPolicy();
-        $multiplier *= ($policy->getDefenseMultiplier() / 100);
+        foreach ($policies as $policy) {
+            $policy = $policy->getPolicy();
+            $multiplier *= ($policy->getDefenseMultiplier() / 100);
 
-        $policyResource = $this->getResourcePolicy($policy, $resource);
-        if (null !== $policyResource) {
-            $multiplier *= ($policyResource->getDefenseMultiplier() / 100);
+            $policyResource = $this->getResourcePolicy($policy, $resource);
+            if (null !== $policyResource) {
+                $multiplier *= ($policyResource->getDefenseMultiplier() / 100);
+            }
+        }
+
+        if ($multiplier < 0) {
+            $multiplier = 0;
         }
 
         return $multiplier;
@@ -143,17 +187,28 @@ class PolicyManager
     public function calculateCapacityMultiplier(Kingdom $kingdom, Resource $resource = null)
     {
         $multiplier = 1;
+        $policies = [];
         $activePolicy = $kingdom->getActivePolicy();
-        if (null === $activePolicy) {
-            return $multiplier;
+        if (null !== $activePolicy) {
+            $policies[] = $activePolicy;
+        }
+        $activePolicies = $this->em->getRepository(WorldPolicyInstance::class)->findActivePolicies($kingdom);
+        foreach ($activePolicies as $activePolicy) {
+            $policies[] = $activePolicy;
         }
 
-        $policy = $activePolicy->getPolicy();
-        $multiplier *= ($policy->getCapacityMultiplier() / 100);
+        foreach ($policies as $policy) {
+            $policy = $policy->getPolicy();
+            $multiplier *= ($policy->getCapacityMultiplier() / 100);
 
-        $policyResource = $this->getResourcePolicy($policy, $resource);
-        if (null !== $policyResource) {
-            $multiplier *= ($policyResource->getCapacityMultiplier() / 100);
+            $policyResource = $this->getResourcePolicy($policy, $resource);
+            if (null !== $policyResource) {
+                $multiplier *= ($policyResource->getCapacityMultiplier() / 100);
+            }
+        }
+
+        if ($multiplier < 0) {
+            $multiplier = 0;
         }
 
         return $multiplier;
@@ -167,20 +222,32 @@ class PolicyManager
     public function calculateProbePowerMultiplier(Kingdom $kingdom, Resource $resource = null)
     {
         $multiplier = 1;
+        $policies = [];
         $activePolicy = $kingdom->getActivePolicy();
-        if (null === $activePolicy) {
-            return $multiplier;
+        if (null !== $activePolicy) {
+            $policies[] = $activePolicy;
+        }
+        $activePolicies = $this->em->getRepository(WorldPolicyInstance::class)->findActivePolicies($kingdom);
+        foreach ($activePolicies as $activePolicy) {
+            $policies[] = $activePolicy;
         }
 
-        $policy = $activePolicy->getPolicy();
-        $multiplier *= ($policy->getProbePowerMultiplier() / 100);
+        foreach ($policies as $policy) {
+            $policy = $policy->getPolicy();
+            $multiplier *= ($policy->getProbePowerMultiplier() / 100);
 
-        $policyResource = $this->getResourcePolicy($policy, $resource);
-        if (null !== $policyResource) {
-            $multiplier *= ($policyResource->getProbePowerMultiplier() / 100);
+            $policyResource = $this->getResourcePolicy($policy, $resource);
+            if (null !== $policyResource) {
+                $multiplier *= ($policyResource->getProbePowerMultiplier() / 100);
+            }
+        }
+
+        if ($multiplier < 0) {
+            $multiplier = 0;
         }
 
         return $multiplier;
+
     }
 
     /**
@@ -191,17 +258,24 @@ class PolicyManager
     public function calculateQueueSizeModifier(Kingdom $kingdom, Resource $resource = null)
     {
         $modifier = 0;
+        $policies = [];
         $activePolicy = $kingdom->getActivePolicy();
-        if (null === $activePolicy) {
-            return $modifier;
+        if (null !== $activePolicy) {
+            $policies[] = $activePolicy;
+        }
+        $activePolicies = $this->em->getRepository(WorldPolicyInstance::class)->findActivePolicies($kingdom);
+        foreach ($activePolicies as $activePolicy) {
+            $policies[] = $activePolicy;
         }
 
-        $policy = $activePolicy->getPolicy();
-        $modifier += $policy->getQueueSizeModifier();
+        foreach ($policies as $policy) {
+            $policy = $policy->getPolicy();
+            $modifier += $policy->getQueueSizeModifier();
 
-        $policyResource = $this->getResourcePolicy($policy, $resource);
-        if (null !== $policyResource) {
-            $modifier += $policyResource->getQueueSizeModifier();
+            $policyResource = $this->getResourcePolicy($policy, $resource);
+            if (null !== $policyResource) {
+                $modifier += $policyResource->getQueueSizeModifier();
+            }
         }
 
         return $modifier;
@@ -214,24 +288,28 @@ class PolicyManager
      */
     public function calculateAttackerSpoilOfWarPercentageMultiplier(Kingdom $kingdom, Resource $resource = null)
     {
-        $percentage = 0;
+        $modifier = 0;
+        $policies = [];
         $activePolicy = $kingdom->getActivePolicy();
-        if (null === $activePolicy) {
-            return $percentage;
+        if (null !== $activePolicy) {
+            $policies[] = $activePolicy;
         }
-        if (null !== $resource && !$resource->getSpoilOfWar()) {
-            return $percentage;
-        }
-
-        $policy = $activePolicy->getPolicy();
-        $percentage += $policy->getSpoilOfWarAttackCaptureMultiplier();
-
-        $policyResource = $this->getResourcePolicy($policy, $resource);
-        if (null !== $policyResource) {
-            $percentage += $policyResource->getSpoilOfWarAttackCaptureMultiplier();
+        $activePolicies = $this->em->getRepository(WorldPolicyInstance::class)->findActivePolicies($kingdom);
+        foreach ($activePolicies as $activePolicy) {
+            $policies[] = $activePolicy;
         }
 
-        return $percentage;
+        foreach ($policies as $policy) {
+            $policy = $policy->getPolicy();
+            $modifier += $policy->getSpoilOfWarAttackCaptureMultiplier();
+
+            $policyResource = $this->getResourcePolicy($policy, $resource);
+            if (null !== $policyResource) {
+                $modifier += $policyResource->getSpoilOfWarAttackCaptureMultiplier();
+            }
+        }
+
+        return $modifier;
     }
 
     /**
@@ -241,23 +319,27 @@ class PolicyManager
      */
     public function calculateDefenderSpoilOfWarPercentageMultiplier(Kingdom $kingdom, Resource $resource = null)
     {
-        $percentage = 0;
+        $modifier = 0;
+        $policies = [];
         $activePolicy = $kingdom->getActivePolicy();
-        if (null === $activePolicy) {
-            return $percentage;
+        if (null !== $activePolicy) {
+            $policies[] = $activePolicy;
         }
-        if (null !== $resource && !$resource->getSpoilOfWar()) {
-            return $percentage;
-        }
-
-        $policy = $activePolicy->getPolicy();
-        $percentage += $policy->getSpoilOfWarDefenseCaptureMultiplier();
-
-        $policyResource = $this->getResourcePolicy($policy, $resource);
-        if (null !== $policyResource) {
-            $percentage += $policyResource->getSpoilOfWarDefenseCaptureMultiplier();
+        $activePolicies = $this->em->getRepository(WorldPolicyInstance::class)->findActivePolicies($kingdom);
+        foreach ($activePolicies as $activePolicy) {
+            $policies[] = $activePolicy;
         }
 
-        return $percentage;
+        foreach ($policies as $policy) {
+            $policy = $policy->getPolicy();
+            $modifier += $policy->getSpoilOfWarDefenseCaptureMultiplier();
+
+            $policyResource = $this->getResourcePolicy($policy, $resource);
+            if (null !== $policyResource) {
+                $modifier += $policyResource->getSpoilOfWarDefenseCaptureMultiplier();
+            }
+        }
+
+        return $modifier;
     }
 }

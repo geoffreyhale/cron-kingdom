@@ -1,7 +1,9 @@
 <?php
 namespace CronkdBundle\Entity;
 
-use CronkdBundle\Entity\Policy\PolicyInstance;
+use CronkdBundle\Entity\Policy\KingdomPolicyInstance;
+use CronkdBundle\Entity\Policy\WorldPolicy;
+use CronkdBundle\Entity\Policy\WorldPolicyInstance;
 use CronkdBundle\Entity\Resource\Resource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -125,12 +127,20 @@ class Kingdom extends BaseEntity
     private $queues;
 
     /**
-     * @var PolicyInstance[]
+     * @var KingdomPolicyInstance[]
      *
-     * @ORM\OneToMany(targetEntity="CronkdBundle\Entity\Policy\PolicyInstance", mappedBy="kingdom")
+     * @ORM\OneToMany(targetEntity="CronkdBundle\Entity\Policy\KingdomPolicyInstance", mappedBy="kingdom")
      * @ORM\OrderBy({"createdAt": "DESC"})
      */
     private $policies;
+
+    /**
+     * @var WorldPolicyInstance[]
+     *
+     * @ORM\OneToMany(targetEntity="CronkdBundle\Entity\Policy\WorldPolicyInstance", mappedBy="kingdom")
+     * @ORM\OrderBy({"createdAt": "DESC"})
+     */
+    private $worldPolicies;
 
     /**
      * @var ChatMessage
@@ -531,11 +541,11 @@ class Kingdom extends BaseEntity
     /**
      * Add policy
      *
-     * @param PolicyInstance $policy
+     * @param KingdomPolicyInstance $policy
      *
      * @return Kingdom
      */
-    public function addPolicy(PolicyInstance $policy)
+    public function addPolicy(KingdomPolicyInstance $policy)
     {
         $this->policies[] = $policy;
 
@@ -545,9 +555,9 @@ class Kingdom extends BaseEntity
     /**
      * Remove policy
      *
-     * @param PolicyInstance $policy
+     * @param KingdomPolicyInstance $policy
      */
-    public function removePolicy(PolicyInstance $policy)
+    public function removePolicy(KingdomPolicyInstance $policy)
     {
         $this->policies->removeElement($policy);
     }
@@ -563,7 +573,7 @@ class Kingdom extends BaseEntity
     }
 
     /**
-     * @return PolicyInstance|null
+     * @return KingdomPolicyInstance|null
      */
     public function getActivePolicy()
     {
@@ -571,7 +581,7 @@ class Kingdom extends BaseEntity
             return null;
         }
 
-        /** @var PolicyInstance */
+        /** @var KingdomPolicyInstance */
         $activePolicy = $this->getPolicies()->first();
         $worldTick = $this->getWorld()->getTick();
         $policyEndTick = $activePolicy->getStartTick() + $activePolicy->getTickDuration();
@@ -603,5 +613,39 @@ class Kingdom extends BaseEntity
     public function __toString()
     {
         return $this->getName();
+    }
+
+    /**
+     * Add worldPolicy
+     *
+     * @param WorldPolicyInstance $worldPolicy
+     *
+     * @return Kingdom
+     */
+    public function addWorldPolicy(WorldPolicyInstance $worldPolicy)
+    {
+        $this->worldPolicies[] = $worldPolicy;
+
+        return $this;
+    }
+
+    /**
+     * Remove worldPolicy
+     *
+     * @param WorldPolicyInstance $worldPolicy
+     */
+    public function removeWorldPolicy(WorldPolicyInstance $worldPolicy)
+    {
+        $this->worldPolicies->removeElement($worldPolicy);
+    }
+
+    /**
+     * Get worldPolicies
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getWorldPolicies()
+    {
+        return $this->worldPolicies;
     }
 }

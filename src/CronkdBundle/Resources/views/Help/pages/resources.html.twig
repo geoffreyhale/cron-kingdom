@@ -42,7 +42,20 @@
                             <td>
                                 <ul>
                                     {% for input in action.inputs %}
-                                        <li>{{ input.inputQuantity }} {{ input.resource.name }} {{ input.requeue ? ' (comes back after '~input.queueSize~' ticks)' : ' (lost forever)' }}</li>
+                                        {% set message = '' %}
+                                        {% if input.inputStrategy == 'static' %}
+                                            {% set message = input.inputQuantity ~ " " ~ input.resource.name ~ " " %}
+                                            {% if input.requeue %}
+                                                {% set message = message ~ " (comes back after " ~ input.queueSize ~ " ticks)" %}
+                                            {% else %}
+                                                {% set message = message ~ " (lost forever)" %}
+                                            {% endif %}
+                                        {% elseif input.inputStrategy == 'exponential' %}
+                                            {% set message = 'Cost is variable dependent on current amount of ' ~ input.resource.name %}
+                                        {% elseif input.inputStrategy == 'requirement' %}
+                                            {% set message = 'Requires at least one available ' ~ input.resource.name %}
+                                        {% endif %}
+                                        <li>{{ message }}</li>
                                     {% endfor %}
                                 </ul>
                             </td>
@@ -54,6 +67,9 @@
         </table>
     </div>
 </div>
+
+<p>To best understand the costs of a resource which requires exponential input, please view the following table:</p>
+{% include '@Cronkd/Action/partials/exponentialTable.html.twig' %}
 
 <h4>Resource Units</h4>
 <p>As resource amounts get larger, the units are abbreviated.</p>

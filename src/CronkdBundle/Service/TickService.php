@@ -1,18 +1,19 @@
 <?php
 namespace CronkdBundle\Service;
 
+use CronkdBundle\Entity\Event\AttackResultEvent;
+use CronkdBundle\Entity\Policy\WorldPolicy;
+use CronkdBundle\Entity\Policy\WorldPolicyInstance;
 use CronkdBundle\Entity\Queue;
 use CronkdBundle\Entity\World;
 use CronkdBundle\Event\WorldTickEvent;
 use CronkdBundle\Exceptions\InvalidWorldSettingsException;
 use CronkdBundle\Manager\KingdomManager;
 use CronkdBundle\Manager\LumberMill;
-use CronkdBundle\Manager\PolicyManager;
 use CronkdBundle\Manager\ResourceManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Stopwatch\Stopwatch;
 
 class TickService
 {
@@ -97,6 +98,49 @@ class TickService
             }
         }
 
+        // World Policies
+        foreach ($world->getKingdoms() as $kingdom) {
+            /** @var WorldPolicy $policy */
+            foreach ($world->getWorldPolicies() as $policy) {
+                $activePolicies = $this->em->getRepository(WorldPolicyInstance::class)->findActivePolicies($kingdom);
+                $attackRepo = $this->em->getRepository(AttackResultEvent::class);
+                $grantPolicy = true;
+                if ($this->containsPolicy($activePolicies, $policy)) {
+                    $grantPolicy = false;
+                }
+
+                switch ($policy->getCondition()) {
+                    case WorldPolicy::CONDITION_GREATER:
+                        if (100 > $policy->percentComplete($kingdom->getResources())) {
+                            $grantPolicy = false;
+                        }
+                        break;
+                    case WorldPolicy::CONDITION_RECENTLY_ATTACKED:
+                        if (!$attackRepo->attackedAtTick($kingdom, $world->getTick())) {
+                            $grantPolicy = false;
+                        }
+                        break;
+                    case WorldPolicy::CONDITION_RECENTLY_DEFENDED:
+                        if (!$attackRepo->defendedAtTick($kingdom, $world->getTick())) {
+                            $grantPolicy = false;
+                        }
+                        break;
+                    default:
+                        $grantPolicy = false;
+                }
+
+                if ($grantPolicy) {
+                    $worldPolicyInstance = new WorldPolicyInstance();
+                    $worldPolicyInstance->setKingdom($kingdom);
+                    $worldPolicyInstance->setPolicy($policy);
+                    $worldPolicyInstance->setStartTick($world->getTick()+1);
+                    $worldPolicyInstance->setTickDuration($world->getWorldPolicyDuration());
+                    $kingdom->addWorldPolicy($worldPolicyInstance);
+                    $this->em->persist($worldPolicyInstance);
+                }
+            }
+        }
+
         $world->performTick();
         $this->em->persist($world);
         $this->em->flush();
@@ -104,5 +148,26 @@ class TickService
         $event = new WorldTickEvent($world);
         $this->eventDispatcher->dispatch('event.world_tick', $event);
         $this->logger->notice('World ' . $world->getName() . ' completed tick ' . $world->getTick());
+    }
+
+    /**
+     * @param array $activePolicies
+     * @param WorldPolicy $policy
+     * @return bool
+     */
+    private function containsPolicy(array $activePolicies, WorldPolicy $policy)
+    {
+        if (!count($activePolicies)) {
+            return false;
+        }
+
+        /** @var WorldPolicyInstance $activePolicy */
+        foreach ($activePolicies as $activePolicy) {
+            if ($activePolicy->getPolicy() == $policy) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

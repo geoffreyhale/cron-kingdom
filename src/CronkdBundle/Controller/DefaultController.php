@@ -42,6 +42,7 @@ class DefaultController extends CronkdController
             'kingdoms'         => $world->getKingdoms(),
             'userHasKingdom'   => null !== $kingdom,
             'resourceTypes'    => $resourceTypes,
+            'worldPolicies'    => $world->getWorldPolicies(),
         ];
     }
 
@@ -60,10 +61,14 @@ class DefaultController extends CronkdController
             return $resourceType->getName();
         }, $resourceTypes);
 
+        $resourceActionService = $this->get('cronkd.service.resource_action');
+        $exponentialTable = $resourceActionService->getExponentialTable();
+
         return [
-            'world'         => $world,
-            'resources'     => $resources,
-            'resourceTypes' => $resourceTypes,
+            'world'            => $world,
+            'resources'        => $resources,
+            'resourceTypes'    => $resourceTypes,
+            'exponentialTable' => $exponentialTable,
         ];
     }
 

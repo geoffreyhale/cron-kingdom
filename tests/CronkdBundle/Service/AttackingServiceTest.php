@@ -1,8 +1,8 @@
 <?php
 
 use CronkdBundle\Entity\KingdomResource;
-use CronkdBundle\Entity\Policy\Policy;
-use CronkdBundle\Entity\Policy\PolicyInstance;
+use CronkdBundle\Entity\Policy\KingdomPolicy;
+use CronkdBundle\Entity\Policy\KingdomPolicyInstance;
 use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Service\AttackingService;
 use Tests\Library\CronkdDatabaseAwareTestCase;
@@ -160,8 +160,8 @@ class AttackingServiceTest extends CronkdDatabaseAwareTestCase
     {
         $hero = $this->fillKingdomResources($this->fetchKingdom($heroName), $heroResources);
         $opponent = $this->fillKingdomResources($this->fetchKingdom($opponentName), $opponentResources);
-        $policy = new PolicyInstance();
-        $policy->setPolicy($this->em->getRepository(Policy::class)->findOneByName('Attacker'));
+        $policy = new KingdomPolicyInstance();
+        $policy->setPolicy($this->em->getRepository(KingdomPolicy::class)->findOneByName('Attacker'));
         $policy->setKingdom($hero);
         $policy->setStartTick(1);
         $policy->setTickDuration(10);
@@ -223,8 +223,8 @@ class AttackingServiceTest extends CronkdDatabaseAwareTestCase
     {
         $hero = $this->fillKingdomResources($this->fetchKingdom($heroName), $heroResources);
         $opponent = $this->fillKingdomResources($this->fetchKingdom($opponentName), $opponentResources);
-        $policy = new PolicyInstance();
-        $policy->setPolicy($this->em->getRepository(Policy::class)->findOneByName('Defender'));
+        $policy = new KingdomPolicyInstance();
+        $policy->setPolicy($this->em->getRepository(KingdomPolicy::class)->findOneByName('Defender'));
         $policy->setKingdom($opponent);
         $policy->setStartTick(1);
         $policy->setTickDuration(10);
@@ -367,8 +367,8 @@ class AttackingServiceTest extends CronkdDatabaseAwareTestCase
             ])
             ->getQuantity()
         ;
-        $policy = new PolicyInstance();
-        $policy->setPolicy($this->em->getRepository(Policy::class)->findOneByName('Warmonger'));
+        $policy = new KingdomPolicyInstance();
+        $policy->setPolicy($this->em->getRepository(KingdomPolicy::class)->findOneByName('Warmonger'));
         $policy->setKingdom($hero);
         $policy->setStartTick(1);
         $policy->setTickDuration(10);
@@ -447,8 +447,8 @@ class AttackingServiceTest extends CronkdDatabaseAwareTestCase
             ])
             ->getQuantity()
         ;
-        $policy = new PolicyInstance();
-        $policy->setPolicy($this->em->getRepository(Policy::class)->findOneByName('Safety'));
+        $policy = new KingdomPolicyInstance();
+        $policy->setPolicy($this->em->getRepository(KingdomPolicy::class)->findOneByName('Safety'));
         $policy->setKingdom($opponent);
         $policy->setStartTick(1);
         $policy->setTickDuration(10);

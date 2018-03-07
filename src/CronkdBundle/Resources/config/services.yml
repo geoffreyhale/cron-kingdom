@@ -138,3 +138,10 @@ services:
         public: true
         tags:
             - { name: twig.extension }
+
+    # Form
+    cronkd.form.type.kingdom_policy_instance:
+        class: CronkdBundle\Form\KingdomPolicyInstanceType
+        arguments: ["@doctrine.orm.entity_manager"]
+        tags:
+            - { name: form.type }

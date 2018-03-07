@@ -52,7 +52,7 @@ class ProbingService
             $report->setResult(true);
             $report->setData([
                 'Resources' => $probedResources,
-                'Policy'    => (null !== $policy ? $policy->getPolicy()->getName() : null),
+                'KingdomPolicy'    => (null !== $policy ? $policy->getPolicy()->getName() : null),
                 'Kingdom'   => $target->getName(),
             ]);
         }

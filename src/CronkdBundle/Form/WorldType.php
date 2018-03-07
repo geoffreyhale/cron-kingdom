@@ -36,7 +36,11 @@ class WorldType extends AbstractType
             ])
             ->add('policyDuration', IntegerType::class, [
                 'required' => true,
-                'label'    => 'Policy Duration (number of ticks)',
+                'label'    => 'Kingdom Policy Duration (number of ticks)',
+            ])
+            ->add('worldPolicyDuration', IntegerType::class, [
+                'required' => true,
+                'label'    => 'World Policy Duration (number of ticks)',
             ])
             ->add('submit', SubmitType::class)
         ;

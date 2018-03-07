@@ -1,7 +1,7 @@
 <?php
 namespace CronkdBundle\Manager;
 
-use CronkdBundle\Entity\Policy\Policy;
+use CronkdBundle\Entity\Policy\KingdomPolicy;
 use CronkdBundle\Entity\World;
 use CronkdBundle\Event\InitializeWorldEvent;
 use CronkdBundle\Model\WorldState;
@@ -73,7 +73,7 @@ class WorldManager
      */
     public function generateWorldState(World $world)
     {
-        $policies = $this->em->getRepository(Policy::class)->findAll();
+        $policies = $this->em->getRepository(KingdomPolicy::class)->findAll();
 
         $worldState = new WorldState($world, $policies);
         $worldState

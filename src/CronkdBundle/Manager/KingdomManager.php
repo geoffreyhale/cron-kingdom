@@ -5,6 +5,7 @@ use CronkdBundle\Entity\Event\AttackResultEvent;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
 use CronkdBundle\Entity\Notification\Notification;
+use CronkdBundle\Entity\Policy\WorldPolicyInstance;
 use CronkdBundle\Entity\Queue;
 use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Entity\Resource\ResourceAction;
@@ -94,6 +95,7 @@ class KingdomManager
             ->setCurrentQueues($this->getResourceQueues($kingdom))
             ->setNotificationCount($this->em->getRepository(Notification::class)->findNotificationCount($kingdom))
             ->setAvailableAttack($this->em->getRepository(AttackResultEvent::class)->hasAvailableAttack($kingdom))
+            ->setActiveWorldPolicies($this->em->getRepository(WorldPolicyInstance::class)->findActivePolicies($kingdom))
         ;
 
         return $kingdomState;

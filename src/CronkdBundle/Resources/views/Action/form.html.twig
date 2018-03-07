@@ -28,7 +28,7 @@
                     <hr />
                     <p>{{ action.description }}</p>
                     <p>&nbsp;</p>
-                    <p>You current own <strong>{{ kingdomResource.quantity }}</strong> {{ resource }}.</p>
+                    <p>You currently have <strong>{{ kingdomResource.quantity }}</strong> available  {{ resource }}.</p>
                     <p>&nbsp;</p>
                     Cost for {{ action.outputQuantity }} additional {{ resource|capitalize }}:
                     <ul>
@@ -75,28 +75,7 @@
         </div>
         {% if displayExponentialTable %}
         <div class="col-sm-3">
-            <div class="row-fluid">
-                <h4>Exponential Cost Table</h4>
-                <table class="table table-bordered table-narrow">
-                    <thead>
-                    <tr>
-                        <th>Current Quantity</th>
-                        <th>Cost per Resource</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for row in exponentialTable %}
-                    <tr>
-                        <td>{{ row.quantity }}</td>
-                        <td>{{ row.cost }}</td>
-                    </tr>
-                    {% endfor %}
-                    <tr>
-                        <td colspan="2">...</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+            {% include '@Cronkd/Action/partials/exponentialTable.html.twig' %}
         </div>
         {% endif %}
     </div>

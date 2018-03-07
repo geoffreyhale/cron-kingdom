@@ -1,7 +1,7 @@
 <?php
 namespace CronkdBundle\Form\Policy;
 
-use CronkdBundle\Entity\Policy\Policy;
+use CronkdBundle\Entity\Policy\KingdomPolicy;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -42,7 +42,7 @@ class PolicyType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Policy::class,
+            'data_class' => KingdomPolicy::class,
         ]);
     }
 

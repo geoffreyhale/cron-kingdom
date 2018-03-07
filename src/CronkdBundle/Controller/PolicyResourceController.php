@@ -1,8 +1,8 @@
 <?php
 namespace CronkdBundle\Controller;
 
-use CronkdBundle\Entity\Policy\Policy;
-use CronkdBundle\Entity\Policy\PolicyResource;
+use CronkdBundle\Entity\Policy\KingdomPolicy;
+use CronkdBundle\Entity\Policy\KingdomPolicyResource;
 use CronkdBundle\Form\Policy\PolicyResourceType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -21,9 +21,9 @@ class PolicyResourceController extends CronkdController
      * @Security("has_role('ROLE_ADMIN')")
      * @Template()
      */
-    public function createAction(Request $request, Policy $policy)
+    public function createAction(Request $request, KingdomPolicy $policy)
     {
-        $policyResource = new PolicyResource();
+        $policyResource = new KingdomPolicyResource();
         $policyResource->setPolicy($policy);
 
         $form = $this->createForm(PolicyResourceType::class, $policyResource, [
@@ -35,7 +35,7 @@ class PolicyResourceController extends CronkdController
             $em->persist($policyResource);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->add('success', 'Policy for ' . $policyResource->getResource()->getName() . ' Created!');
+            $this->get('session')->getFlashBag()->add('success', 'KingdomPolicy for ' . $policyResource->getResource()->getName() . ' Created!');
 
             return $this->redirectToRoute('policy_update', [
                 'id' => $policy->getId(),
@@ -55,7 +55,7 @@ class PolicyResourceController extends CronkdController
      * @Security("has_role('ROLE_ADMIN')")
      * @Template()
      */
-    public function updateAction(Request $request, PolicyResource $policyResource)
+    public function updateAction(Request $request, KingdomPolicyResource $policyResource)
     {
         $policy = $policyResource->getPolicy();
 
@@ -68,7 +68,7 @@ class PolicyResourceController extends CronkdController
             $em->persist($policy);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->add('success', 'Policy Updated!');
+            $this->get('session')->getFlashBag()->add('success', 'KingdomPolicy Updated!');
 
             return $this->redirectToRoute('policy_update', [
                 'id' => $policy->getId(),
@@ -89,7 +89,7 @@ class PolicyResourceController extends CronkdController
      * @Security("has_role('ROLE_ADMIN')")
      * @Template()
      */
-    public function deleteAction(Request $request, PolicyResource $policyResource)
+    public function deleteAction(Request $request, KingdomPolicyResource $policyResource)
     {
         $form = $this->createForm(PolicyResourceType::class, $policyResource);
         $form->handleRequest($request);
@@ -98,7 +98,7 @@ class PolicyResourceController extends CronkdController
             $em->persist($policy);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->add('success', 'Policy Updated!');
+            $this->get('session')->getFlashBag()->add('success', 'KingdomPolicy Updated!');
 
             return $this->redirectToRoute('policy_update', [
                 'policy' => $policy->getId(),

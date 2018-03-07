@@ -28,8 +28,17 @@
                             <a class="btn btn-info" href="{{ path('policy_create', {'id': world.id}) }}"><i class="fa fa-plus"></i> Add</a>
                         </div>
                     {% endif %}
-                    <h2>Policies</h2>
-                    {% include '@Cronkd/World/partials/policiesSection.html.twig' %}
+                    <h2>Kingdom Policies</h2>
+                    <div class="alert alert-info">
+                        Kingdoms may select one policy for themselves at a time.
+                    </div>
+                    {% include '@Cronkd/World/partials/kingdomPoliciesSection.html.twig' %}
+                    <hr />
+                    <h2>World Policies</h2>
+                    <div class="alert alert-info">
+                        Kingdoms may earn many policies by meeting certain conditions.
+                    </div>
+                    {% include '@Cronkd/World/partials/worldPoliciesSection.html.twig' %}
                 </div>
 
                 <div class="tab-pane {{ tab == 'resources' ? 'active' : '' }}" id="resources">

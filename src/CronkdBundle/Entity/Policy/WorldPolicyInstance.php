@@ -7,12 +7,12 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Jms;
 
 /**
- * @ORM\Table(name="policy_instance")
- * @ORM\Entity()
+ * @ORM\Table(name="world_policy_instance")
+ * @ORM\Entity(repositoryClass="CronkdBundle\Repository\WorldPolicyInstanceRepository")
  *
  * @Jms\ExclusionPolicy("all")
  */
-class PolicyInstance extends BaseEntity
+class WorldPolicyInstance extends BaseEntity
 {
     /**
      * @var int
@@ -45,9 +45,9 @@ class PolicyInstance extends BaseEntity
     private $kingdom;
 
     /**
-     * @var Policy
+     * @var KingdomPolicy
      *
-     * @ORM\ManyToOne(targetEntity="Policy")
+     * @ORM\ManyToOne(targetEntity="WorldPolicy")
      */
     private $policy;
 
@@ -66,7 +66,7 @@ class PolicyInstance extends BaseEntity
      *
      * @param integer $startTick
      *
-     * @return PolicyInstance
+     * @return WorldPolicyInstance
      */
     public function setStartTick($startTick)
     {
@@ -90,7 +90,7 @@ class PolicyInstance extends BaseEntity
      *
      * @param integer $tickDuration
      *
-     * @return PolicyInstance
+     * @return WorldPolicyInstance
      */
     public function setTickDuration($tickDuration)
     {
@@ -114,7 +114,7 @@ class PolicyInstance extends BaseEntity
      *
      * @param Kingdom $kingdom
      *
-     * @return PolicyInstance
+     * @return WorldPolicyInstance
      */
     public function setKingdom(Kingdom $kingdom = null)
     {
@@ -136,11 +136,11 @@ class PolicyInstance extends BaseEntity
     /**
      * Set policy
      *
-     * @param Policy $policy
+     * @param WorldPolicy $policy
      *
-     * @return PolicyInstance
+     * @return WorldPolicyInstance
      */
-    public function setPolicy(Policy $policy = null)
+    public function setPolicy(WorldPolicy $policy = null)
     {
         $this->policy = $policy;
 
@@ -150,7 +150,7 @@ class PolicyInstance extends BaseEntity
     /**
      * Get policy
      *
-     * @return Policy
+     * @return WorldPolicy
      */
     public function getPolicy()
     {

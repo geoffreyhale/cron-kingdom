@@ -7,12 +7,12 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Jms;
 
 /**
- * @ORM\Table(name="policy_resource")
+ * @ORM\Table(name="world_policy_resulting_resource")
  * @ORM\Entity()
  *
  * @Jms\ExclusionPolicy("all")
  */
-class PolicyResource extends BaseEntity
+class WorldPolicyResource extends BaseEntity
 {
     use PolicyTrait;
 
@@ -34,9 +34,9 @@ class PolicyResource extends BaseEntity
     private $resource;
 
     /**
-     * @var Policy
+     * @var WorldPolicy
      *
-     * @ORM\ManyToOne(targetEntity="Policy", inversedBy="resources")
+     * @ORM\ManyToOne(targetEntity="WorldPolicy", inversedBy="resources")
      */
     private $policy;
 
@@ -49,13 +49,13 @@ class PolicyResource extends BaseEntity
     {
         return $this->id;
     }
-    
+
     /**
      * Set resource
      *
      * @param Resource $resource
      *
-     * @return PolicyResource
+     * @return WorldPolicyResource
      */
     public function setResource(Resource $resource = null)
     {
@@ -77,11 +77,11 @@ class PolicyResource extends BaseEntity
     /**
      * Set policy
      *
-     * @param Policy $policy
+     * @param KingdomPolicy $policy
      *
-     * @return PolicyResource
+     * @return WorldPolicyResource
      */
-    public function setPolicy(Policy $policy = null)
+    public function setPolicy(KingdomPolicy $policy = null)
     {
         $this->policy = $policy;
 
@@ -91,7 +91,7 @@ class PolicyResource extends BaseEntity
     /**
      * Get policy
      *
-     * @return Policy
+     * @return WorldPolicy
      */
     public function getPolicy()
     {
@@ -103,7 +103,7 @@ class PolicyResource extends BaseEntity
      *
      * @param float $netWorthMultiplier
      *
-     * @return PolicyResource
+     * @return WorldPolicyResource
      */
     public function setNetWorthMultiplier($netWorthMultiplier)
     {

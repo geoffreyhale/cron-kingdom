@@ -3,8 +3,8 @@
 use CronkdBundle\Command\TickCommand;
 use CronkdBundle\Entity\Kingdom;
 use CronkdBundle\Entity\KingdomResource;
-use CronkdBundle\Entity\Policy\Policy;
-use CronkdBundle\Entity\Policy\PolicyInstance;
+use CronkdBundle\Entity\Policy\KingdomPolicy;
+use CronkdBundle\Entity\Policy\KingdomPolicyInstance;
 use CronkdBundle\Entity\Resource\Resource;
 use CronkdBundle\Service\QueuePopulator;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -83,10 +83,10 @@ class TickServiceTest extends CronkdDatabaseAwareTestCase
         $kingdom  = $this->em->getRepository(Kingdom::class)->findOneByName('Hero');
         $world    = $kingdom->getWorld();
         $this->fillKingdomResources($kingdom, ['Material' => 0]);
-        $policy = new Policy();
+        $policy = new KingdomPolicy();
         $policy->setName('OutputMultiplier');
         $policy->setOutputMultiplier($multiplier);
-        $policyInstance = new PolicyInstance();
+        $policyInstance = new KingdomPolicyInstance();
         $policyInstance->setPolicy($policy);
         $policyInstance->setKingdom($kingdom);
         $policyInstance->setStartTick(1);

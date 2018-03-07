@@ -1,4 +1,4 @@
-<table id="policyTable" class="table table-striped table-bordered">
+<table id="kingdomPolicyTable" class="table table-striped table-bordered">
     <thead>
     <tr>
         <th>Name</th>
@@ -7,7 +7,7 @@
     </tr>
     </thead>
     <tbody>
-    {% for policy in world.policies %}
+    {% for policy in world.kingdomPolicies %}
         <tr>
             <td>
                 {% if not world.isInactive %}
@@ -18,13 +18,13 @@
                 <strong>{{ policy.name }}</strong>
             </td>
             <td>
-                {% include '@Cronkd/Policy/partials/_overview.html.twig' %}
+                {% include '@Cronkd/KingdomPolicy/partials/_overview.html.twig' %}
             </td>
             <td>
                 {% for policyResource in policy.resources %}
                     {% if policyResource.hasAttributes %}
                         <strong>{{ policyResource.resource.name }}</strong><br />
-                        {% include '@Cronkd/Policy/partials/_overview.html.twig' with {'policy': policyResource} %}
+                        {% include '@Cronkd/KingdomPolicy/partials/_overview.html.twig' with {'policy': policyResource} %}
                     {% endif %}
                 {% endfor %}
             </td>

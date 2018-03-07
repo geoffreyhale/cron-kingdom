@@ -1,0 +1,19 @@
+<h2>Buffs</h2>
+<p>Buffs are temporary enhancements to your kingdom that can be earned by participating in specific events or building your kingdom in a particular specification.</p>
+
+<table class="table table-striped table-bordered">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for policy in world.worldPolicies %}
+        <tr>
+            <td>{{ policy.name }}</td>
+            <td>{{ policy.description }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

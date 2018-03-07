@@ -2,11 +2,11 @@
 namespace CronkdBundle\Controller;
 
 use CronkdBundle\Entity\Kingdom;
-use CronkdBundle\Entity\Policy\Policy;
-use CronkdBundle\Entity\Policy\PolicyInstance;
+use CronkdBundle\Entity\Policy\KingdomPolicy;
+use CronkdBundle\Entity\Policy\KingdomPolicyInstance;
 use CronkdBundle\Entity\World;
 use CronkdBundle\Form\Policy\PolicyType;
-use CronkdBundle\Form\PolicyInstanceType;
+use CronkdBundle\Form\KingdomPolicyInstanceType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -27,7 +27,7 @@ class PolicyController extends CronkdController
      */
     public function createAction(Request $request, World $world)
     {
-        $policy = new Policy();
+        $policy = new KingdomPolicy();
         $policy->setWorld($world);
 
         $form = $this->createForm(PolicyType::class, $policy);
@@ -37,7 +37,7 @@ class PolicyController extends CronkdController
             $em->persist($policy);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->add('success', 'Policy Created!');
+            $this->get('session')->getFlashBag()->add('success', 'KingdomPolicy Created!');
 
             return $this->redirectToRoute('world_configure', [
                 'world' => $policy->getWorld()->getId(),
@@ -45,7 +45,7 @@ class PolicyController extends CronkdController
             ]);
         }
 
-        return $this->render('CronkdBundle:Policy:create.html.twig', [
+        return $this->render('CronkdBundle:KingdomPolicy:create.html.twig', [
             'world'  => $policy->getWorld(),
             'form'   => $form->createView(),
         ]);
@@ -57,7 +57,7 @@ class PolicyController extends CronkdController
      * @Security("has_role('ROLE_ADMIN')")
      * @Template()
      */
-    public function updateAction(Request $request, Policy $policy)
+    public function updateAction(Request $request, KingdomPolicy $policy)
     {
         $form = $this->createForm(PolicyType::class, $policy);
         $form->handleRequest($request);
@@ -66,7 +66,7 @@ class PolicyController extends CronkdController
             $em->persist($policy);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->add('success', 'Policy Updated!');
+            $this->get('session')->getFlashBag()->add('success', 'KingdomPolicy Updated!');
 
             return $this->redirectToRoute('world_configure', [
                 'world' => $policy->getWorld()->getId(),
@@ -74,7 +74,7 @@ class PolicyController extends CronkdController
             ]);
         }
 
-        return $this->render('CronkdBundle:Policy:update.html.twig', [
+        return $this->render('CronkdBundle:KingdomPolicy:update.html.twig', [
             'policy' => $policy,
             'world'  => $policy->getWorld(),
             'form'   => $form->createView(),
@@ -85,7 +85,7 @@ class PolicyController extends CronkdController
      * @Route("/select/{id}", name="policy_select")
      * @ParamConverter("id", class="CronkdBundle:Kingdom")
      * @Method({"GET", "POST"})
-     * @Template()
+     * @Template("CronkdBundle:KingdomPolicy:select.html.twig")
      */
     public function selectAction(Request $request, Kingdom $kingdom)
     {
@@ -101,8 +101,8 @@ class PolicyController extends CronkdController
 
         $em = $this->getDoctrine()->getManager();
 
-        $policyInstance = new PolicyInstance();
-        $form = $this->createForm(PolicyInstanceType::class, $policyInstance);
+        $policyInstance = new KingdomPolicyInstance();
+        $form = $this->createForm(KingdomPolicyInstanceType::class, $policyInstance);
         $form->handleRequest($request);
         if ($form->isValid()) {
             $policyManager->create($policyInstance, $kingdom);
@@ -114,7 +114,7 @@ class PolicyController extends CronkdController
 
         return [
             'form'     => $form->createView(),
-            'policies' => $em->getRepository(Policy::class)->findBy([], ['name' => 'ASC']),
+            'policies' => $em->getRepository(KingdomPolicy::class)->findBy([], ['name' => 'ASC']),
         ];
     }
 }

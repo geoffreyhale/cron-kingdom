@@ -14,18 +14,7 @@ class AttackResultEventRepository extends EntityRepository
      */
     public function hasAvailableAttack(Kingdom $kingdom)
     {
-        $qb = $this->createQueryBuilder('al');
-        $qb->select('COUNT(al.id) AS AttackCount');
-        $qb->where('al.attacker = :kingdom');
-        $qb->andWhere('al.tick = :tick');
-        $qb->setParameters([
-            'kingdom' => $kingdom,
-            'tick'    => $kingdom->getWorld()->getTick(),
-        ]);
-
-        $result = $qb->getQuery()->getSingleScalarResult();
-
-        return 0 == (int) $result ? true : false;
+        return !$this->attackedAtTick($kingdom, $kingdom->getWorld()->getTick());
     }
 
     /**
@@ -68,5 +57,51 @@ class AttackResultEventRepository extends EntityRepository
             'loss' => $failures,
             'win' => $successes
         ];
+    }
+
+    /**
+     * @param Kingdom $kingdom
+     * @param int $tick
+     * @return bool
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function attackedAtTick(Kingdom $kingdom, int $tick)
+    {
+        $qb = $this->createQueryBuilder('al');
+        $qb->select('COUNT(al.id) AS AttackCount');
+        $qb->where('al.attacker = :kingdom');
+        $qb->andWhere('al.tick = :tick');
+        $qb->setParameters([
+            'kingdom' => $kingdom,
+            'tick'    => $tick,
+        ]);
+
+        $result = (int) $qb->getQuery()->getSingleScalarResult();
+
+        return 0 < $result ? true : false;
+    }
+
+    /**
+     * @param Kingdom $kingdom
+     * @param int $tick
+     * @return bool
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function defendedAtTick(Kingdom $kingdom, int $tick)
+    {
+        $qb = $this->createQueryBuilder('al');
+        $qb->select('COUNT(al.id) AS AttackCount');
+        $qb->where('al.defender = :kingdom');
+        $qb->andWhere('al.tick = :tick');
+        $qb->setParameters([
+            'kingdom' => $kingdom,
+            'tick'    => $tick,
+        ]);
+
+        $result = (int) $qb->getQuery()->getSingleScalarResult();
+
+        return 0 < $result ? true : false;
     }
 }

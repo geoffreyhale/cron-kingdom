@@ -13,7 +13,7 @@ use JMS\Serializer\Annotation as Jms;
  *
  * @Jms\ExclusionPolicy("all")
  */
-class Policy extends BaseEntity
+class KingdomPolicy extends BaseEntity
 {
     use PolicyTrait;
 
@@ -45,7 +45,7 @@ class Policy extends BaseEntity
      *
      * @var PolicyResourceModifier[]
      *
-     * @ORM\OneToMany(targetEntity="PolicyResource", mappedBy="policy")
+     * @ORM\OneToMany(targetEntity="KingdomPolicyResource", mappedBy="policy")
      */
     private $resources;
 
@@ -79,7 +79,7 @@ class Policy extends BaseEntity
      *
      * @param string $name
      *
-     * @return Policy
+     * @return KingdomPolicy
      */
     public function setName($name)
     {
@@ -103,7 +103,7 @@ class Policy extends BaseEntity
      *
      * @param string $description
      *
-     * @return Policy
+     * @return KingdomPolicy
      */
     public function setDescription($description)
     {
@@ -125,11 +125,11 @@ class Policy extends BaseEntity
     /**
      * Add resource
      *
-     * @param PolicyResource $resource
+     * @param KingdomPolicyResource $resource
      *
-     * @return Policy
+     * @return KingdomPolicy
      */
-    public function addResource(PolicyResource $resource)
+    public function addResource(KingdomPolicyResource $resource)
     {
         $this->resources[] = $resource;
 
@@ -139,9 +139,9 @@ class Policy extends BaseEntity
     /**
      * Remove resource
      *
-     * @param PolicyResource $resource
+     * @param KingdomPolicyResource $resource
      */
-    public function removeResource(PolicyResource $resource)
+    public function removeResource(KingdomPolicyResource $resource)
     {
         $this->resources->removeElement($resource);
     }
@@ -161,7 +161,7 @@ class Policy extends BaseEntity
      *
      * @param World $world
      *
-     * @return Policy
+     * @return KingdomPolicy
      */
     public function setWorld(World $world = null)
     {
@@ -186,29 +186,5 @@ class Policy extends BaseEntity
     public function __toString()
     {
         return $this->getName();
-    }
-
-    /**
-     * Set netWorthMultiplier
-     *
-     * @param float $netWorthMultiplier
-     *
-     * @return Policy
-     */
-    public function setNetWorthMultiplier($netWorthMultiplier)
-    {
-        $this->netWorthMultiplier = $netWorthMultiplier;
-
-        return $this;
-    }
-
-    /**
-     * Get netWorthMultiplier
-     *
-     * @return float
-     */
-    public function getNetWorthMultiplier()
-    {
-        return $this->netWorthMultiplier;
     }
 }

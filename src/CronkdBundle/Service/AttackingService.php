@@ -165,7 +165,7 @@ class AttackingService
             'tick'     => $kingdom->getWorld()->getTick(),
         ]);
 
-        return count($previousAttacks);
+        return null !== $previousAttacks;
     }
 
     /**
