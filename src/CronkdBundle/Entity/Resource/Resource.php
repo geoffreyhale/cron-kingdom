@@ -3,6 +3,7 @@ namespace CronkdBundle\Entity\Resource;
 
 use CronkdBundle\Entity\BaseEntity;
 use CronkdBundle\Entity\KingdomResource;
+use CronkdBundle\Entity\Technology\TechnologyLevel;
 use CronkdBundle\Entity\World;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -165,6 +166,14 @@ class Resource extends BaseEntity
      * @ORM\OneToMany(targetEntity="ResourceAction", mappedBy="resource")
      */
     private $actions;
+
+    /**
+     * @var TechnologyLevel
+     *
+     * @ORM\ManyToOne(targetEntity="CronkdBundle\Entity\Technology\TechnologyLevel")
+     * @ORM\JoinColumn(name="resource_id", referencedColumnName="id")
+     */
+    private $techRequirement;
 
     /**
      * Constructor
@@ -644,5 +653,29 @@ class Resource extends BaseEntity
     public function __toString()
     {
         return $this->getName();
+    }
+
+    /**
+     * Set techRequirement
+     *
+     * @param TechnologyLevel $techRequirement
+     *
+     * @return Resource
+     */
+    public function setTechRequirement(TechnologyLevel $techRequirement = null)
+    {
+        $this->techRequirement = $techRequirement;
+
+        return $this;
+    }
+
+    /**
+     * Get techRequirement
+     *
+     * @return TechnologyLevel
+     */
+    public function getTechRequirement()
+    {
+        return $this->techRequirement;
     }
 }

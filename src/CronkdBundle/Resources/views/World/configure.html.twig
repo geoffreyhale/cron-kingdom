@@ -8,6 +8,7 @@
                 <li role="presentation" {{ tab == 'world' ? 'class="active"' : '' }}><a href="#settings" data-toggle="tab">World Settings</a></li>
                 <li role="presentation" {{ tab == 'policies' ? 'class="active"' : '' }}><a href="#policies" data-toggle="tab">Policies</a></li>
                 <li role="presentation" {{ tab == 'resources' ? 'class="active"' : '' }}><a href="#resources" data-toggle="tab">Resources</a></li>
+                <li role="presentation" {{ tab == 'technology' ? 'class="active"' : '' }}><a href="#tech" data-toggle="tab">Technology</a></li>
             </ul>
         </div>
         <div class="col-md-10">
@@ -50,6 +51,16 @@
                     <h2>Resources</h2>
                     {% include '@Cronkd/World/partials/resourcesSection.html.twig' %}
                 </div>
+
+                <div class="tab-pane {{ tab == 'tech' ? 'active' : '' }}" id="tech">
+                    {% if not world.isInactive %}
+                        <div class="pull-right">
+                            <a class="btn btn-info" href="{{ path('resource_create', {'id': world.id}) }}"><i class="fa fa-plus"></i> Add</a>
+                        </div>
+                    {% endif %}
+                    <h2>Technology</h2>
+                    {% include '@Cronkd/World/partials/techSection.html.twig' %}
+                </div>
             </div>
         </div>
     </div>
@@ -61,6 +72,7 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $('#resourceTable').dataTable();
+            $('#techTable').dataTable();
         });
     </script>
 {% endblock %}

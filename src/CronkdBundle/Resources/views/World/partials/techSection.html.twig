@@ -1,0 +1,25 @@
+<table id="techTable" class="table table-striped table-bordered">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Levels</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for tech in world.technologies %}
+        <tr>
+            <td>
+                {% if not world.isInactive %}
+                    <div class="pull-right">
+                        <a href="{{ path('resource_update', {'id': tech.id}) }}"><i class="fa fa-cogs"></i></a>
+                    </div>
+                {% endif %}
+                <strong>{{ tech.name }}</strong>
+            </td>
+            <td>{{ tech.type|capitalize }}</td>
+            <td>{{ tech.levels|length }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

@@ -5,6 +5,7 @@ use CronkdBundle\Entity\Policy\KingdomPolicyInstance;
 use CronkdBundle\Entity\Policy\WorldPolicy;
 use CronkdBundle\Entity\Policy\WorldPolicyInstance;
 use CronkdBundle\Entity\Resource\Resource;
+use CronkdBundle\Entity\Technology\Technology;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Jms;
@@ -150,13 +151,21 @@ class Kingdom extends BaseEntity
     private $lastReadChatMessage;
 
     /**
+     * @var KingdomTechnologyLevel[]
+     *
+     * @ORM\OneToMany(targetEntity="CronkdBundle\Entity\KingdomTechnologyLevel", mappedBy="kingdom")
+     */
+    private $technologies;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
-        $this->policies  = new ArrayCollection();
-        $this->queues    = new ArrayCollection();
-        $this->resources = new ArrayCollection();
+        $this->policies     = new ArrayCollection();
+        $this->queues       = new ArrayCollection();
+        $this->resources    = new ArrayCollection();
+        $this->technologies = new ArrayCollection();
     }
 
     /**
@@ -647,5 +656,49 @@ class Kingdom extends BaseEntity
     public function getWorldPolicies()
     {
         return $this->worldPolicies;
+    }
+
+    /**
+     * Add technology
+     *
+     * @param KingdomTechnologyLevel $technology
+     *
+     * @return Kingdom
+     */
+    public function addTechnology(KingdomTechnologyLevel $technology)
+    {
+        $this->technologies[] = $technology;
+
+        return $this;
+    }
+
+    /**
+     * Remove technology
+     *
+     * @param KingdomTechnologyLevel $technology
+     */
+    public function removeTechnology(KingdomTechnologyLevel $technology)
+    {
+        $this->technologies->removeElement($technology);
+    }
+
+    /**
+     * Get technologies
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getTechnologies()
+    {
+        return $this->technologies;
+    }
+
+    /**
+     * @param Technology $technology
+     * @param int|null $level
+     * @return bool
+     */
+    public function hasTechnology(Technology $technology, int $level = null)
+    {
+        return false;
     }
 }

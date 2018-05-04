@@ -130,6 +130,12 @@ class World extends BaseEntity
     private $baseResource;
 
     /**
+     * @ORM\OneToMany(targetEntity="CronkdBundle\Entity\Technology\Technology", mappedBy="world")
+     * @ORM\OrderBy({"name" = "ASC"})
+     */
+    private $technologies;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -591,5 +597,39 @@ class World extends BaseEntity
         $this->addTick();
 
         return $this;
+    }
+
+    /**
+     * Add technology
+     *
+     * @param \CronkdBundle\Entity\Technology\Technology $technology
+     *
+     * @return World
+     */
+    public function addTechnology(\CronkdBundle\Entity\Technology\Technology $technology)
+    {
+        $this->technologies[] = $technology;
+
+        return $this;
+    }
+
+    /**
+     * Remove technology
+     *
+     * @param \CronkdBundle\Entity\Technology\Technology $technology
+     */
+    public function removeTechnology(\CronkdBundle\Entity\Technology\Technology $technology)
+    {
+        $this->technologies->removeElement($technology);
+    }
+
+    /**
+     * Get technologies
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getTechnologies()
+    {
+        return $this->technologies;
     }
 }

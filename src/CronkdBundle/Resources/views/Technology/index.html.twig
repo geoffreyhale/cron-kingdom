@@ -1,0 +1,56 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+
+    <div class="row-fluid">
+        <div class="col-sm-12">
+            <ol class="breadcrumb">
+                <li><a href="{{ path('home') }}">Dashboard</a></li>
+                <li class="active">Technology</li>
+            </ol>
+            <h3>Technology</h3>
+            <hr />
+            <div class="alert alert-warning">
+                <p>
+                    You have <strong>{{ kingdom.techPoints }}</strong> technology points to use.
+                    <br />
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="row-fluid">
+        {% for type in types %}
+        <div class="col-sm-12 col-md-6">
+            <div class="text-center">
+                <h3>{{ type }}</h3>
+            </div>
+            {% for tech in technologies %}
+                {% if tech.type|lower == type|lower %}
+            <div class="col-md-12 col-sm-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{{ tech.name }}</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+                                <span class="sr-only">90% Complete</span>
+                            </div>
+                        </div>
+                        <br />
+                        Fully Upgraded
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    {{ parent() }}
+
+{% endblock %}
